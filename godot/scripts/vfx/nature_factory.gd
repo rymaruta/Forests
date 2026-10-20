@@ -70,9 +70,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var toe := MeshInstance3D.new()
 		toe.mesh = CraftMeshes.uv_sphere(toe_r, 14 if hero else 10, 16 if hero else 12, 0.012, float(i) * 2.7, 0.88)
 		toe.material_override = VisualKit.bark_shader_material(bark_tint)
-		var reach := (base_r * 0.88) if hero else (base_r + 0.08)
-		toe.position = Vector3(cos(a) * reach, toe_r * 0.85, sin(a) * reach)
-		toe.scale = Vector3(1.2, 0.95, 1.1)
+		# フレア外縁より外へ（フレアに飲み込まれない）
+		var reach := (base_r * 1.35) if hero else (base_r + 0.08)
+		toe.position = Vector3(cos(a) * reach, toe_r * 0.75, sin(a) * reach)
+		toe.scale = Vector3(1.25, 0.9, 1.15)
 		toe.rotation = Vector3(0.2, a, 0.0)
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
