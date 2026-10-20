@@ -13,8 +13,11 @@ func _ready() -> void:
 
 
 func _bake_csg_canopies() -> void:
-	## CSGユニオンをArrayMeshへ焼き、フェルトシェーダを載せる
-	await get_tree().create_timer(0.35).timeout
+	## CSGユニオンをArrayMeshへ焼き（冠／幹＋趾）
+	await get_tree().create_timer(0.55).timeout
+	# CSG メッシュ確定のため数フレーム待つ
+	for _i in 8:
+		await get_tree().process_frame
 	_bake_csg_in($Subject)
 
 
@@ -22,15 +25,19 @@ func _bake_csg_in(n: Node) -> void:
 	for c in n.get_children():
 		if c is CSGCombiner3D:
 			var comb := c as CSGCombiner3D
-			var felt: Material = comb.get_meta("felt_material", null)
+			var mat: Material = null
+			if comb.has_meta("felt_material"):
+				mat = comb.get_meta("felt_material") as Material
+			elif comb.has_meta("bake_material"):
+				mat = comb.get_meta("bake_material") as Material
 			var data: Array = comb.get_meshes()
 			if data.size() >= 2 and data[1] is Mesh:
 				var raw: Mesh = data[1] as Mesh
 				var mi := MeshInstance3D.new()
 				mi.mesh = CraftMeshes.weld_smooth(raw)
 				mi.transform = comb.transform
-				if felt:
-					mi.material_override = felt
+				if mat:
+					mi.material_override = mat
 				mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				var parent := comb.get_parent()
 				parent.add_child(mi)

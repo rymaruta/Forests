@@ -51,47 +51,83 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var leaf := Color(0.28, 0.34, 0.20) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.16, 0.22, 0.12)
 
-	# 幹: CraftMeshes（MC soft-union は接合白欠けで破棄）。趾は深く埋め込み＋接合球
+	# ヒーロー幹＋趾: CSGユニオン→AssetBenchで weld bake（別球継ぎ目禁止）
+	# 非ヒーロー: CraftMeshes＋埋め込み趾
 	var trunk_h := h * (1.05 if hero else 0.92)
-	var trunk := MeshInstance3D.new()
+	var bark_mat := VisualKit.bark_shader_material(bark_tint)
 	var toe_n := 4 if hero else (0 if backdrop else 4)
-	# ヒーローは幾何フルート無し（規則柱禁止）。溝はテクスチャ＋シェーダ
-	trunk.mesh = CraftMeshes.trunk(
-		trunk_h, base_r, top_r,
-		40 if hero else 16, lean,
-		0.0 if hero else 0.028, true,
-		toe_n
-	)
-	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
-	root.add_child(trunk)
-	for i in toe_n:
-		var a := float(i) / float(toe_n) * TAU + 0.55
-		var ca := cos(a)
-		var sa := sin(a)
-		var toe_r := 0.24 if hero else 0.17
-		var toe := MeshInstance3D.new()
-		toe.mesh = CraftMeshes.uv_sphere(toe_r, 18 if hero else 10, 20 if hero else 12, 0.022, float(i) * 2.7, 0.98)
-		toe.material_override = VisualKit.bark_shader_material(bark_tint)
-		var reach := (base_r * 1.05) if hero else (base_r * 0.85)
-		# 外へ長い粘土マウンド（球貼り付け・平底カット禁止）
-		toe.position = Vector3(ca * reach, toe_r * 0.72, sa * reach)
-		toe.rotation = Vector3(0.0, a, 0.15)
-		toe.scale = Vector3(1.55, 0.95, 1.15) if hero else Vector3(1.12, 1.05, 1.12)
-		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(toe)
-		if hero:
-			for j in 4:
-				var t := float(j + 1) / 5.0
-				var jr := lerpf(0.16, 0.22, t)
-				var join := MeshInstance3D.new()
-				join.mesh = CraftMeshes.uv_sphere(jr, 12, 14, 0.01, float(i) * 1.7 + float(j), 0.98)
-				join.material_override = VisualKit.bark_shader_material(bark_tint)
-				var jrch := lerpf(base_r * 0.20, reach * 0.82, t)
-				var jy := lerpf(0.42, toe_r * 0.70, t)
-				join.position = Vector3(ca * jrch, jy, sa * jrch)
-				join.scale = Vector3(1.35, 1.05, 1.2)
-				join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				root.add_child(join)
+	if hero:
+		var comb := CSGCombiner3D.new()
+		comb.name = "HeroTrunkCSG"
+		comb.set_meta("bake_material", bark_mat)
+		var cyl := CSGCylinder3D.new()
+		cyl.radius = lerpf(base_r, top_r, 0.35)
+		cyl.height = trunk_h
+		cyl.sides = 28
+		cyl.cone = false
+		cyl.position = Vector3(0.0, trunk_h * 0.5, lean * 0.5)
+		# 上を細く（円錐ではなくスケールでテーパー）
+		cyl.scale = Vector3(1.0, 1.0, 1.0)
+		comb.add_child(cyl)
+		var top_cap := CSGSphere3D.new()
+		top_cap.radius = top_r * 1.15
+		top_cap.radial_segments = 14
+		top_cap.rings = 8
+		top_cap.position = Vector3(0.0, trunk_h * 0.92, lean * 0.9)
+		comb.add_child(top_cap)
+		# 裾フレア
+		var flare := CSGSphere3D.new()
+		flare.radius = base_r * 1.15
+		flare.radial_segments = 20
+		flare.rings = 12
+		flare.position = Vector3(0.0, base_r * 0.55, 0.0)
+		flare.scale = Vector3(1.15, 0.72, 1.15)
+		comb.add_child(flare)
+		for i in toe_n:
+			var a := float(i) / float(toe_n) * TAU + 0.55
+			var ca := cos(a)
+			var sa := sin(a)
+			# 接合ネック
+			var neck := CSGSphere3D.new()
+			neck.radius = 0.20
+			neck.radial_segments = 14
+			neck.rings = 10
+			neck.position = Vector3(ca * base_r * 0.55, 0.28, sa * base_r * 0.55)
+			neck.scale = Vector3(1.35, 1.05, 1.2)
+			comb.add_child(neck)
+			# 主趾（外へ長い粘土マウンド）
+			var toe := CSGSphere3D.new()
+			toe.radius = 0.24
+			toe.radial_segments = 16
+			toe.rings = 12
+			toe.position = Vector3(ca * base_r * 1.05, 0.20, sa * base_r * 1.05)
+			toe.rotation = Vector3(0.0, a, 0.12)
+			toe.scale = Vector3(1.55, 0.92, 1.12)
+			comb.add_child(toe)
+			# 外側の小さい丸み
+			var tip := CSGSphere3D.new()
+			tip.radius = 0.14
+			tip.radial_segments = 12
+			tip.rings = 8
+			tip.position = Vector3(ca * base_r * 1.32, 0.12, sa * base_r * 1.32)
+			comb.add_child(tip)
+		root.add_child(comb)
+	else:
+		var trunk := MeshInstance3D.new()
+		trunk.mesh = CraftMeshes.trunk(
+			trunk_h, base_r, top_r,
+			16, lean, 0.028, true, toe_n
+		)
+		trunk.material_override = bark_mat
+		root.add_child(trunk)
+		for i in toe_n:
+			var a := float(i) / float(toe_n) * TAU + 0.55
+			var toe := MeshInstance3D.new()
+			toe.mesh = CraftMeshes.uv_sphere(0.17, 10, 12, 0.018, float(i) * 2.7, 0.94)
+			toe.material_override = bark_mat
+			toe.position = Vector3(cos(a) * base_r * 0.85, 0.13, sin(a) * base_r * 0.85)
+			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(toe)
 
 	# 短い Y 枝（冠の下に見える位置へ）
 	for b in 2:
