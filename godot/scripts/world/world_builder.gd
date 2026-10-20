@@ -170,7 +170,7 @@ func _make_cottage() -> void:
 func _scatter_trees() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20261020
-	for i in 40:
+	for i in 28:
 		var p := Vector3(rng.randf_range(-17, 17), 0, rng.randf_range(-17, 17))
 		if p.distance_to(Vector3(8, 0, -6)) < 6.8:
 			continue
@@ -315,7 +315,7 @@ func _scatter_grass() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 77
 	var gmat := VisualKit.grass_material()
-	for i in 240:
+	for i in 160:
 		var p := _rand_point(rng, 1.6, 4.6)
 		p.y = VisualKit._h(p.x, p.z)
 		var grass := MeshInstance3D.new()

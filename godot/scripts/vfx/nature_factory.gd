@@ -27,7 +27,7 @@ static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -
 		root.add_child(root_pad)
 
 	# branches
-	var bcount := 2 if backdrop else rng.randi_range(4, 6)
+	var bcount := 2 if backdrop else rng.randi_range(3, 4)
 	for b in bcount:
 		var br := MeshInstance3D.new()
 		var blen := rng.randf_range(0.5, 0.95) * (1.2 if backdrop else 1.0)

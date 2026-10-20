@@ -25,14 +25,12 @@ func _ready() -> void:
 	_refresh_item_chip()
 	_update_action_button()
 
-	# 生成中に床抜けしないよう物理を止める
+	# Web の await/_ready 相性を避け、同期生成＋物理ロック
 	player.set_physics_process(false)
-	player.visible = false
-	GameState.toast_requested.emit("森を育てています…")
-	await world_builder.build_async()
+	player.velocity = Vector3.ZERO
+	world_builder.build()
 	_apply_loaded_save()
-	if player.global_position.y < -1.0 or player.global_position.y > 8.0:
-		player.global_position = Vector3(0.0, VisualKit._h(0.0, 3.0) + 0.35, 3.0)
+	player.global_position = Vector3(0.0, VisualKit._h(0.0, 3.0) + 0.4, 3.0)
 	player.velocity = Vector3.ZERO
 	player.visible = true
 	player.set_physics_process(true)
