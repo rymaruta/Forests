@@ -15,7 +15,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj
 RES = 120
 PAD = 0.05
 K = 0.11
-FLUTE_AMT = 0.036
+FLUTE_AMT = 0.032
 BASE_R = 0.40
 TOP_R = 0.18
 TRUNK_H = 1.75
@@ -118,7 +118,9 @@ def main():
     normals = normals / nlen
     ang = np.arctan2(verts[:, 2], verts[:, 0])
     y = verts[:, 1]
-    flute_mask = np.clip((y - 0.15) / 0.35, 0.0, 1.0)
+    # 趾・裾にはフルートを入れない（白欠け・裂け禁止）
+    flute_mask = np.clip((y - 0.42) / 0.40, 0.0, 1.0)
+    flute_mask = flute_mask * flute_mask * (3.0 - 2.0 * flute_mask)
     flute = np.sin(ang * 7.0) * 0.7 + np.sin(ang * 4.0 + y * 2.0) * 0.3
     verts = verts + normals * (flute[:, None] * FLUTE_AMT * flute_mask[:, None])
 
