@@ -16,18 +16,19 @@ void vertex() {
 void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
-	// UV が薄い場合でも読めるワールド縦溝
-	// 柔らかい縦木目（深すぎる溝は禁止）
 	float ang = atan(v_world.z, v_world.x);
-	float world_groove = 0.5 + 0.5 * sin(ang * 8.0 + v_world.y * 0.6);
-	world_groove = mix(world_groove, 0.5 + 0.5 * sin(ang * 15.0), 0.3);
-	float groove = mix(tex.r, world_groove, 0.75);
+	float g1 = 0.5 + 0.5 * sin(ang * 9.0 + v_world.y * 0.7);
+	float g2 = 0.5 + 0.5 * sin(ang * 15.0 + 1.3);
+	float world_groove = mix(g1, g2, 0.28);
+	// 溝をはっきり読ませる
+	world_groove = smoothstep(0.22, 0.82, world_groove);
+	float groove = mix(tex.r * 0.75 + 0.1, world_groove, 0.82);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.75, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.42 + groove * 0.40);
-	base *= 0.88 + ndl * 0.18;
+	ndl = mix(0.70, 1.0, ndl);
+	vec3 base = mix(bark_dark, bark_color, 0.28 + groove * 0.55);
+	base *= 0.86 + ndl * 0.20;
 	ALBEDO = base;
-	ROUGHNESS = 0.97;
+	ROUGHNESS = 0.98;
 	SPECULAR = 0.0;
 	METALLIC = 0.0;
 }

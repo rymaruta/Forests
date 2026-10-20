@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj via 3D soft-union SDF + marching cubes."""
+"""Bake canopy_hero.obj via 3D soft-union SDF + marching cubes.
+
+参照: 小さめの房が密集して雲になる（巨大3球ではない）。
+K_BLEND で溶かし、谷は残す。
+"""
 from __future__ import annotations
 
 import math
@@ -11,8 +15,8 @@ from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
 BASE_R = 1.28
-RES = 120
-PAD = 0.16
+RES = 136
+PAD = 0.14
 K_BLEND = 0.09
 SEED = 2901
 
@@ -22,37 +26,34 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
     return (1.0 - h) * b + h * a - k * h * (1.0 - h)
 
 
-def fib_sphere(n: int, y_min: float = -0.2, y_max: float = 1.0):
-    pts = []
-    for i in range(n):
-        y = 1 - 2 * (i + 0.5) / n
-        if y < y_min or y > y_max:
-            continue
-        r = math.sqrt(max(0.0, 1 - y * y))
-        th = math.pi * (1 + 5**0.5) * i
-        pts.append((math.cos(th) * r, y, math.sin(th) * r))
-    return pts
-
-
 def lobe_specs():
     specs = [
-        ((0.0, 0.55, 0.0), 0.46),
-        ((0.0, 0.85, 0.0), 0.36),
-        ((0.0, 0.25, 0.0), 0.40),
+        ((0.0, 0.55, 0.0), 0.42),
+        ((0.0, 0.82, 0.0), 0.34),
+        ((0.0, 0.28, 0.0), 0.36),
     ]
+    # 中間サイズの密集房（参照の雲感）
+    for i in range(8):
+        a = i / 8 * math.tau + 0.15
+        specs.append(
+            (
+                (math.cos(a) * 0.48, 0.48 + 0.06 * math.sin(i * 1.3), math.sin(a) * 0.48),
+                0.30,
+            )
+        )
     for i in range(7):
-        a = i / 7 * math.tau + 0.2
-        specs.append(((math.cos(a) * 0.50, 0.52 + 0.04 * math.sin(i), math.sin(a) * 0.50), 0.34))
-    for i in range(5):
-        a = i / 5 * math.tau + 0.5
-        specs.append(((math.cos(a) * 0.30, 1.00, math.sin(a) * 0.30), 0.28))
-    specs.append(((0.0, 1.25, 0.0), 0.26))
-    for i in range(5):
-        a = i / 5 * math.tau + 0.1
-        specs.append(((math.cos(a) * 0.38, 0.16, math.sin(a) * 0.38), 0.28))
-    for p in fib_sphere(48, y_min=-0.15, y_max=0.95):
-        cx, cy, cz = p[0] * 0.72, p[1] * 0.55 + 0.58, p[2] * 0.72
-        specs.append(((cx, cy, cz), 0.14 + 0.03 * (p[0] * p[0] + p[2] * p[2])))
+        a = i / 7 * math.tau + 0.4
+        specs.append(((math.cos(a) * 0.32, 0.78, math.sin(a) * 0.32), 0.26))
+    for i in range(6):
+        a = i / 6 * math.tau + 0.05
+        specs.append(((math.cos(a) * 0.36, 0.18, math.sin(a) * 0.36), 0.26))
+    specs.append(((0.0, 1.15, 0.0), 0.26))
+    # 表層の小房（シルエットの丸み、ギザ禁止の範囲で）
+    for i in range(12):
+        a = i / 12 * math.tau + 0.22
+        y = 0.35 + 0.55 * ((i % 5) / 4.0)
+        r = 0.42 + 0.08 * math.sin(i)
+        specs.append(((math.cos(a) * r * 0.55, y, math.sin(a) * r * 0.55), 0.18))
     return specs
 
 
@@ -63,12 +64,12 @@ def main() -> None:
     for c, r in lobe_specs():
         centers.append(
             (
-                c[0] * BASE_R + rng.uniform(-0.006, 0.006) * BASE_R,
-                c[1] * BASE_R + rng.uniform(-0.005, 0.005) * BASE_R,
-                c[2] * BASE_R + rng.uniform(-0.006, 0.006) * BASE_R,
+                c[0] * BASE_R + rng.uniform(-0.004, 0.004) * BASE_R,
+                c[1] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[2] * BASE_R + rng.uniform(-0.004, 0.004) * BASE_R,
             )
         )
-        radii.append(r * BASE_R * rng.uniform(0.997, 1.003))
+        radii.append(r * BASE_R * rng.uniform(0.998, 1.002))
 
     xs = [p[0] for p in centers]
     ys = [p[1] for p in centers]
@@ -131,7 +132,7 @@ def main() -> None:
             fo.write("v %.5f %.5f %.5f\n" % tuple(v))
         for f in faces:
             fo.write("f %d %d %d\n" % (f[0] + 1, f[1] + 1, f[2] + 1))
-    print("wrote", OUT, "verts", len(verts), "faces", len(faces))
+    print("wrote", OUT, "verts", len(verts), "faces", len(faces), "lobes", len(centers), "k", K_BLEND)
 
 
 if __name__ == "__main__":

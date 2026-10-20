@@ -7,8 +7,8 @@ class_name NatureFactory
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
 const HERO_TRUNK_H := 2.15
-const HERO_BASE_R := 0.38
-const HERO_TOP_R := 0.18
+const HERO_BASE_R := 0.32
+const HERO_TOP_R := 0.16
 const HERO_CANOPY_R := 1.28
 const HERO_SEED := 2901
 
@@ -46,49 +46,56 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r = (0.14 if not backdrop else 0.2)
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
-	var bark_tint := Color(0.36, 0.24, 0.16) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	# セージ／オリーブ（参照：くすんだセージ。彩度を落とす）
-	var leaf := Color(0.40, 0.46, 0.34) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.26, 0.32, 0.22)
+	var bark_tint := Color(0.34, 0.22, 0.14) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	# セージ／オリーブ（参照：くすんだ明るいセージ）
+	var leaf := Color(0.48, 0.54, 0.40) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.32, 0.38, 0.28)
 
-	# 幹フレア＋丸い趾球（角ばった星型ブーストは使わない）
+	# 幹：円柱（裾は短い）。ヒーロー根は soft-union OBJ
 	var trunk := MeshInstance3D.new()
 	var trunk_h := h * (1.05 if hero else 0.92)
-	trunk.mesh = CraftMeshes.trunk(trunk_h, base_r, top_r, 28 if hero else 16, lean, 0.038 if hero else 0.028, true, 0)
+	var toe_n := 0 if hero else (0 if backdrop else 4)
+	# ヒーローは根OBJが裾を持つので幹下端を少し浮かせて重ねる
+	var trunk_start_y := 0.48 if (hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj")) else 0.0
+	var trunk_mesh_h := trunk_h - trunk_start_y
+	trunk.mesh = CraftMeshes.trunk(
+		trunk_mesh_h, base_r * (0.92 if trunk_start_y > 0.0 else 1.0), top_r,
+		28 if hero else 16, lean,
+		0.022 if hero else 0.028, true,
+		0
+	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
+	trunk.position.y = trunk_start_y
 	root.add_child(trunk)
-	var toe_n := 5 if hero else (0 if backdrop else 4)
-	for i in toe_n:
-		var toe := MeshInstance3D.new()
-		toe.mesh = CraftMeshes.uv_sphere(0.28 if hero else 0.18, 14 if hero else 8, 16 if hero else 10, 0.03, float(i) * 2.7, 0.7)
-		toe.material_override = VisualKit.bark_shader_material(bark_tint)
-		var a := float(i) / float(toe_n) * TAU + 0.4
-		var reach := 0.42 if hero else 0.26
-		toe.position = Vector3(cos(a) * reach, 0.16, sin(a) * reach * 0.92)
-		toe.scale = Vector3(1.35, 0.85, 1.2)
-		toe.rotation = Vector3(0.25, a, 0.0)
-		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(toe)
-		# 内側の埋め込み球で幹とつなぐ
-		if hero:
-			var join := MeshInstance3D.new()
-			join.mesh = CraftMeshes.uv_sphere(0.2, 10, 12, 0.02, float(i) * 1.9, 0.85)
-			join.material_override = VisualKit.bark_shader_material(bark_tint)
-			join.position = Vector3(cos(a) * 0.22, 0.2, sin(a) * 0.22)
-			join.scale = Vector3(1.1, 0.9, 1.1)
-			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			root.add_child(join)
+	if hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj"):
+		var roots := MeshInstance3D.new()
+		roots.mesh = load("res://assets/meshes/root_hero.obj") as Mesh
+		roots.material_override = VisualKit.bark_shader_material(bark_tint)
+		roots.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(roots)
+	else:
+		toe_n = 4 if not backdrop else 0
+		for i in toe_n:
+			var a := float(i) / float(toe_n) * TAU + 0.55
+			var toe_r := 0.18
+			var toe := MeshInstance3D.new()
+			toe.mesh = CraftMeshes.uv_sphere(toe_r, 10, 12, 0.012, float(i) * 2.7, 1.0)
+			toe.material_override = VisualKit.bark_shader_material(bark_tint)
+			toe.position = Vector3(cos(a) * (base_r + 0.08), toe_r * 0.9, sin(a) * (base_r + 0.08))
+			toe.scale = Vector3(1.1, 0.9, 1.0)
+			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(toe)
 
-	# 短い Y 枝（参照：幹側面に短く、冠に突き刺さらない）
+	# 短い Y 枝（参照：幹側面に短く太い・冠の下で見える）
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.48 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.11 if hero else 0.06, 0.05 if hero else 0.022, 12, 0.1)
+		var blen := 0.55 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.14 if hero else 0.06, 0.07 if hero else 0.022, 12, 0.06)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.7 if b == 0 else PI - 0.7) + lean * 1.5
-		var by := h * 0.58
-		br.position = Vector3(cos(ang) * (0.30 if hero else 0.2) + lean * 0.15, by, 0.12)
-		br.rotation = Vector3(1.05, ang, 0.05 if b == 0 else -0.05)
+		var ang := (0.45 if b == 0 else PI - 0.45) + lean * 1.5
+		var by := h * (0.52 if b == 0 else 0.48)
+		br.position = Vector3(cos(ang) * (0.32 if hero else 0.2) + lean * 0.15, by, 0.10 if b == 0 else -0.08)
+		br.rotation = Vector3(0.85, ang, 0.1 if b == 0 else -0.1)
 		root.add_child(br)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
@@ -98,7 +105,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	canopy.position = Vector3(lean * 0.08, h * 0.70, 0.0)
+	canopy.position = Vector3(lean * 0.08, h * 0.78, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 

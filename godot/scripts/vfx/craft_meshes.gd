@@ -45,7 +45,8 @@ static func uv_sphere(radius: float, rings: int, segments: int, displace: float 
 static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true, root_toes: int = 0) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var rings := 14
+	# 根付近を密にして厚い粘土裾を作る
+	var rings := 20 if root_toes > 0 else 14
 	for i in rings:
 		var t0 := float(i) / float(rings)
 		var t1 := float(i + 1) / float(rings)
@@ -53,13 +54,9 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 		var y1 := t1 * height
 		var r0 := lerpf(bottom_r, top_r, t0 * t0 * 0.35 + t0 * 0.65)
 		var r1 := lerpf(bottom_r, top_r, t1 * t1 * 0.35 + t1 * 0.65)
-		# root flare（参照：丸く厚い裾。星型ブースト無しでも成立）
-		if t0 < 0.28:
-			var ft0: float = 1.0 - t0 / 0.28
-			r0 *= 1.0 + 0.62 * ft0 * ft0
-		if t1 < 0.28:
-			var ft1: float = 1.0 - t1 / 0.28
-			r1 *= 1.0 + 0.62 * ft1 * ft1
+		# root flare（参照：丸く厚い裾。スカート薄縁禁止）
+		r0 *= _root_flare_mul(t0)
+		r1 *= _root_flare_mul(t1)
 		var lean0 := lean * t0 * t0
 		var lean1 := lean * t1 * t1
 		for j in segments:
@@ -69,11 +66,13 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 縦フルート（正面からも溝が読める）
-			var ripple0 := 1.0 + bark_ripple * (0.65 * sin(a0 * 8.0) + 0.35 * sin(a0 * 5.0 + t0 * 3.0))
-			var ripple1 := 1.0 + bark_ripple * (0.65 * sin(a1 * 8.0) + 0.35 * sin(a1 * 5.0 + t0 * 3.0))
-			var ripple2 := 1.0 + bark_ripple * (0.65 * sin(a0 * 8.0) + 0.35 * sin(a0 * 5.0 + t1 * 3.0))
-			var ripple3 := 1.0 + bark_ripple * (0.65 * sin(a1 * 8.0) + 0.35 * sin(a1 * 5.0 + t1 * 3.0))
+			# 縦フルート（裾は弱め、幹中腹で読める）
+			var rip_amt0 := bark_ripple * lerpf(0.35, 1.0, clampf(t0 / 0.18, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.35, 1.0, clampf(t1 / 0.18, 0.0, 1.0))
+			var ripple0 := 1.0 + rip_amt0 * (0.7 * sin(a0 * 7.0) + 0.3 * sin(a0 * 4.5 + t0 * 2.8))
+			var ripple1 := 1.0 + rip_amt0 * (0.7 * sin(a1 * 7.0) + 0.3 * sin(a1 * 4.5 + t0 * 2.8))
+			var ripple2 := 1.0 + rip_amt1 * (0.7 * sin(a0 * 7.0) + 0.3 * sin(a0 * 4.5 + t1 * 2.8))
+			var ripple3 := 1.0 + rip_amt1 * (0.7 * sin(a1 * 7.0) + 0.3 * sin(a1 * 4.5 + t1 * 2.8))
 			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 + lean0, y0, sin(a0) * r0 * ripple0 * toe0)
 			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 + lean0, y0, sin(a1) * r0 * ripple1 * toe1)
 			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 + lean1, y1, sin(a0) * r1 * ripple2 * toe2)
@@ -84,11 +83,12 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			_tri_uv(st, p10, p11, p01, Vector2(u1, t0), Vector2(u1, t1), Vector2(u0, t1))
 	# 底を閉じて中空見えを防ぐ（toe外形に追従）
 	var bot_c := Vector3(0, 0.001, 0)
+	var flare0 := _root_flare_mul(0.0)
 	for j in segments:
 		var a0 := float(j) / float(segments) * TAU
 		var a1 := float(j + 1) / float(segments) * TAU
-		var br0 := bottom_r * 1.72 * _root_toe_boost(a0, 0.0, root_toes)
-		var br1 := bottom_r * 1.72 * _root_toe_boost(a1, 0.0, root_toes)
+		var br0 := bottom_r * flare0 * _root_toe_boost(a0, 0.0, root_toes)
+		var br1 := bottom_r * flare0 * _root_toe_boost(a1, 0.0, root_toes)
 		var p0 := Vector3(cos(a0) * br0, 0.001, sin(a0) * br0)
 		var p1 := Vector3(cos(a1) * br1, 0.001, sin(a1) * br1)
 		_tri(st, bot_c, p1, p0)
@@ -105,20 +105,30 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 	return st.commit()
 
 
-static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 幹フレアに丸い指を彫る（角ばった星型禁止）
-	if toes <= 0 or t > 0.32:
+static func _root_flare_mul(t: float) -> float:
+	## 参照：幹はほぼ円柱＋足元だけごく軽く広がる（趾球が主役）
+	if t >= 0.18:
 		return 1.0
-	var fall := 1.0 - t / 0.32
+	var ft := 1.0 - t / 0.18
+	ft = ft * ft * (3.0 - 2.0 * ft)
+	return 1.0 + 0.18 * ft
+
+
+static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
+	## 丸い趾を幹側面に押し出す（星型・全周スカート禁止）
+	if toes <= 0 or t > 0.28:
+		return 1.0
+	var fall := 1.0 - t / 0.28
 	fall = fall * fall * (3.0 - 2.0 * fall)
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.35
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.85, 0.0, 1.0)
+		# 趾同士の谷を残す（全周ブースト禁止）
+		var lobe: float = clampf(1.0 - d / 0.55, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.48 * best * fall
+	return 1.0 + 0.58 * best * fall
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:
@@ -143,6 +153,18 @@ static func branch(length: float, start_r: float, end_r: float, segments: int = 
 			var p11 := Vector3(cos(a1) * r1 + off1, y1, sin(a1) * r1)
 			_tri(st, p00, p10, p01)
 			_tri(st, p10, p11, p01)
+	# 両端を閉じて白穴を防ぐ
+	var tip := Vector3(bend, length, 0)
+	var base_c := Vector3(0, 0, 0)
+	for j in segments:
+		var a0 := float(j) / float(segments) * TAU
+		var a1 := float(j + 1) / float(segments) * TAU
+		var pe0 := Vector3(cos(a0) * end_r + bend, length, sin(a0) * end_r)
+		var pe1 := Vector3(cos(a1) * end_r + bend, length, sin(a1) * end_r)
+		_tri(st, tip, pe0, pe1)
+		var pb0 := Vector3(cos(a0) * start_r, 0, sin(a0) * start_r)
+		var pb1 := Vector3(cos(a1) * start_r, 0, sin(a1) * start_r)
+		_tri(st, base_c, pb1, pb0)
 	st.generate_normals()
 	return st.commit()
 

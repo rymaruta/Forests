@@ -50,11 +50,11 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: マーチングキューブ軟結合 OBJ（godot/tools/bake_canopy_hero.py）
-      高い幹比率 HERO_TRUNK_H=2.15 / CANOPY_R=1.28
+  形: マーチングキューブ軟結合 OBJ（canopy_hero.obj / root_hero.obj）
+      HERO_TRUNK_H=2.15 / BASE_R=0.32 / CANOPY_R=1.28 / SEED=2901
+      根: soft-union 趾（球継ぎは破棄、フィン押し出しも破棄）
   質感: stylized_foliage フロック＋stylized_bark ワールド縦溝
-  根: フレア＋丸趾球（星型ブーストは破棄）
-  既に捨てた製法: 縦筋シェル / 放射メタボール破片 / CSG / 高K切れ目 / 星型趾
-  未達: 参照級のフェルト毛羽・房の分離感・根の粘土一体感
-  次のレバー: ①K_BLENDと房配置 ②フロック高周波 ③趾の埋め込み
+  Bench光: アンビエント強め・影薄め（参照の柔らかい見せ方へ）
+  未達: 参照級フェルト毛羽・趾の粘土一体感・Y枝の自然さ
+  次のレバー: ①フェルト微細＋房色むら ②趾の埋め込み深さ ③枝の太さ/角度
   ワールドへは戻さない（Bench合格まで）

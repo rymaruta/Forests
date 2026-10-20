@@ -10,6 +10,7 @@ uniform float roughness_val : hint_range(0.0, 1.0) = 1.0;
 uniform float flock_mix : hint_range(0.0, 1.0) = 0.28;
 
 varying vec3 v_world;
+varying vec3 v_obj;
 
 float _hash31(vec3 p) {
 	p = fract(p * 0.1031);
@@ -37,6 +38,7 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	v_obj = VERTEX;
 	float h = max(VERTEX.y, 0.0);
 	float t = TIME * wind_speed;
 	float mask = clamp(h * 0.04, 0.0, 0.22);
@@ -45,24 +47,35 @@ void vertex() {
 }
 
 void fragment() {
-	// フェルト：等方高密度フロック（斜めストリーク禁止）
-	vec3 tex = texture(leaf_tex, v_world.xy * 0.55 + v_world.zx * 0.35).rgb;
-	float f1 = _vnoise(v_world * 32.0);
-	float f2 = _vnoise(v_world * 68.0 + 2.3);
-	float f3 = _vnoise(v_world * 140.0 + 8.0);
-	float flock = f1 * 0.38 + f2 * 0.34 + f3 * 0.28;
-	// 疑似毛羽：ノーマルを極小に揺らす（互換レンダラ向け）
+	// フェルト：低〜中周波の毛羽＋房AO。プラスチック平坦を避ける
+	vec3 tex = texture(leaf_tex, v_world.xy * 0.55 + v_world.zx * 0.38).rgb;
+	float f_lo = _vnoise(v_world * 9.0);
+	float f_mid = _vnoise(v_world * 22.0 + 1.7);
+	float f_hi = _vnoise(v_world * 48.0 + 4.2);
+	float flock = f_lo * 0.40 + f_mid * 0.38 + f_hi * 0.22;
+	float crevice = clamp(1.0 - NORMAL.y * 1.1, 0.0, 1.0);
+	crevice = pow(crevice, 1.25);
+	float lobe_ao = mix(1.0, 0.55, crevice);
+	// 毛羽っぽい擬似法線
 	vec3 n = NORMAL;
-	n += (f2 - 0.5) * 0.12 * normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
+	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
+	n += (f_mid - 0.5) * 0.14 * t1;
+	n += (f_hi - 0.5) * 0.07 * normalize(cross(NORMAL, t1));
 	n = normalize(n);
-	float ndl = clamp(dot(n, normalize(vec3(0.1, 1.0, 0.15))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.30 + 0.70, 0.0, 1.0);
-	float up = clamp(n.y * 0.12 + 0.88, 0.8, 1.0);
-	vec3 base = mix(leaf_dark, leaf_color, 0.56 + ndl * 0.18 + up * 0.06);
-	base = mix(base, tex * leaf_color, flock_mix * 0.9);
-	base *= mix(0.93, 1.07, flock);
+	float ndl = clamp(dot(n, normalize(vec3(0.12, 1.0, 0.18))), 0.0, 1.0);
+	ndl = clamp(ndl * 0.28 + 0.72, 0.0, 1.0);
+	float up = clamp(n.y * 0.18 + 0.82, 0.78, 1.0);
+	// ソフトなリムでフェルトの毛羽感
+	float rim = pow(1.0 - clamp(n.y * 0.55 + 0.45, 0.0, 1.0), 1.8) * 0.08;
+	vec3 base = mix(leaf_dark, leaf_color, 0.48 + ndl * 0.20 + up * 0.10);
+	base = mix(base, tex * leaf_color, flock_mix * 0.95);
+	base *= mix(0.88, 1.10, flock);
+	base *= lobe_ao;
+	base += leaf_color * rim;
+	float under = clamp(0.28 - v_obj.y * 0.18, 0.0, 0.22);
+	base *= 1.0 - under;
 	ALBEDO = base;
-	ROUGHNESS = max(roughness_val, 0.98);
+	ROUGHNESS = max(roughness_val, 0.99);
 	SPECULAR = 0.0;
 	METALLIC = 0.0;
 }
