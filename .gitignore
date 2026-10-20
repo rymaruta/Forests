@@ -22,3 +22,4 @@ archive/web-canvas-prototype/node_modules/
 archive/web-canvas-prototype/dist/
 node_modules/
 dist/
+.vite/
