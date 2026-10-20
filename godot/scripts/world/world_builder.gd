@@ -454,26 +454,34 @@ func _add_moss_clump(pos: Vector3) -> void:
 
 
 func _add_lights() -> void:
+	# 影を溶かして柔らかくする補助光
 	var fill := OmniLight3D.new()
-	fill.light_color = Color(0.70, 0.85, 1.0)
-	fill.light_energy = 0.4
-	fill.omni_range = 32.0
+	fill.light_color = Color(0.75, 0.88, 1.0)
+	fill.light_energy = 0.85
+	fill.omni_range = 40.0
 	fill.position = Vector3(-8, 10, 12)
 	_gen().add_child(fill)
 
 	var warm := OmniLight3D.new()
-	warm.light_color = Color(1.0, 0.82, 0.55)
-	warm.light_energy = 0.35
-	warm.omni_range = 22.0
+	warm.light_color = Color(1.0, 0.86, 0.65)
+	warm.light_energy = 0.7
+	warm.omni_range = 28.0
 	warm.position = Vector3(12, 6, -2)
 	_gen().add_child(warm)
 
 	var rim := OmniLight3D.new()
 	rim.light_color = Color(0.85, 0.95, 0.8)
-	rim.light_energy = 0.2
-	rim.omni_range = 18.0
+	rim.light_energy = 0.45
+	rim.omni_range = 24.0
 	rim.position = Vector3(0, 4, -12)
 	_gen().add_child(rim)
+
+	var ground := OmniLight3D.new()
+	ground.light_color = Color(0.55, 0.7, 0.45)
+	ground.light_energy = 0.35
+	ground.omni_range = 30.0
+	ground.position = Vector3(0, 1.5, 0)
+	_gen().add_child(ground)
 
 
 func _add_ambience() -> void:

@@ -3,13 +3,13 @@ class_name CameraOrbit
 ## プレイヤー追従 + 右画面スワイプでオービット
 
 @export var target_path: NodePath
-@export var distance: float = 7.5
-@export var height: float = 3.2
-@export var min_pitch: float = -0.55
-@export var max_pitch: float = 0.35
+@export var distance: float = 6.2
+@export var height: float = 2.4
+@export var min_pitch: float = -0.45
+@export var max_pitch: float = 0.2
 
-var yaw: float = 0.4
-var pitch: float = -0.35
+var yaw: float = 0.55
+var pitch: float = -0.22
 var _dragging: bool = false
 var _last_pos: Vector2 = Vector2.ZERO
 var _touch_index: int = -1

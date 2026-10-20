@@ -10,18 +10,21 @@ static func load_shader(path: String) -> Shader:
 static func terrain_material() -> ShaderMaterial:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_terrain.gdshader")
+	m.set_shader_parameter("grass_tex", load("res://assets/textures/grass.png"))
+	m.set_shader_parameter("dirt_tex", load("res://assets/textures/dirt.png"))
 	return m
 
 
 static func foliage_material(color: Color, dark: Color = Color.BLACK) -> ShaderMaterial:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_foliage.gdshader")
+	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
 	m.set_shader_parameter("leaf_color", color)
 	if dark.a > 0.01 and dark != Color.BLACK:
 		m.set_shader_parameter("leaf_dark", dark)
 	else:
 		m.set_shader_parameter("leaf_dark", color.darkened(0.35))
-	m.set_shader_parameter("wind_strength", 0.07)
+	m.set_shader_parameter("wind_strength", 0.1)
 	return m
 
 
@@ -40,6 +43,8 @@ static func grass_material() -> ShaderMaterial:
 static func bark_material(tint: Color = Color(0.42, 0.28, 0.18)) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = tint
+	m.albedo_texture = load("res://assets/textures/bark.png")
+	m.uv1_scale = Vector3(1.5, 2.5, 1.0)
 	m.roughness = 0.88
 	m.specular_mode = BaseMaterial3D.SPECULAR_SCHLICK_GGX
 	return m
@@ -73,15 +78,16 @@ static func make_height_terrain(size: float = 52.0, res: int = 48) -> ArrayMesh:
 
 
 static func _h(x: float, z: float) -> float:
-	# soft rolling hills, flat near spawn
+	# はっきりわかる起伏（スポーン付近は平坦）
 	var d := sqrt(x * x + z * z)
-	var flatten := smoothstep(4.0, 12.0, d)
-	var n := sin(x * 0.11) * cos(z * 0.09) * 0.55
-	n += sin(x * 0.23 + 1.7) * cos(z * 0.19) * 0.25
+	var flatten := smoothstep(3.5, 10.0, d)
+	var n := sin(x * 0.09) * cos(z * 0.08) * 1.35
+	n += sin(x * 0.19 + 1.7) * cos(z * 0.16) * 0.7
+	n += sin(x * 0.37) * 0.25
 	# pond basin
 	var pond := Vector2(x - 8.0, z + 6.0).length()
 	if pond < 5.5:
-		n = lerp(n, -0.35, 1.0 - pond / 5.5)
+		n = lerp(n, -0.55, 1.0 - pond / 5.5)
 	return n * flatten
 
 
