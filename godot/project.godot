@@ -1,0 +1,55 @@
+; Engine configuration file.
+; Forests — iOS向け3Dスローライフ MVP (Godot 4.3)
+
+config_version=5
+
+[application]
+
+config/name="Forests"
+config/description="自分のペースで森に暮らす、オリジナル3Dスローライフ。"
+config/version="0.1.0"
+run/main_scene="res://scenes/boot/Title.tscn"
+config/features=PackedStringArray("4.3", "GL Compatibility")
+config/icon="res://assets/icon.svg"
+
+[autoload]
+
+GameState="*res://scripts/autoload/game_state.gd"
+SaveService="*res://scripts/autoload/save_service.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/size/mode=0
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=4
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[layer_names]
+
+3d_physics/layer_1="world"
+3d_physics/layer_2="player"
+3d_physics/layer_3="interactable"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.web="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+anti_aliasing/quality/msaa_3d=0
+lights_and_shadows/directional_shadow/size=2048
+environment/defaults/default_clear_color=Color(0.45, 0.7, 0.55, 1)
+
+[gui]
+
+theme/custom="res://assets/ui/default_theme.tres"
+theme/custom_font="res://assets/fonts/NotoSansJP-Regular.ttf"
+
+[internationalization]
+
+locale/fallback="ja"

@@ -1,0 +1,28 @@
+# Godot
+godot/.godot/
+godot/*.translation
+godot/export/
+godot/*.apk
+godot/*.aab
+godot/*.ipa
+godot/*.xcframework
+godot/.mono/
+godot/android/
+godot/ios/
+
+# OS / editor
+.DS_Store
+*.swp
+*~
+.vscode/
+.idea/
+
+# Legacy web prototype deps (if reinstalled)
+archive/web-canvas-prototype/node_modules/
+archive/web-canvas-prototype/dist/
+node_modules/
+dist/
+.vite/
+
+# Large wasm can live in play/; keep it tracked for zero-setup play
+# (index.wasm ~34MB — acceptable for playable drop)
