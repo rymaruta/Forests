@@ -9,7 +9,7 @@ config/name="Forests"
 config/description="自分のペースで森に暮らす、オリジナル3Dスローライフ。"
 config/version="0.1.0"
 run/main_scene="res://scenes/boot/Title.tscn"
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/features=PackedStringArray("4.3", "Mobile")
 config/icon="res://assets/icon.svg"
 
 [autoload]
@@ -38,9 +38,8 @@ pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
-renderer/rendering_method.mobile="gl_compatibility"
-renderer/rendering_method.web="gl_compatibility"
+renderer/rendering_method="mobile"
+renderer/rendering_method.web="mobile"
 textures/vram_compression/import_etc2_astc=true
 anti_aliasing/quality/msaa_3d=0
 lights_and_shadows/directional_shadow/size=2048
