@@ -143,12 +143,12 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：軽い裾広がりのみ（強い半径ブースト＝平スカート）
-	if t >= 0.22:
+	## 軽い裾。趾メッシュと連続する程度（平スカート禁止）
+	if t >= 0.30:
 		return 1.0
-	var ft := 1.0 - t / 0.22
+	var ft := 1.0 - t / 0.30
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.22 * ft
+	return 1.0 + 0.30 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:

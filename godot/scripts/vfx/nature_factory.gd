@@ -72,19 +72,19 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var sa := sin(a)
 		if hero:
 			var toe := MeshInstance3D.new()
-			toe.mesh = CraftMeshes.clay_root_toe(0.72, 0.22, 0.08, 14, 18, float(i) * 2.3)
+			toe.mesh = CraftMeshes.clay_root_toe(0.78, 0.24, 0.07, 16, 18, float(i) * 2.3)
 			toe.material_override = bark_mat
-			# 幹側面に深く食い込ませ、下へ弧を描く
-			toe.position = Vector3(ca * base_r * 0.28, 0.32, sa * base_r * 0.28)
-			toe.rotation = Vector3(0.0, a, 0.72)
+			# 幹に深く埋め、下外へ弧（別球の貼り付け禁止）
+			toe.position = Vector3(ca * base_r * 0.18, 0.38, sa * base_r * 0.18)
+			toe.rotation = Vector3(0.15, a, 0.85)
 			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(toe)
-			# 接合を埋める小さな球
+			# 接合を埋める球
 			var join := MeshInstance3D.new()
-			join.mesh = CraftMeshes.uv_sphere(0.18, 12, 14, 0.01, float(i) * 1.5, 0.98)
+			join.mesh = CraftMeshes.uv_sphere(0.20, 12, 14, 0.01, float(i) * 1.5, 0.98)
 			join.material_override = bark_mat
-			join.position = Vector3(ca * base_r * 0.22, 0.34, sa * base_r * 0.22)
-			join.scale = Vector3(1.3, 1.15, 1.25)
+			join.position = Vector3(ca * base_r * 0.12, 0.40, sa * base_r * 0.12)
+			join.scale = Vector3(1.45, 1.25, 1.35)
 			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(join)
 		else:
