@@ -71,16 +71,16 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
 
-	# 短い支持スタブ（参照：樹冠すぐ下の左右短い枝）
+	# 短い支持スタブ（参照：樹冠すぐ下に見える左右枝）
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.55 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.065 if hero else 0.022, 12, 0.12)
+		var blen := 0.62 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.07 if hero else 0.022, 12, 0.14)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.0 if b == 0 else PI) + lean * 1.5
-		var by := h * 0.72
-		br.position = Vector3(cos(ang) * 0.18 + lean * 0.15, by, sin(ang) * 0.04)
-		br.rotation = Vector3(0.75, ang, 0.0)
+		var ang := (0.25 if b == 0 else PI - 0.25) + lean * 1.5
+		var by := h * 0.7
+		br.position = Vector3(cos(ang) * 0.2 + lean * 0.15, by, 0.12)
+		br.rotation = Vector3(0.65, ang, 0.0)
 		root.add_child(br)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
@@ -90,7 +90,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	canopy.position = Vector3(lean * 0.08, h * 0.68, 0.0)
+	canopy.position = Vector3(lean * 0.08, h * 0.82, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 

@@ -53,13 +53,13 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 		var y1 := t1 * height
 		var r0 := lerpf(bottom_r, top_r, t0 * t0 * 0.35 + t0 * 0.65)
 		var r1 := lerpf(bottom_r, top_r, t1 * t1 * 0.35 + t1 * 0.65)
-		# root flare near ground（丸く・スカート化しない）
-		if t0 < 0.16:
-			var ft0: float = 1.0 - t0 / 0.16
-			r0 *= 1.0 + 0.45 * ft0 * ft0
-		if t1 < 0.16:
-			var ft1: float = 1.0 - t1 / 0.16
-			r1 *= 1.0 + 0.45 * ft1 * ft1
+		# root flare near ground（toeメッシュと競合しないよう控えめ）
+		if t0 < 0.14:
+			var ft0: float = 1.0 - t0 / 0.14
+			r0 *= 1.0 + 0.28 * ft0 * ft0
+		if t1 < 0.14:
+			var ft1: float = 1.0 - t1 / 0.14
+			r1 *= 1.0 + 0.28 * ft1 * ft1
 		var lean0 := lean * t0 * t0
 		var lean1 := lean * t1 * t1
 		for j in segments:
