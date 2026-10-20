@@ -51,29 +51,39 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var leaf := Color(0.46, 0.50, 0.40) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.34, 0.38, 0.30)
 
-	# ヒーロー：幹＋趾を一本の soft-union OBJ（水平継ぎ目禁止）
+	# 幹は一本の CraftMeshes（MC幹は趾接合で白欠けが出るので使わない）
 	var trunk_h := h * (1.05 if hero else 0.92)
-	if hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj"):
-		var trunk := MeshInstance3D.new()
-		trunk.mesh = load("res://assets/meshes/root_hero.obj") as Mesh
-		trunk.material_override = VisualKit.bark_shader_material(bark_tint)
-		root.add_child(trunk)
-	else:
-		var trunk := MeshInstance3D.new()
-		trunk.mesh = CraftMeshes.trunk(trunk_h, base_r, top_r, 16, lean, 0.028, true, 0)
-		trunk.material_override = VisualKit.bark_shader_material(bark_tint)
-		root.add_child(trunk)
-		var toe_n := 0 if backdrop else 4
-		for i in toe_n:
-			var a := float(i) / float(toe_n) * TAU + 0.55
-			var toe_r := 0.18
-			var toe := MeshInstance3D.new()
-			toe.mesh = CraftMeshes.uv_sphere(toe_r, 10, 12, 0.012, float(i) * 2.7, 1.0)
-			toe.material_override = VisualKit.bark_shader_material(bark_tint)
-			toe.position = Vector3(cos(a) * (base_r + 0.08), toe_r * 0.9, sin(a) * (base_r + 0.08))
-			toe.scale = Vector3(1.1, 0.9, 1.0)
-			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			root.add_child(toe)
+	var trunk := MeshInstance3D.new()
+	trunk.mesh = CraftMeshes.trunk(
+		trunk_h, base_r, top_r,
+		32 if hero else 16, lean,
+		0.030 if hero else 0.028, true,
+		0
+	)
+	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
+	root.add_child(trunk)
+	var toe_n := 4 if hero else (0 if backdrop else 4)
+	for i in toe_n:
+		var a := float(i) / float(toe_n) * TAU + 0.55
+		# 扁平な粘土趾：幹に半分埋め、床で切らない
+		var toe_r := 0.22 if hero else 0.16
+		var toe := MeshInstance3D.new()
+		toe.mesh = CraftMeshes.uv_sphere(toe_r, 14 if hero else 10, 16 if hero else 12, 0.01, float(i) * 2.7, 0.72)
+		toe.material_override = VisualKit.bark_shader_material(bark_tint)
+		var reach := base_r * 0.70 if hero else (base_r + 0.08)
+		toe.position = Vector3(cos(a) * reach, toe_r * 0.55, sin(a) * reach)
+		toe.scale = Vector3(1.35, 0.75, 1.15)
+		toe.rotation = Vector3(0.35, a, 0.0)
+		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(toe)
+		if hero:
+			var join := MeshInstance3D.new()
+			join.mesh = CraftMeshes.uv_sphere(0.16, 12, 14, 0.008, float(i) * 1.7, 0.85)
+			join.material_override = VisualKit.bark_shader_material(bark_tint)
+			join.position = Vector3(cos(a) * (base_r * 0.35), 0.22, sin(a) * (base_r * 0.35))
+			join.scale = Vector3(1.15, 0.95, 1.1)
+			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(join)
 
 	# 短い Y 枝（ヒーローは冠にほぼ埋めて突き出しを抑える）
 	if not hero:
