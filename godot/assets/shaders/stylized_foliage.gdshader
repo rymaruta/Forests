@@ -38,7 +38,8 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	// フェルト毛羽：法線方向の微変位でシルエットをぼかす（粘土平滑禁止）
-	float fuzz = _hash31(VERTEX * 38.0 + 2.7) * 0.055 + _hash31(VERTEX * 71.0) * 0.022;
+	// 強すぎる頂点ファズ＝ジャギー縁。弱くしてリムで毛羽を読む
+	float fuzz = _hash31(VERTEX * 38.0 + 2.7) * 0.022 + _hash31(VERTEX * 71.0) * 0.010;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -86,7 +87,7 @@ void fragment() {
 
 	// 繊維散乱リム（スペキュラではない）
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 1.8) * 0.36;
+	float rim = pow(1.0 - facing, 2.0) * 0.42;
 
 	// 房ごとの体積感：上向き面を明るく、谷を落とす（平坦ノイズ禁止）
 	vec3 base = mix(leaf_dark, leaf_color, 0.42 + fiber_catch * 0.34 + up * 0.14);

@@ -43,16 +43,16 @@ void fragment() {
 		+ _n2(vec2(y * 0.8, ang * 0.4)) * 0.40;
 	// 不規則な縦溝：一定バンド禁止。ノイズで本数・位置を揺らす
 	float a01 = ang / 6.2831853;
-	float gA = 0.5 + 0.5 * sin((a01 * 4.0 + warp) * 6.2831853);
-	float gB = 0.5 + 0.5 * sin((a01 * 6.5 + warp * 1.4 + 0.7) * 6.2831853);
-	float gC = 0.5 + 0.5 * sin((a01 * 3.2 + y * 0.2 + 1.3) * 6.2831853);
-	float groove = gA * 0.48 + gB * 0.32 + gC * 0.20;
-	groove = smoothstep(0.35, 0.78, groove) * trunk_mask;
-	float grain = _n2(vec2(ang * 4.5, y * 3.2));
-	groove = mix(groove, groove * (0.75 + grain * 0.5), 0.40);
+	float gA = 0.5 + 0.5 * sin((a01 * 3.4 + warp) * 6.2831853);
+	float gB = 0.5 + 0.5 * sin((a01 * 5.2 + warp * 1.6 + 0.7) * 6.2831853);
+	float gC = _n2(vec2(a01 * 8.0 + warp, y * 1.4));
+	float groove = gA * 0.40 + gB * 0.28 + gC * 0.32;
+	groove = smoothstep(0.38, 0.74, groove) * trunk_mask;
+	float grain = _n2(vec2(ang * 3.8, y * 2.8));
+	groove = mix(groove, groove * (0.78 + grain * 0.45), 0.50);
 
-	float tex_g = tex.r * 0.55 + 0.22;
-	groove = mix(tex_g * trunk_mask, groove, 0.62);
+	float tex_g = tex.r * 0.60 + 0.20;
+	groove = mix(tex_g * trunk_mask, groove, 0.55);
 
 	// 溝の擬似凹凸（アルベドだけだと平坦に見える）
 	vec3 n = NORMAL;
