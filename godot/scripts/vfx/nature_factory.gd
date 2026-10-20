@@ -54,7 +54,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 幹フレア＋丸い趾球（角ばった星型ブーストは使わない）
 	var trunk := MeshInstance3D.new()
 	var trunk_h := h * (1.05 if hero else 0.92)
-	trunk.mesh = CraftMeshes.trunk(trunk_h, base_r, top_r, 28 if hero else 16, lean, 0.055 if hero else 0.032, true, 0)
+	trunk.mesh = CraftMeshes.trunk(trunk_h, base_r, top_r, 28 if hero else 16, lean, 0.038 if hero else 0.028, true, 0)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
 	root.add_child(trunk)
 	var toe_n := 5 if hero else (0 if backdrop else 4)
@@ -176,33 +176,45 @@ static func cottage() -> Node3D:
 	var wood := VisualKit.bark_shader_material(Color(0.26, 0.16, 0.09))
 	var roof := VisualKit.roof_tile_material()
 	var stone := StandardMaterial3D.new()
-	stone.albedo_color = Color(0.52, 0.50, 0.46)
-	stone.roughness = 0.96
+	stone.albedo_color = Color(0.42, 0.40, 0.36)
+	stone.roughness = 1.0
 	stone.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	stone.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 
-	# 石積み基壇（参照：丸い cobble。白い板は出さない）
+	# 石積み：濃い不透明の丸石だけ。白い板は隠す
 	var plinth := MeshInstance3D.new()
 	var pm := BoxMesh.new()
-	pm.size = Vector3(3.7, 0.36, 2.9)
+	pm.size = Vector3(3.4, 0.22, 2.6)
 	plinth.mesh = pm
 	plinth.material_override = stone
-	plinth.position.y = 0.12
-	plinth.position.z = -0.05
+	plinth.position = Vector3(0, 0.08, -0.1)
 	root.add_child(plinth)
-	for i in 12:
+	# 前面の石：重なりすぎないよう1列＋少し互い違い
+	for i in 10:
 		var cob := MeshInstance3D.new()
-		cob.mesh = CraftMeshes.uv_sphere(0.20 + fmod(float(i) * 0.04, 0.09), 9, 11, 0.12, float(i) * 5.0, 0.78)
+		cob.mesh = CraftMeshes.uv_sphere(0.26 + fmod(float(i) * 0.02, 0.06), 10, 12, 0.06, float(i) * 4.7, 0.75)
 		var cm := StandardMaterial3D.new()
-		cm.albedo_color = Color(0.50, 0.48, 0.44).lerp(Color(0.38, 0.40, 0.36), fmod(float(i) * 0.27, 1.0))
-		cm.roughness = 0.97
+		cm.albedo_color = Color(0.38, 0.36, 0.32).lerp(Color(0.28, 0.30, 0.26), fmod(float(i) * 0.19, 1.0))
+		cm.roughness = 1.0
 		cm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 		cob.material_override = cm
-		var row := i / 6
-		var col := i % 6
-		cob.position = Vector3(-1.45 + float(col) * 0.58, 0.22 + float(row) * 0.18, 1.55 + float(row) * 0.08)
-		cob.scale = Vector3(1.25, 0.85, 1.05)
+		cob.position = Vector3(-1.7 + float(i) * 0.38, 0.22 + (0.06 if i % 2 == 0 else 0.0), 1.52)
+		cob.scale = Vector3(1.1, 0.95, 1.0)
 		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cob)
+	for i in 5:
+		for side in [-1.0, 1.0]:
+			var cob := MeshInstance3D.new()
+			cob.mesh = CraftMeshes.uv_sphere(0.24, 9, 11, 0.06, float(i) * 3.1 + side, 0.8)
+			var cm := StandardMaterial3D.new()
+			cm.albedo_color = Color(0.36, 0.35, 0.31)
+			cm.roughness = 1.0
+			cm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+			cob.material_override = cm
+			cob.position = Vector3(side * 1.68, 0.2, -0.8 + float(i) * 0.5)
+			cob.scale = Vector3(1.05, 0.9, 1.1)
+			cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(cob)
 
 	# 漆喰本体（参照：横広・低め）
 	var body := MeshInstance3D.new()

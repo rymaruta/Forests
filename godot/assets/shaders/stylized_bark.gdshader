@@ -17,16 +17,15 @@ void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
 	// UV が薄い場合でも読めるワールド縦溝
-	// 正面からも縦溝が読めるよう角周波数を高め、高さ依存は弱く
+	// 柔らかい縦木目（深すぎる溝は禁止）
 	float ang = atan(v_world.z, v_world.x);
-	float world_groove = 0.5 + 0.5 * sin(ang * 11.0 + v_world.y * 0.8);
-	world_groove = world_groove * world_groove;
-	world_groove = mix(world_groove, 0.5 + 0.5 * sin(ang * 19.0), 0.4);
-	float groove = mix(tex.r, world_groove, 0.92);
+	float world_groove = 0.5 + 0.5 * sin(ang * 8.0 + v_world.y * 0.6);
+	world_groove = mix(world_groove, 0.5 + 0.5 * sin(ang * 15.0), 0.3);
+	float groove = mix(tex.r, world_groove, 0.75);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.72, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.35 + groove * 0.48);
-	base *= 0.86 + ndl * 0.20;
+	ndl = mix(0.75, 1.0, ndl);
+	vec3 base = mix(bark_dark, bark_color, 0.42 + groove * 0.40);
+	base *= 0.88 + ndl * 0.18;
 	ALBEDO = base;
 	ROUGHNESS = 0.97;
 	SPECULAR = 0.0;
