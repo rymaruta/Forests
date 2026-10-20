@@ -47,9 +47,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
 	var bark_tint := Color(0.38, 0.26, 0.16) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	# セージ／オリーブ（参照：くすみ・低彩度）
-	var leaf := Color(0.50, 0.54, 0.42) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.36, 0.40, 0.32)
+	# セージ／オリーブ（参照：くすみ・ホットスポット禁止）
+	var leaf := Color(0.46, 0.50, 0.40) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.34, 0.38, 0.30)
 
 	# ヒーロー：幹＋趾を一本の soft-union OBJ（水平継ぎ目禁止）
 	var trunk_h := h * (1.05 if hero else 0.92)

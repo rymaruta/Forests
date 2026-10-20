@@ -64,8 +64,8 @@ void fragment() {
 	n += (f_hi - 0.5) * 0.07 * normalize(cross(NORMAL, t1));
 	n = normalize(n);
 	float ndl = clamp(dot(n, normalize(vec3(0.12, 1.0, 0.18))), 0.0, 1.0);
-	// 強いラップライティングでフェルトの柔らかさ
-	ndl = clamp(ndl * 0.18 + 0.82, 0.0, 1.0);
+	// ほぼフラットなラップ（ホットスポット＝プラスチック禁止）
+	ndl = clamp(ndl * 0.12 + 0.88, 0.0, 1.0);
 	float up = clamp(n.y * 0.18 + 0.82, 0.78, 1.0);
 	// ソフトなリムでフェルトの毛羽感
 	float rim = pow(1.0 - clamp(n.y * 0.55 + 0.45, 0.0, 1.0), 1.8) * 0.08;
