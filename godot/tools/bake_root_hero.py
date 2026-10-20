@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Bake root_hero.obj — 幹下半＋趾を一体の soft-union（継ぎ目・浮き球禁止）。"""
+"""Bake root_hero.obj — 幹全体＋趾を一本の soft-union（水平継ぎ目禁止）。
+
+縦溝はシェーダ側。ここでは形の一体感だけ作る。
+"""
 from __future__ import annotations
 
 import math
@@ -12,8 +15,9 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj
 RES = 120
 PAD = 0.05
 K = 0.11
-BASE_R = 0.32
-TOP_Y = 0.85  # 幹下半まで含めて継ぎ目を消す
+BASE_R = 0.34
+TOP_R = 0.17
+TRUNK_H = 1.95
 
 
 def soft_min(a, b, k):
@@ -26,25 +30,21 @@ def soft_max(a, b, k):
 
 
 def main():
-    specs = []  # cx,cy,cz,rx,ry,rz
-    # 幹円柱を縦に連続（上まで）
-    n = 10
+    specs = []
+    n = 14
     for i in range(n):
         t = i / (n - 1)
-        y = 0.08 + t * (TOP_Y - 0.08)
-        # 裾だけ少し太い
-        flare = 1.0 + 0.22 * max(0.0, 1.0 - y / 0.35) ** 2
-        r = BASE_R * flare * (1.0 - 0.12 * t)
-        specs.append((0.0, y, 0.0, r, r * 0.85, r))
+        y = 0.06 + t * (TRUNK_H - 0.06)
+        flare = 1.0 + 0.30 * max(0.0, 1.0 - y / 0.40) ** 2
+        r = (BASE_R * (1.0 - t) + TOP_R * t) * flare
+        specs.append((0.0, y, 0.0, r, r * 0.88, r))
 
-    # 趾：幹裾から連続して外へ細長く
     for i in range(4):
         a = i / 4 * math.tau + 0.55
         ca, sa = math.cos(a), math.sin(a)
-        # 幹側面から生え、地面へ寝る
-        specs.append((ca * BASE_R * 0.35, 0.22, sa * BASE_R * 0.35, 0.16, 0.14, 0.15))
-        specs.append((ca * (BASE_R + 0.06), 0.14, sa * (BASE_R + 0.06), 0.17, 0.12, 0.13))
-        specs.append((ca * (BASE_R + 0.16), 0.10, sa * (BASE_R + 0.16), 0.13, 0.10, 0.11))
+        specs.append((ca * BASE_R * 0.42, 0.20, sa * BASE_R * 0.42, 0.17, 0.15, 0.16))
+        specs.append((ca * (BASE_R + 0.06), 0.13, sa * (BASE_R + 0.06), 0.16, 0.12, 0.13))
+        specs.append((ca * (BASE_R + 0.15), 0.09, sa * (BASE_R + 0.15), 0.12, 0.09, 0.10))
 
     rs = [max(s[3], s[4], s[5]) for s in specs]
     xs = [s[0] for s in specs]
@@ -100,7 +100,7 @@ def main():
     faces = np.array(new_faces)
 
     with OUT.open("w") as fo:
-        fo.write("# root+lower-trunk soft-union k=%.2f top=%.2f\n" % (K, TOP_Y))
+        fo.write("# full-trunk+toes soft-union k=%.2f h=%.2f\n" % (K, TRUNK_H))
         for v in verts:
             fo.write("v %.5f %.5f %.5f\n" % tuple(v))
         for f in faces:

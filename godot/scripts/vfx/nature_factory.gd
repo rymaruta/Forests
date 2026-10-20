@@ -51,30 +51,19 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var leaf := Color(0.50, 0.54, 0.42) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.36, 0.40, 0.32)
 
-	# 幹：円柱（裾は短い）。ヒーロー根は soft-union OBJ
-	var trunk := MeshInstance3D.new()
+	# ヒーロー：幹＋趾を一本の soft-union OBJ（水平継ぎ目禁止）
 	var trunk_h := h * (1.05 if hero else 0.92)
-	var toe_n := 0 if hero else (0 if backdrop else 4)
-	# ヒーローは根OBJが裾を持つので幹下端を少し浮かせて重ねる
-	var trunk_start_y := 0.72 if (hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj")) else 0.0
-	var trunk_mesh_h := trunk_h - trunk_start_y
-	trunk.mesh = CraftMeshes.trunk(
-		trunk_mesh_h, base_r * (0.92 if trunk_start_y > 0.0 else 1.0), top_r,
-		28 if hero else 16, lean,
-		0.035 if hero else 0.028, true,
-		0
-	)
-	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
-	trunk.position.y = trunk_start_y
-	root.add_child(trunk)
 	if hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj"):
-		var roots := MeshInstance3D.new()
-		roots.mesh = load("res://assets/meshes/root_hero.obj") as Mesh
-		roots.material_override = VisualKit.bark_shader_material(bark_tint)
-		roots.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(roots)
+		var trunk := MeshInstance3D.new()
+		trunk.mesh = load("res://assets/meshes/root_hero.obj") as Mesh
+		trunk.material_override = VisualKit.bark_shader_material(bark_tint)
+		root.add_child(trunk)
 	else:
-		toe_n = 4 if not backdrop else 0
+		var trunk := MeshInstance3D.new()
+		trunk.mesh = CraftMeshes.trunk(trunk_h, base_r, top_r, 16, lean, 0.028, true, 0)
+		trunk.material_override = VisualKit.bark_shader_material(bark_tint)
+		root.add_child(trunk)
+		var toe_n := 0 if backdrop else 4
 		for i in toe_n:
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var toe_r := 0.18
