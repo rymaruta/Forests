@@ -253,77 +253,76 @@ static func cottage() -> Node3D:
 	# ポーチ柱＋梁
 	for side in [-1.0, 1.0]:
 		var post := MeshInstance3D.new()
-		post.mesh = CraftMeshes.trunk(1.3, 0.08, 0.06, 8)
+		post.mesh = CraftMeshes.trunk(1.15, 0.09, 0.07, 8)
 		post.material_override = wood
-		post.position = Vector3(side * 0.72, 0.38, 1.58)
+		post.position = Vector3(side * 0.85, 0.42, 1.78)
 		root.add_child(post)
-	_beam(root, wood, Vector3(0, 1.62, 1.58), Vector3(1.6, 0.12, 0.14))
+	_beam(root, wood, Vector3(0, 1.5, 1.78), Vector3(1.85, 0.14, 0.16))
 
 	# 凹み扉＋小窓
-	_beam(root, wood, Vector3(0, 1.0, 1.08), Vector3(0.88, 1.35, 0.12))
+	_beam(root, wood, Vector3(0, 0.95, 1.28), Vector3(0.95, 1.25, 0.14))
 	var door := MeshInstance3D.new()
 	var doorm := BoxMesh.new()
-	doorm.size = Vector3(0.72, 1.2, 0.06)
+	doorm.size = Vector3(0.78, 1.1, 0.06)
 	door.mesh = doorm
 	door.material_override = VisualKit.bark_shader_material(Color(0.28, 0.18, 0.1))
-	door.position = Vector3(0, 1.0, 1.12)
+	door.position = Vector3(0, 0.95, 1.32)
 	root.add_child(door)
-	# 扉の小窓
 	var dw := MeshInstance3D.new()
 	var dwm := BoxMesh.new()
-	dwm.size = Vector3(0.28, 0.28, 0.04)
+	dwm.size = Vector3(0.3, 0.3, 0.04)
 	dw.mesh = dwm
 	var dwmat := StandardMaterial3D.new()
 	dwmat.albedo_color = Color(0.75, 0.88, 0.92)
 	dwmat.emission_enabled = true
 	dwmat.emission = Color(0.95, 0.85, 0.45)
-	dwmat.emission_energy_multiplier = 0.45
+	dwmat.emission_energy_multiplier = 0.55
 	dw.material_override = dwmat
-	dw.position = Vector3(0, 1.35, 1.16)
+	dw.position = Vector3(0, 1.28, 1.36)
 	root.add_child(dw)
-	_beam(root, wood, Vector3(-0.16, 1.0, 1.16), Vector3(0.04, 1.1, 0.02))
-	_beam(root, wood, Vector3(0.16, 1.0, 1.16), Vector3(0.04, 1.1, 0.02))
+	_beam(root, wood, Vector3(-0.18, 0.95, 1.36), Vector3(0.04, 1.0, 0.02))
+	_beam(root, wood, Vector3(0.18, 0.95, 1.36), Vector3(0.04, 1.0, 0.02))
 	var knob := MeshInstance3D.new()
-	knob.mesh = CraftMeshes.uv_sphere(0.04, 5, 6)
-	knob.material_override = VisualKit.character_material(Color(0.78, 0.62, 0.32), Color(0.48, 0.36, 0.16))
-	knob.position = Vector3(0.24, 0.95, 1.18)
+	knob.mesh = CraftMeshes.uv_sphere(0.045, 5, 6)
+	knob.material_override = VisualKit.character_material(Color(0.2, 0.18, 0.16), Color(0.1, 0.1, 0.1))
+	knob.position = Vector3(0.26, 0.9, 1.38)
 	root.add_child(knob)
 
 	# 窓＋花箱（参照どおり左右）
 	for side in [-1.0, 1.0]:
-		_beam(root, wood, Vector3(side * 0.95, 1.4, 1.15), Vector3(0.62, 0.62, 0.1))
+		_beam(root, wood, Vector3(side * 1.1, 1.3, 1.35), Vector3(0.7, 0.7, 0.12))
 		var glass := MeshInstance3D.new()
 		var glm := BoxMesh.new()
-		glm.size = Vector3(0.46, 0.46, 0.04)
+		glm.size = Vector3(0.52, 0.52, 0.04)
 		glass.mesh = glm
 		var gmat := StandardMaterial3D.new()
 		gmat.albedo_color = Color(0.7, 0.85, 0.9)
 		gmat.emission_enabled = true
 		gmat.emission = Color(0.95, 0.82, 0.4)
-		gmat.emission_energy_multiplier = 0.55
+		gmat.emission_energy_multiplier = 0.7
 		gmat.roughness = 0.25
 		glass.material_override = gmat
-		glass.position = Vector3(side * 0.95, 1.4, 1.2)
+		glass.position = Vector3(side * 1.1, 1.3, 1.4)
 		root.add_child(glass)
-		_beam(root, wood, Vector3(side * 0.95, 1.4, 1.22), Vector3(0.46, 0.05, 0.02))
-		_beam(root, wood, Vector3(side * 0.95, 1.4, 1.22), Vector3(0.05, 0.46, 0.02))
+		_beam(root, wood, Vector3(side * 1.1, 1.3, 1.42), Vector3(0.52, 0.05, 0.02))
+		_beam(root, wood, Vector3(side * 1.1, 1.3, 1.42), Vector3(0.05, 0.52, 0.02))
 
 	# 煙突（石）
-	_beam(root, stone, Vector3(-0.95, 2.85, -0.35), Vector3(0.42, 0.95, 0.42))
-	_beam(root, stone, Vector3(-0.95, 3.35, -0.35), Vector3(0.5, 0.1, 0.5))
+	_beam(root, stone, Vector3(-1.15, 2.55, -0.4), Vector3(0.48, 1.0, 0.48))
+	_beam(root, stone, Vector3(-1.15, 3.1, -0.4), Vector3(0.56, 0.12, 0.56))
 
-	# 丸みのある段
-	_beam(root, wood, Vector3(0, 0.3, 1.55), Vector3(1.3, 0.16, 0.55))
-	_beam(root, wood, Vector3(0, 0.16, 1.75), Vector3(1.05, 0.12, 0.4))
+	# 段
+	_beam(root, wood, Vector3(0, 0.32, 1.75), Vector3(1.5, 0.18, 0.6))
+	_beam(root, wood, Vector3(0, 0.18, 1.95), Vector3(1.2, 0.14, 0.45))
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 88
 	for side in [-1.0, 1.0]:
-		_beam(root, wood, Vector3(side * 0.95, 1.02, 1.24), Vector3(0.62, 0.16, 0.26))
-		for j in 2:
+		_beam(root, wood, Vector3(side * 1.1, 0.95, 1.42), Vector3(0.7, 0.18, 0.28))
+		for j in 3:
 			var f := flower(rng, ForestsPalette.petals()[j % 6])
-			f.scale = Vector3.ONE * 0.5
-			f.position = Vector3(side * 0.95 + (j - 0.5) * 0.14, 1.1, 1.24)
+			f.scale = Vector3.ONE * 0.45
+			f.position = Vector3(side * 1.1 + (j - 1.0) * 0.14, 1.05, 1.42)
 			root.add_child(f)
 
 	return root

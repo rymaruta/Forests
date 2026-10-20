@@ -180,9 +180,15 @@ func _scatter_trees() -> void:
 		if p.length() < 4.0:
 			continue
 		p.y = VisualKit._h(p.x, p.z)
-		# 参照は広葉樹が主役。針葉は少数に抑える
+		# 参照は広葉樹が主役。針葉は少数。手前数本はヒーロー固定形
 		var is_pine := rng.randf() > 0.88
-		var tree: Node3D = NatureFactory.pine_tree(rng) if is_pine else NatureFactory.deciduous_tree(rng)
+		var tree: Node3D
+		if (not is_pine) and i < 3:
+			tree = NatureFactory.deciduous_tree_hero()
+		elif is_pine:
+			tree = NatureFactory.pine_tree(rng)
+		else:
+			tree = NatureFactory.deciduous_tree(rng)
 		_wrap_interact_tree(tree, p, rng, is_pine)
 
 	for i in 10:
