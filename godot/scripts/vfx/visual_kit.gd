@@ -24,9 +24,9 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
 	var dcol := dark if (dark.a > 0.01 and dark != Color.BLACK) else color.darkened(0.38)
 	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
-	m.set_shader_parameter("wind_strength", 0.012)
+	m.set_shader_parameter("wind_strength", 0.008)
 	m.set_shader_parameter("roughness_val", 1.0)
-	m.set_shader_parameter("flock_mix", 0.28)
+	m.set_shader_parameter("flock_mix", 0.48)
 	return m
 
 
@@ -88,8 +88,10 @@ static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Mate
 	m.shader = load_shader("res://assets/shaders/stylized_bark.gdshader")
 	m.set_shader_parameter("bark_tex", load("res://assets/textures/bark.png"))
 	m.set_shader_parameter("bark_color", Vector3(tint.r, tint.g, tint.b))
-	var bd := tint.darkened(0.45)
+	var bd := tint.darkened(0.38)
 	m.set_shader_parameter("bark_dark", Vector3(bd.r, bd.g, bd.b))
+	m.set_shader_parameter("uv_scale_x", 2.2)
+	m.set_shader_parameter("uv_scale_y", 3.4)
 	return m
 
 

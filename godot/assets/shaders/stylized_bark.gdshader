@@ -7,16 +7,26 @@ uniform vec3 bark_dark : source_color = vec3(0.22, 0.14, 0.08);
 uniform float uv_scale_x = 1.6;
 uniform float uv_scale_y = 2.8;
 
+varying vec3 v_world;
+
+void vertex() {
+	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+}
+
 void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
-	float groove = tex.r;
+	// UV が薄い場合でも読めるワールド縦溝
+	float ang = atan(v_world.z, v_world.x);
+	float world_groove = 0.55 + 0.45 * sin(ang * 5.0 + v_world.y * 3.2);
+	world_groove *= 0.7 + 0.3 * sin(ang * 11.0 + v_world.y * 1.4);
+	float groove = mix(tex.r, world_groove, 0.82);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.72, 1.0, ndl);
-	// 縦溝をもう少しはっきり（参照の樹皮）
-	vec3 base = mix(bark_dark, bark_color, 0.22 + groove * 0.62);
-	base *= 0.82 + ndl * 0.24;
+	vec3 base = mix(bark_dark, bark_color, 0.30 + groove * 0.52);
+	base *= 0.84 + ndl * 0.22;
 	ALBEDO = base;
-	ROUGHNESS = 0.95;
+	ROUGHNESS = 0.97;
 	SPECULAR = 0.0;
+	METALLIC = 0.0;
 }

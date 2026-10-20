@@ -60,16 +60,16 @@ func _build_stage() -> void:
 	var key: DirectionalLight3D = $KeyLight
 	key.light_color = Color(1.0, 0.98, 0.94)
 	# 参照相当：柔らかいが立体感が残るキー
-	key.light_energy = 0.85
+	key.light_energy = 0.95
 	key.light_specular = 0.0
 	key.shadow_enabled = true
-	key.shadow_blur = 4.5
-	key.shadow_opacity = 0.14
+	key.shadow_blur = 3.2
+	key.shadow_opacity = 0.22
 	key.rotation_degrees = Vector3(-48, -30, 0)
 
 	var fill: DirectionalLight3D = $FillLight
 	fill.light_color = Color(0.9, 0.92, 0.95)
-	fill.light_energy = 0.45
+	fill.light_energy = 0.32
 	fill.light_specular = 0.0
 	fill.shadow_enabled = false
 	fill.rotation_degrees = Vector3(-28, 55, 0)
@@ -109,8 +109,8 @@ func _spawn_subject() -> void:
 			var tree := NatureFactory.deciduous_tree_hero(rng)
 			hold.add_child(tree)
 			# 参照シート相当：根〜冠が切れない余白つき正面
-			cam.position = Vector3(0.15, 2.35, 8.4)
-			cam.look_at(Vector3(0.0, 1.55, 0.0), Vector3.UP)
+			cam.position = Vector3(0.15, 2.55, 9.0)
+			cam.look_at(Vector3(0.0, 1.75, 0.0), Vector3.UP)
 			cam.fov = 28.0
 		"cottage":
 			var home := NatureFactory.cottage()

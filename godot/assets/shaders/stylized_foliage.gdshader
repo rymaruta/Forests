@@ -45,16 +45,20 @@ void vertex() {
 }
 
 void fragment() {
-	// フェルト：低周波〜中周波のみ（高周波モアレ禁止）
-	vec3 tex = texture(leaf_tex, v_world.xz * 0.35 + v_world.y * 0.12).rgb;
-	float flock = _vnoise(v_world * 28.0) * 0.55 + _vnoise(v_world * 56.0 + 1.7) * 0.45;
+	// フェルト：高密度フロック。艶なし。黒割れ禁止。
+	vec3 tex = texture(leaf_tex, v_world.xz * 0.85 + v_world.y * 0.28).rgb;
+	float f1 = _vnoise(v_world * 26.0);
+	float f2 = _vnoise(v_world * 54.0 + 2.3);
+	float f3 = _vnoise(v_world * 110.0 + 8.0);
+	float flock = f1 * 0.4 + f2 * 0.35 + f3 * 0.25;
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.1, 1.0, 0.15))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.42 + 0.58, 0.0, 1.0);
-	float up = clamp(NORMAL.y * 0.2 + 0.8, 0.72, 1.0);
-	vec3 base = mix(leaf_dark, leaf_color, 0.52 + ndl * 0.2 + up * 0.1);
+	ndl = clamp(ndl * 0.28 + 0.72, 0.0, 1.0);
+	float up = clamp(NORMAL.y * 0.12 + 0.88, 0.8, 1.0);
+	vec3 base = mix(leaf_dark, leaf_color, 0.58 + ndl * 0.16 + up * 0.06);
 	base = mix(base, tex * leaf_color, flock_mix);
-	base *= mix(0.97, 1.03, flock);
+	base *= mix(0.94, 1.06, flock);
 	ALBEDO = base;
-	ROUGHNESS = roughness_val;
+	ROUGHNESS = max(roughness_val, 0.98);
 	SPECULAR = 0.0;
+	METALLIC = 0.0;
 }

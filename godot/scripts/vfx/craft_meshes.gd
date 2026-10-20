@@ -42,10 +42,10 @@ static func uv_sphere(radius: float, rings: int, segments: int, displace: float 
 	return st.commit()
 
 
-static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true) -> ArrayMesh:
+static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true, root_toes: int = 0) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var rings := 12
+	var rings := 14
 	for i in rings:
 		var t0 := float(i) / float(rings)
 		var t1 := float(i + 1) / float(rings)
@@ -53,38 +53,43 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 		var y1 := t1 * height
 		var r0 := lerpf(bottom_r, top_r, t0 * t0 * 0.35 + t0 * 0.65)
 		var r1 := lerpf(bottom_r, top_r, t1 * t1 * 0.35 + t1 * 0.65)
-		# root flare near ground（toeメッシュと競合しないよう控えめ）
-		if t0 < 0.14:
-			var ft0: float = 1.0 - t0 / 0.14
-			r0 *= 1.0 + 0.28 * ft0 * ft0
-		if t1 < 0.14:
-			var ft1: float = 1.0 - t1 / 0.14
-			r1 *= 1.0 + 0.28 * ft1 * ft1
+		# root flare（参照：丸く厚い裾。星型ブースト無しでも成立）
+		if t0 < 0.28:
+			var ft0: float = 1.0 - t0 / 0.28
+			r0 *= 1.0 + 0.62 * ft0 * ft0
+		if t1 < 0.28:
+			var ft1: float = 1.0 - t1 / 0.28
+			r1 *= 1.0 + 0.62 * ft1 * ft1
 		var lean0 := lean * t0 * t0
 		var lean1 := lean * t1 * t1
 		for j in segments:
 			var a0 := float(j) / float(segments) * TAU
 			var a1 := float(j + 1) / float(segments) * TAU
+			var toe0 := _root_toe_boost(a0, t0, root_toes)
+			var toe1 := _root_toe_boost(a1, t0, root_toes)
+			var toe2 := _root_toe_boost(a0, t1, root_toes)
+			var toe3 := _root_toe_boost(a1, t1, root_toes)
 			var ripple0 := 1.0 + bark_ripple * sin(a0 * 5.0 + t0 * 8.0)
 			var ripple1 := 1.0 + bark_ripple * sin(a1 * 5.0 + t0 * 8.0)
 			var ripple2 := 1.0 + bark_ripple * sin(a0 * 5.0 + t1 * 8.0)
 			var ripple3 := 1.0 + bark_ripple * sin(a1 * 5.0 + t1 * 8.0)
-			var p00 := Vector3(cos(a0) * r0 * ripple0 + lean0, y0, sin(a0) * r0 * ripple0)
-			var p10 := Vector3(cos(a1) * r0 * ripple1 + lean0, y0, sin(a1) * r0 * ripple1)
-			var p01 := Vector3(cos(a0) * r1 * ripple2 + lean1, y1, sin(a0) * r1 * ripple2)
-			var p11 := Vector3(cos(a1) * r1 * ripple3 + lean1, y1, sin(a1) * r1 * ripple3)
+			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 + lean0, y0, sin(a0) * r0 * ripple0 * toe0)
+			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 + lean0, y0, sin(a1) * r0 * ripple1 * toe1)
+			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 + lean1, y1, sin(a0) * r1 * ripple2 * toe2)
+			var p11 := Vector3(cos(a1) * r1 * ripple3 * toe3 + lean1, y1, sin(a1) * r1 * ripple3 * toe3)
 			var u0 := float(j) / float(segments)
 			var u1 := float(j + 1) / float(segments)
 			_tri_uv(st, p00, p10, p01, Vector2(u0, t0), Vector2(u1, t0), Vector2(u0, t1))
 			_tri_uv(st, p10, p11, p01, Vector2(u1, t0), Vector2(u1, t1), Vector2(u0, t1))
-	# 底を閉じて中空見えを防ぐ
-	var bot_r := bottom_r * 1.45
+	# 底を閉じて中空見えを防ぐ（toe外形に追従）
 	var bot_c := Vector3(0, 0.001, 0)
 	for j in segments:
 		var a0 := float(j) / float(segments) * TAU
 		var a1 := float(j + 1) / float(segments) * TAU
-		var p0 := Vector3(cos(a0) * bot_r, 0.001, sin(a0) * bot_r)
-		var p1 := Vector3(cos(a1) * bot_r, 0.001, sin(a1) * bot_r)
+		var br0 := bottom_r * 1.72 * _root_toe_boost(a0, 0.0, root_toes)
+		var br1 := bottom_r * 1.72 * _root_toe_boost(a1, 0.0, root_toes)
+		var p0 := Vector3(cos(a0) * br0, 0.001, sin(a0) * br0)
+		var p1 := Vector3(cos(a1) * br1, 0.001, sin(a1) * br1)
 		_tri(st, bot_c, p1, p0)
 	if cap_top:
 		var top_lean := lean
@@ -97,6 +102,22 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			_tri(st, top_c, p0, p1)
 	st.generate_normals()
 	return st.commit()
+
+
+static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
+	## 幹フレアに丸い指を彫る（角ばった星型禁止）
+	if toes <= 0 or t > 0.32:
+		return 1.0
+	var fall := 1.0 - t / 0.32
+	fall = fall * fall * (3.0 - 2.0 * fall)
+	var best := 0.0
+	for i in toes:
+		var center := float(i) / float(toes) * TAU + 0.35
+		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
+		var lobe: float = clampf(1.0 - d / 0.85, 0.0, 1.0)
+		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
+		best = maxf(best, lobe)
+	return 1.0 + 0.48 * best * fall
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:
@@ -215,24 +236,16 @@ static func _dir_uv(p: Vector3) -> Vector2:
 
 
 static func canopy_soft_union(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
-	## 参照雲冠：球房ソフトユニオンを一体メッシュ化（重心原点・スムーズ）。
+	## 参照雲冠：外周に並ぶ中房のソフトユニオン（溶けすぎずスカラップが残る）。
+	## 中心1巨大球は禁止。半径は近い房同士で重なるが、外縁のコブが読める配置。
 	var centers: Array[Vector3] = []
 	var radii: Array[float] = []
-	var specs := [
-		{"c": Vector3(0.0, 0.58, 0.0), "r": 0.68},
-		{"c": Vector3(-0.65, 0.5, 0.14), "r": 0.55},
-		{"c": Vector3(0.68, 0.52, -0.1), "r": 0.57},
-		{"c": Vector3(0.12, 0.46, -0.62), "r": 0.52},
-		{"c": Vector3(-0.14, 0.44, 0.65), "r": 0.53},
-		{"c": Vector3(0.3, 0.98, 0.24), "r": 0.45},
-		{"c": Vector3(-0.35, 0.92, -0.2), "r": 0.43},
-		{"c": Vector3(0.0, 0.22, 0.0), "r": 0.52},
-	]
+	var specs: Array = _hero_canopy_lobe_specs()
 	var centroid := Vector3.ZERO
 	for s in specs:
 		var c: Vector3 = (s["c"] as Vector3) * base_r
-		c += Vector3(rng.randf_range(-0.02, 0.02), rng.randf_range(-0.015, 0.015), rng.randf_range(-0.02, 0.02)) * base_r
-		var rr: float = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
+		c += Vector3(rng.randf_range(-0.012, 0.012), rng.randf_range(-0.01, 0.01), rng.randf_range(-0.012, 0.012)) * base_r
+		var rr: float = float(s["r"]) * base_r * rng.randf_range(0.99, 1.01)
 		centers.append(c)
 		radii.append(rr)
 		centroid += c
@@ -243,11 +256,10 @@ static func canopy_soft_union(rng: RandomNumberGenerator, base_r: float = 1.15) 
 	var bound := 0.0
 	for i in centers.size():
 		bound = maxf(bound, centers[i].length() + radii[i])
-	bound *= 1.06
+	bound *= 1.08
 
-	var rings := 48
-	var segs := 72
-	# 格子で位置を先に計算
+	var rings := 56
+	var segs := 84
 	var grid: Array = []
 	grid.resize((rings + 1) * (segs + 1))
 	for i in rings + 1:
@@ -272,18 +284,46 @@ static func canopy_soft_union(rng: RandomNumberGenerator, base_r: float = 1.15) 
 			var u1 := float(j + 1) / float(segs)
 			var v0 := float(i) / float(rings)
 			var v1 := float(i + 1) / float(rings)
-			# 外向き巻き（CCW from outside）
 			_tri_uv(st, p00, p01, p10, Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v0))
 			_tri_uv(st, p10, p01, p11, Vector2(u1, v0), Vector2(u0, v1), Vector2(u1, v1))
 	st.generate_normals()
 	return st.commit()
 
 
+static func _hero_canopy_lobe_specs() -> Array:
+	## 参照：重なりの大きい中房クラスタ。切れ目より一体の雲。
+	var specs: Array = []
+	specs.append({"c": Vector3(0.0, 0.55, 0.0), "r": 0.58})
+	for i in 6:
+		var a := float(i) / 6.0 * TAU + 0.2
+		specs.append({
+			"c": Vector3(cos(a) * 0.52, 0.48 + 0.05 * sin(float(i) * 1.3), sin(a) * 0.52),
+			"r": 0.46 if i % 2 == 0 else 0.42,
+		})
+	for i in 4:
+		var a := float(i) / 4.0 * TAU + 0.6
+		specs.append({
+			"c": Vector3(cos(a) * 0.32, 0.95, sin(a) * 0.32),
+			"r": 0.38,
+		})
+	specs.append({"c": Vector3(0.0, 1.18, 0.0), "r": 0.34})
+	# 下縁を埋めて幹差し込み部の穴を防ぐ
+	specs.append({"c": Vector3(0.0, 0.18, 0.0), "r": 0.48})
+	for i in 4:
+		var a := float(i) / 4.0 * TAU + 0.4
+		specs.append({
+			"c": Vector3(cos(a) * 0.38, 0.22, sin(a) * 0.38),
+			"r": 0.36,
+		})
+	return specs
+
+
 static func _soft_union_p(v: float, u: float, centers: Array[Vector3], radii: Array[float], bound: float) -> Vector3:
 	var yaw := u * TAU
 	var elev := (0.5 - v) * PI
 	var dir := Vector3(cos(elev) * cos(yaw), sin(elev), cos(elev) * sin(yaw)).normalized()
-	const K := 18.0
+	# やや溶かして粘土つなぎ（高K＋高周波ノイズは切れ目の元）
+	const K := 12.0
 	var acc := 0.0
 	var wsum := 0.0
 	for i in centers.size():
@@ -296,7 +336,8 @@ static func _soft_union_p(v: float, u: float, centers: Array[Vector3], radii: Ar
 	var r_out: float = (acc / wsum) if wsum > 0.0 else bound * 0.2
 	r_out = clampf(r_out, 0.05, bound)
 	var p := dir * r_out
-	p += dir * (_noise3(p * 2.2, 5.1) - 0.5) * 0.028 * bound
+	# ごく弱い低周波だけ（折りたたみ禁止）
+	p += dir * (_noise3(p * 1.6, 5.1) - 0.5) * 0.018 * bound
 	return p
 
 
