@@ -1,6 +1,6 @@
 extends Node3D
 class_name WorldBuilder
-## Forests 手組みの森。密度・光・造形を妥協なく組む。
+## Forests 世界。全部手組み、構図ごと作り込む。
 
 
 func build() -> void:
@@ -8,6 +8,7 @@ func build() -> void:
 	_make_ground()
 	_make_path()
 	_make_water()
+	_make_cottage()
 	_scatter_trees()
 	_scatter_flowers_bushes_rocks()
 	_scatter_grass()
@@ -40,7 +41,7 @@ func _mat(c: Color, rough: float = 0.84) -> StandardMaterial3D:
 func _make_ground() -> void:
 	var ground := StaticBody3D.new()
 	var mesh := MeshInstance3D.new()
-	mesh.mesh = VisualKit.make_height_terrain(52.0, 72)
+	mesh.mesh = VisualKit.make_height_terrain(52.0, 80)
 	mesh.material_override = VisualKit.terrain_material()
 	ground.add_child(mesh)
 	var col := CollisionShape3D.new()
@@ -53,19 +54,32 @@ func _make_ground() -> void:
 
 
 func _make_path() -> void:
-	var stone_mat := _mat(Color(0.62, 0.58, 0.5), 0.9)
-	stone_mat.albedo_color = Color(0.66, 0.62, 0.54)
-	for a in 22:
-		var ang := a / 22.0 * TAU
-		var x := cos(ang) * 3.4
-		var z := sin(ang) * 3.4 + 2.5
-		var y := VisualKit._h(x, z) + 0.015
-		var stone := MeshInstance3D.new()
-		stone.mesh = CraftMeshes.stepping_stone(0.42 + randf() * 0.16, float(a) * 3.1)
-		stone.material_override = stone_mat
-		stone.position = Vector3(x, y, z)
-		stone.rotation_degrees.y = rad_to_deg(ang) + randf_range(-18, 18)
-		_gen().add_child(stone)
+	# ring around spawn
+	for a in 24:
+		var ang := a / 24.0 * TAU
+		_place_stone(cos(ang) * 3.35, sin(ang) * 3.35 + 2.5, float(a))
+	# path toward cottage
+	for i in 14:
+		var t := float(i) / 13.0
+		var x := lerpf(0.0, -5.2, t) + sin(t * 3.0) * 0.35
+		var z := lerpf(2.5, 4.0, t) + cos(t * 2.0) * 0.2
+		_place_stone(x, z, 100.0 + float(i))
+	# path toward pond
+	for i in 12:
+		var t := float(i) / 11.0
+		var x := lerpf(1.5, 7.2, t) + sin(t * 4.0) * 0.25
+		var z := lerpf(1.0, -4.5, t)
+		_place_stone(x, z, 200.0 + float(i))
+
+
+func _place_stone(x: float, z: float, seed: float) -> void:
+	var y := VisualKit._h(x, z) + 0.015
+	var stone := MeshInstance3D.new()
+	stone.mesh = CraftMeshes.stepping_stone(0.4 + fmod(abs(seed), 1.0) * 0.14, seed)
+	stone.material_override = VisualKit.character_material(ForestsPalette.STONE, ForestsPalette.STONE_MOSS)
+	stone.position = Vector3(x, y, z)
+	stone.rotation_degrees.y = seed * 17.0
+	_gen().add_child(stone)
 
 
 func _make_water() -> void:
@@ -73,15 +87,14 @@ func _make_water() -> void:
 	pond.position = Vector3(8, -0.04, -6)
 	_gen().add_child(pond)
 
-	# bed
 	var bed := MeshInstance3D.new()
 	var bed_m := CylinderMesh.new()
-	bed_m.top_radius = 4.5
-	bed_m.bottom_radius = 4.5
+	bed_m.top_radius = 4.55
+	bed_m.bottom_radius = 4.55
 	bed_m.height = 0.08
-	bed_m.radial_segments = 48
+	bed_m.radial_segments = 56
 	bed.mesh = bed_m
-	bed.material_override = _mat(Color(0.32, 0.42, 0.36), 0.95)
+	bed.material_override = VisualKit.character_material(Color(0.3, 0.4, 0.34), Color(0.18, 0.26, 0.2))
 	bed.position.y = -0.05
 	pond.add_child(bed)
 
@@ -89,137 +102,91 @@ func _make_water() -> void:
 	var cyl := CylinderMesh.new()
 	cyl.top_radius = 4.35
 	cyl.bottom_radius = 4.35
-	cyl.height = 0.18
-	cyl.radial_segments = 48
+	cyl.height = 0.16
+	cyl.radial_segments = 56
 	water.mesh = cyl
 	water.material_override = VisualKit.water_material()
 	water.position.y = 0.1
 	pond.add_child(water)
 
-	for i in 20:
-		var ang := i / 20.0 * TAU
-		var r := 4.5 + randf_range(-0.15, 0.55)
+	for i in 22:
+		var ang := i / 22.0 * TAU
+		var r := 4.5 + randf_range(-0.12, 0.5)
 		var rock := MeshInstance3D.new()
-		rock.mesh = CraftMeshes.rock(12.0 + i * 3.1, randf_range(0.3, 0.58))
-		rock.material_override = _mat(Color(0.5, 0.5, 0.46).lerp(Color(0.4, 0.46, 0.38), randf()), 0.82)
+		rock.mesh = CraftMeshes.rock(14.0 + i * 2.9, randf_range(0.28, 0.56))
+		rock.material_override = VisualKit.character_material(
+			Color(0.52, 0.5, 0.46).lerp(ForestsPalette.STONE_MOSS, randf()),
+			Color(0.32, 0.34, 0.3)
+		)
 		rock.position = Vector3(cos(ang) * r, 0.04, sin(ang) * r)
-		rock.rotation_degrees = Vector3(randf_range(-18, 18), randf() * 360.0, randf_range(-12, 12))
-		rock.scale = Vector3(randf_range(0.95, 1.45), randf_range(0.42, 0.72), randf_range(0.95, 1.4))
+		rock.rotation_degrees = Vector3(randf_range(-16, 16), randf() * 360.0, randf_range(-12, 12))
+		rock.scale = Vector3(randf_range(0.95, 1.4), randf_range(0.4, 0.7), randf_range(0.95, 1.35))
 		pond.add_child(rock)
+
+
+func _make_cottage() -> void:
+	var home := NatureFactory.cottage()
+	home.position = Vector3(-6.0, VisualKit._h(-6.0, 4.0), 4.0)
+	home.rotation_degrees.y = 18.0
+	_gen().add_child(home)
+	# soft ground shadow under cottage
+	var disc := MeshInstance3D.new()
+	var cm := CylinderMesh.new()
+	cm.top_radius = 2.4
+	cm.bottom_radius = 2.4
+	cm.height = 0.02
+	disc.mesh = cm
+	var m := _mat(Color(0.1, 0.14, 0.08, 0.28), 1.0)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	disc.material_override = m
+	disc.position = home.position + Vector3(0, 0.02, 0)
+	disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	_gen().add_child(disc)
 
 
 func _scatter_trees() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20261020
-	for i in 48:
+	for i in 52:
 		var p := Vector3(rng.randf_range(-17, 17), 0, rng.randf_range(-17, 17))
 		if p.distance_to(Vector3(8, 0, -6)) < 6.8:
 			continue
-		if p.length() < 3.4:
+		if p.distance_to(Vector3(-6, 0, 4)) < 4.5:
+			continue
+		if p.length() < 3.5:
 			continue
 		p.y = VisualKit._h(p.x, p.z)
-		if rng.randf() > 0.7:
-			_add_pine(p, rng)
-		else:
-			_add_deciduous(p, rng)
+		var is_pine := rng.randf() > 0.72
+		var tree: Node3D = NatureFactory.pine_tree(rng) if is_pine else NatureFactory.deciduous_tree(rng)
+		_wrap_interact_tree(tree, p, rng, is_pine)
 
 	for i in 10:
-		var ang := i / 10.0 * TAU + 0.15
-		var p := Vector3(cos(ang) * 24.5, -0.1, sin(ang) * 24.5)
-		_add_deciduous(p, rng, true)
+		var ang := i / 10.0 * TAU + 0.12
+		var p := Vector3(cos(ang) * 24.5, -0.08, sin(ang) * 24.5)
+		var tree := NatureFactory.deciduous_tree(rng, true)
+		tree.position = p
+		_gen().add_child(tree)
 
 
-func _add_deciduous(pos: Vector3, rng: RandomNumberGenerator, backdrop: bool = false) -> void:
-	var h := rng.randf_range(2.05, 3.05) * (1.65 if backdrop else 1.0)
-	var lean := rng.randf_range(-0.16, 0.16)
-	var bark := VisualKit.bark_material(Color(0.45, 0.30, 0.19).lerp(Color(0.36, 0.23, 0.14), rng.randf()))
-	var leaf_col := Color(0.30, 0.55, 0.30).lerp(Color(0.42, 0.64, 0.34), rng.randf())
-	var leaf_dark := leaf_col.darkened(0.38)
-
-	var trunk_mi := MeshInstance3D.new()
-	trunk_mi.mesh = CraftMeshes.trunk(h, 0.26 if not backdrop else 0.38, 0.1 if not backdrop else 0.14, 14, lean, 0.05)
-	trunk_mi.material_override = bark
-
-	# secondary branches
-	var branch_root := Node3D.new()
-	branch_root.position = Vector3(lean * 0.4, h * 0.55, 0)
-	var branch_count := 3 if backdrop else rng.randi_range(3, 5)
-	for b in branch_count:
-		var br := MeshInstance3D.new()
-		br.mesh = CraftMeshes.branch(rng.randf_range(0.45, 0.85), 0.06, 0.02, 6, rng.randf_range(0.1, 0.28))
-		br.material_override = bark
-		var ang := float(b) / float(branch_count) * TAU + rng.randf() * 0.4
-		br.position = Vector3(cos(ang) * 0.08, rng.randf_range(0.0, h * 0.25), sin(ang) * 0.08)
-		br.rotation = Vector3(rng.randf_range(0.5, 1.1), ang, rng.randf_range(-0.2, 0.2))
-		branch_root.add_child(br)
-
-	var canopy := MeshInstance3D.new()
-	canopy.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(1.15, 1.55) * (1.45 if backdrop else 1.0))
-	canopy.material_override = VisualKit.foliage_material(leaf_col, leaf_dark)
-	canopy.position = Vector3(lean * 0.9, h * 0.88, 0)
-
-	var cards := MeshInstance3D.new()
-	cards.mesh = CraftMeshes.leaf_cards(rng, 28 if backdrop else 42, rng.randf_range(0.85, 1.2) * (1.3 if backdrop else 1.0))
-	cards.material_override = VisualKit.foliage_material(leaf_col.lightened(0.08), leaf_dark)
-	cards.position = canopy.position
-	cards.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-
-	if backdrop:
-		var n := Node3D.new()
-		n.position = pos
-		n.add_child(trunk_mi)
-		n.add_child(branch_root)
-		n.add_child(canopy)
-		n.add_child(cards)
-		_gen().add_child(n)
-		return
-
+func _wrap_interact_tree(tree: Node3D, pos: Vector3, rng: RandomNumberGenerator, is_pine: bool) -> void:
 	var body := Interactable.new()
-	body.interact_id = "tree_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = "葉ずれの木"
-	body.examine_text = "樹皮に手を当てると、森の鼓動がする。"
-	body.item_id = "softwood"
+	body.interact_id = ("pine_" if is_pine else "tree_") + "%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
+	body.display_name = "青葉の針葉樹" if is_pine else "葉ずれの木"
+	body.examine_text = "針葉の匂いが澄んでいる。" if is_pine else "樹皮に手を当てると、森の鼓動がする。"
+	body.item_id = "pine_needle" if is_pine else "softwood"
 	body.item_amount = rng.randi_range(1, 2)
 	body.position = pos
-	body.add_child(trunk_mi)
-	body.add_child(branch_root)
-	body.add_child(canopy)
-	body.add_child(cards)
+	var h: float = float(tree.get_meta("tree_height")) if tree.has_meta("tree_height") else 2.8
+	var kids := tree.get_children()
+	for c in kids:
+		tree.remove_child(c)
+		body.add_child(c)
+	tree.free()
 	var col := CollisionShape3D.new()
 	var shape := CylinderShape3D.new()
-	shape.radius = 0.8
-	shape.height = h + 1.3
-	col.shape = shape
-	col.position.y = shape.height * 0.4
-	body.add_child(col)
-	_gen().add_child(body)
-
-
-func _add_pine(pos: Vector3, rng: RandomNumberGenerator) -> void:
-	var body := Interactable.new()
-	body.interact_id = "pine_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = "青葉の針葉樹"
-	body.examine_text = "針葉の匂いが澄んでいる。"
-	body.item_id = "pine_needle"
-	body.item_amount = rng.randi_range(1, 2)
-	body.position = pos
-
-	var h := rng.randf_range(2.5, 3.6)
-	var trunk_mi := MeshInstance3D.new()
-	trunk_mi.mesh = CraftMeshes.trunk(h, 0.18, 0.06, 12, rng.randf_range(-0.07, 0.07), 0.035)
-	trunk_mi.material_override = VisualKit.bark_material(Color(0.34, 0.24, 0.17))
-	body.add_child(trunk_mi)
-
-	var canopy := MeshInstance3D.new()
-	canopy.mesh = CraftMeshes.pine_canopy(rng.randi_range(5, 7), rng.randf_range(1.0, 1.4), h * 0.88)
-	canopy.material_override = VisualKit.foliage_material(Color(0.20, 0.42, 0.30), Color(0.10, 0.26, 0.16))
-	canopy.position.y = 0.28
-	body.add_child(canopy)
-
-	var col := CollisionShape3D.new()
-	var shape := CylinderShape3D.new()
-	shape.radius = 0.7
-	shape.height = h + 1.0
+	shape.radius = 0.85
+	shape.height = h + 1.4
 	col.shape = shape
 	col.position.y = shape.height * 0.4
 	body.add_child(col)
@@ -229,17 +196,12 @@ func _add_pine(pos: Vector3, rng: RandomNumberGenerator) -> void:
 func _scatter_flowers_bushes_rocks() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 42
-	var petal_cols := [
-		Color(0.98, 0.72, 0.38),
-		Color(0.95, 0.52, 0.66),
-		Color(0.72, 0.68, 0.96),
-		Color(0.96, 0.94, 0.7),
-		Color(0.62, 0.82, 0.95),
-		Color(0.95, 0.62, 0.48),
-	]
+	var petals: Array = ForestsPalette.petals()
 
-	for i in 48:
+	for i in 56:
 		var p := _rand_point(rng, 2.2, 5.0)
+		if p.distance_to(Vector3(-6, 0, 4)) < 3.2:
+			continue
 		p.y = VisualKit._h(p.x, p.z)
 		var body := Interactable.new()
 		body.interact_id = "flower_%d_%d" % [int(p.x * 10), int(p.z * 10)]
@@ -248,7 +210,7 @@ func _scatter_flowers_bushes_rocks() -> void:
 		body.item_id = "sunpetal"
 		body.item_amount = 1
 		body.position = p
-		body.add_child(_make_flower(rng, petal_cols[rng.randi_range(0, petal_cols.size() - 1)]))
+		body.add_child(NatureFactory.flower(rng, petals[rng.randi_range(0, petals.size() - 1)]))
 		var col := CollisionShape3D.new()
 		var shape := SphereShape3D.new()
 		shape.radius = 0.4
@@ -257,8 +219,10 @@ func _scatter_flowers_bushes_rocks() -> void:
 		body.add_child(col)
 		_gen().add_child(body)
 
-	for i in 18:
+	for i in 20:
 		var p := _rand_point(rng, 2.5, 4.0)
+		if p.distance_to(Vector3(-6, 0, 4)) < 3.5:
+			continue
 		p.y = VisualKit._h(p.x, p.z)
 		var body := Interactable.new()
 		body.interact_id = "moss_%d_%d" % [int(p.x * 10), int(p.z * 10)]
@@ -270,7 +234,7 @@ func _scatter_flowers_bushes_rocks() -> void:
 		var bush := MeshInstance3D.new()
 		bush.mesh = CraftMeshes.bush(rng)
 		var bc := Color(0.28, 0.5, 0.3).lerp(Color(0.36, 0.58, 0.32), rng.randf())
-		bush.material_override = VisualKit.foliage_material(bc, bc.darkened(0.3))
+		bush.material_override = VisualKit.foliage_material(bc, bc.darkened(0.32))
 		body.add_child(bush)
 		var col := CollisionShape3D.new()
 		var shape := SphereShape3D.new()
@@ -280,8 +244,10 @@ func _scatter_flowers_bushes_rocks() -> void:
 		body.add_child(col)
 		_gen().add_child(body)
 
-	for i in 18:
+	for i in 20:
 		var p := _rand_point(rng, 3.0, 5.5)
+		if p.distance_to(Vector3(-6, 0, 4)) < 3.0:
+			continue
 		p.y = VisualKit._h(p.x, p.z)
 		var body := Interactable.new()
 		body.interact_id = "rock_%d_%d" % [int(p.x * 10), int(p.z * 10)]
@@ -292,7 +258,10 @@ func _scatter_flowers_bushes_rocks() -> void:
 		body.position = p
 		var rock := MeshInstance3D.new()
 		rock.mesh = CraftMeshes.rock(rng.randf() * 100.0, rng.randf_range(0.34, 0.65))
-		rock.material_override = _mat(Color(0.5, 0.5, 0.48).lerp(Color(0.4, 0.46, 0.38), rng.randf()), 0.8)
+		rock.material_override = VisualKit.character_material(
+			Color(0.5, 0.5, 0.48).lerp(ForestsPalette.STONE_MOSS, rng.randf()),
+			Color(0.3, 0.32, 0.28)
+		)
 		rock.scale = Vector3(rng.randf_range(0.95, 1.55), rng.randf_range(0.48, 0.78), rng.randf_range(0.95, 1.45))
 		rock.rotation_degrees = Vector3(rng.randf_range(-22, 22), rng.randf() * 360.0, rng.randf_range(-18, 18))
 		body.add_child(rock)
@@ -305,54 +274,30 @@ func _scatter_flowers_bushes_rocks() -> void:
 		_gen().add_child(body)
 
 
-func _make_flower(rng: RandomNumberGenerator, petal_col: Color) -> Node3D:
-	var root := Node3D.new()
-	var stem := MeshInstance3D.new()
-	stem.mesh = CraftMeshes.trunk(0.42, 0.02, 0.012, 7, rng.randf_range(-0.04, 0.04), 0.0)
-	stem.material_override = _mat(Color(0.24, 0.52, 0.28))
-	root.add_child(stem)
-
-	var center := MeshInstance3D.new()
-	center.mesh = CraftMeshes.uv_sphere(0.055, 6, 8, 0.08, rng.randf() * 10.0)
-	center.position.y = 0.44
-	var cm := _mat(Color(0.96, 0.84, 0.32), 0.4)
-	cm.emission_enabled = true
-	cm.emission = Color(0.96, 0.82, 0.28)
-	cm.emission_energy_multiplier = 0.35
-	center.material_override = cm
-	root.add_child(center)
-
-	var petals := MeshInstance3D.new()
-	petals.mesh = CraftMeshes.flower_petals(rng.randi_range(5, 7), rng.randf_range(0.13, 0.18))
-	petals.position.y = 0.44
-	var pmat := _mat(petal_col, 0.45)
-	pmat.emission_enabled = true
-	pmat.emission = petal_col
-	pmat.emission_energy_multiplier = 0.2
-	pmat.cull_mode = BaseMaterial3D.CULL_DISABLED
-	petals.material_override = pmat
-	root.add_child(petals)
-
-	# tiny leaf pair on stem
-	for side in [-1.0, 1.0]:
-		var leaf := MeshInstance3D.new()
-		leaf.mesh = CraftMeshes.flower_petals(1, 0.1)
-		leaf.material_override = _mat(Color(0.3, 0.55, 0.3), 0.7)
-		leaf.position = Vector3(0.02 * side, 0.2, 0)
-		leaf.rotation = Vector3(-0.4, 0.0, 0.9 * side)
-		root.add_child(leaf)
-	return root
+func _make_spawn_garden() -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 99
+	var cols: Array = ForestsPalette.petals()
+	for i in 18:
+		var ang := i / 18.0 * TAU
+		var r := 4.15 + (i % 3) * 0.32
+		var p := Vector3(cos(ang) * r, 0, sin(ang) * r + 2.5)
+		p.y = VisualKit._h(p.x, p.z)
+		var f := NatureFactory.flower(rng, cols[i % cols.size()])
+		f.position = p
+		f.scale = Vector3.ONE * rng.randf_range(1.05, 1.4)
+		_gen().add_child(f)
 
 
 func _scatter_grass() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 77
 	var gmat := VisualKit.grass_material()
-	for i in 320:
-		var p := _rand_point(rng, 1.8, 4.8)
+	for i in 380:
+		var p := _rand_point(rng, 1.6, 4.6)
 		p.y = VisualKit._h(p.x, p.z)
 		var grass := MeshInstance3D.new()
-		grass.mesh = CraftMeshes.grass_clump(rng.randi_range(7, 12), rng.randf_range(0.9, 1.55), float(i) * 1.7)
+		grass.mesh = CraftMeshes.grass_clump(rng.randi_range(8, 13), rng.randf_range(0.95, 1.6), float(i) * 1.7)
 		grass.material_override = gmat
 		grass.position = p
 		grass.rotation_degrees.y = rng.randf() * 360.0
@@ -371,82 +316,47 @@ func _rand_point(rng: RandomNumberGenerator, min_len: float, pond_clear: float) 
 	return Vector3(rng.randf_range(4, 10), 0, rng.randf_range(4, 10))
 
 
-func _make_spawn_garden() -> void:
-	## スポーン周りを意図的に美しく（ランダム散布だけにしない）
-	var rng := RandomNumberGenerator.new()
-	rng.seed = 99
-	var cols := [
-		Color(0.98, 0.72, 0.4),
-		Color(0.95, 0.55, 0.68),
-		Color(0.7, 0.72, 0.96),
-		Color(0.95, 0.92, 0.65),
-	]
-	for i in 16:
-		var ang := i / 16.0 * TAU
-		var r := 4.2 + (i % 3) * 0.35
-		var p := Vector3(cos(ang) * r, 0, sin(ang) * r + 2.5)
-		p.y = VisualKit._h(p.x, p.z)
-		var f := _make_flower(rng, cols[i % cols.size()])
-		f.position = p
-		f.scale = Vector3.ONE * rng.randf_range(1.05, 1.35)
-		_gen().add_child(f)
-	# soft contact shadow under spawn ring
-	for i in 8:
-		var ang := i / 8.0 * TAU
-		var disc := MeshInstance3D.new()
-		var cm := CylinderMesh.new()
-		cm.top_radius = 0.55
-		cm.bottom_radius = 0.55
-		cm.height = 0.01
-		disc.mesh = cm
-		var m := _mat(Color(0.12, 0.18, 0.1, 0.22), 1.0)
-		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-		disc.material_override = m
-		var x := cos(ang) * 3.4
-		var z := sin(ang) * 3.4 + 2.5
-		disc.position = Vector3(x, VisualKit._h(x, z) + 0.01, z)
-		disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		_gen().add_child(disc)
-
-
 func _add_lights() -> void:
-	# soft sky fill (cool)
 	var fill := OmniLight3D.new()
-	fill.light_color = Color(0.68, 0.82, 0.98)
-	fill.light_energy = 1.05
-	fill.omni_range = 48.0
-	fill.position = Vector3(-10, 12, 14)
+	fill.light_color = ForestsPalette.FILL_COOL
+	fill.light_energy = 1.1
+	fill.omni_range = 50.0
+	fill.position = Vector3(-10, 13, 14)
 	_gen().add_child(fill)
 
-	# warm key bounce
 	var warm := OmniLight3D.new()
-	warm.light_color = Color(1.0, 0.86, 0.64)
-	warm.light_energy = 0.95
-	warm.omni_range = 34.0
-	warm.position = Vector3(12, 7, -4)
+	warm.light_color = ForestsPalette.FILL_WARM
+	warm.light_energy = 1.0
+	warm.omni_range = 36.0
+	warm.position = Vector3(12, 7.5, -4)
 	_gen().add_child(warm)
 
-	# ground bounce green
 	var ground := OmniLight3D.new()
-	ground.light_color = Color(0.55, 0.72, 0.42)
-	ground.light_energy = 0.55
-	ground.omni_range = 30.0
-	ground.position = Vector3(0, 1.4, 2)
+	ground.light_color = ForestsPalette.BOUNCE_GREEN
+	ground.light_energy = 0.6
+	ground.omni_range = 32.0
+	ground.position = Vector3(0, 1.5, 2)
 	_gen().add_child(ground)
 
-	# pond sparkle
 	var pond_l := OmniLight3D.new()
-	pond_l.light_color = Color(0.7, 0.92, 0.95)
-	pond_l.light_energy = 0.7
-	pond_l.omni_range = 10.0
-	pond_l.position = Vector3(8, 1.5, -6)
+	pond_l.light_color = Color(0.72, 0.94, 0.96)
+	pond_l.light_energy = 0.75
+	pond_l.omni_range = 11.0
+	pond_l.position = Vector3(8, 1.6, -6)
 	_gen().add_child(pond_l)
+
+	# cottage warm window glow
+	var home_l := OmniLight3D.new()
+	home_l.light_color = Color(1.0, 0.85, 0.55)
+	home_l.light_energy = 0.85
+	home_l.omni_range = 8.0
+	home_l.position = Vector3(-6.0, 1.4, 5.2)
+	_gen().add_child(home_l)
 
 
 func _add_ambience() -> void:
 	var pollen := GPUParticles3D.new()
-	pollen.amount = 72
+	pollen.amount = 80
 	pollen.lifetime = 11.0
 	pollen.preprocess = 4.0
 	pollen.visibility_aabb = AABB(Vector3(-22, 0, -22), Vector3(44, 14, 44))
@@ -456,10 +366,10 @@ func _add_ambience() -> void:
 	mat.direction = Vector3(0.12, 0.55, 0.08)
 	mat.spread = 55.0
 	mat.initial_velocity_min = 0.08
-	mat.initial_velocity_max = 0.32
+	mat.initial_velocity_max = 0.3
 	mat.gravity = Vector3(0, 0.01, 0)
 	mat.scale_min = 0.03
-	mat.scale_max = 0.085
+	mat.scale_max = 0.08
 	mat.color = Color(1.0, 0.95, 0.75, 0.9)
 	pollen.process_material = mat
 	var draw := SphereMesh.new()
@@ -468,9 +378,8 @@ func _add_ambience() -> void:
 	pollen.position = Vector3(0, 2.8, 0)
 	_gen().add_child(pollen)
 
-	# secondary soft motes
 	var motes := GPUParticles3D.new()
-	motes.amount = 36
+	motes.amount = 40
 	motes.lifetime = 8.0
 	motes.preprocess = 2.0
 	motes.visibility_aabb = AABB(Vector3(-18, 0, -18), Vector3(36, 12, 36))
@@ -480,7 +389,7 @@ func _add_ambience() -> void:
 	mat2.direction = Vector3(-0.1, 0.4, 0.15)
 	mat2.spread = 40.0
 	mat2.initial_velocity_min = 0.05
-	mat2.initial_velocity_max = 0.2
+	mat2.initial_velocity_max = 0.18
 	mat2.gravity = Vector3(0, 0.008, 0)
 	mat2.scale_min = 0.02
 	mat2.scale_max = 0.05
