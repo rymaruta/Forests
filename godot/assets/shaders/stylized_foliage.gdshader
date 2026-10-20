@@ -88,13 +88,13 @@ void fragment() {
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	float rim = pow(1.0 - facing, 1.8) * 0.36;
 
-	vec3 base = mix(leaf_dark, leaf_color, 0.48 + fiber_catch * 0.28 + up * 0.10);
-	base = mix(base, leaf_color * (0.88 + tex.g * 0.22), flock_mix * 0.55);
-	// 粒立ちすぎ禁止（ベルベット寄り）
-	base *= mix(0.97, 1.03, flock);
+	// 房ごとの体積感：上向き面を明るく、谷を落とす（平坦ノイズ禁止）
+	vec3 base = mix(leaf_dark, leaf_color, 0.42 + fiber_catch * 0.34 + up * 0.14);
+	base = mix(base, leaf_color * (0.90 + tex.g * 0.16), flock_mix * 0.42);
+	base *= mix(0.98, 1.02, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim;
-	base *= mix(0.98, 1.02, fiber2);
+	base += leaf_color * rim * 1.15;
+	base *= mix(0.985, 1.015, fiber2);
 
 	float under = clamp(0.22 - v_obj.y * 0.16, 0.0, 0.16);
 	base *= 1.0 - under;

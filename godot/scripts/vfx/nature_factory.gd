@@ -137,7 +137,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	canopy.position = Vector3(lean * 0.08, h * 0.78, 0.0)
+	# 枝が見える余白を残す
+	canopy.position = Vector3(lean * 0.08, h * 0.84, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 
