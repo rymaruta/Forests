@@ -23,3 +23,6 @@ archive/web-canvas-prototype/dist/
 node_modules/
 dist/
 .vite/
+
+# Large wasm can live in play/; keep it tracked for zero-setup play
+# (index.wasm ~34MB — acceptable for playable drop)

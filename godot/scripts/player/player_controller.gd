@@ -80,6 +80,20 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity.y = 0.0
 
+	# キーボード補助（ブラウザ検証用。iPhoneではスティック優先）
+	if not GameState.is_menu_open:
+		var kb := Vector2.ZERO
+		if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
+			kb.x -= 1.0
+		if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
+			kb.x += 1.0
+		if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
+			kb.y -= 1.0
+		if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
+			kb.y += 1.0
+		if kb.length() > 0.01:
+			move_input = kb.limit_length(1.0)
+
 	var cam := get_viewport().get_camera_3d()
 	var wish := Vector3.ZERO
 	if move_input.length() > 0.05 and cam:
