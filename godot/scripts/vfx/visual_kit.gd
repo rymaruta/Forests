@@ -56,11 +56,12 @@ static func stone_material(tint: Color = ForestsPalette.STONE) -> Material:
 
 static func plaster_material() -> Material:
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.92, 0.88, 0.78)
+	m.albedo_color = Color(0.9, 0.86, 0.76)
 	m.albedo_texture = load("res://assets/textures/plaster.png")
-	m.uv1_scale = Vector3(2.4, 2.4, 2.4)
+	m.uv1_scale = Vector3(3.2, 3.2, 3.2)
 	m.uv1_triplanar = true
-	m.roughness = 0.97
+	m.uv1_triplanar_sharpness = 4.0
+	m.roughness = 0.98
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	return m
 
