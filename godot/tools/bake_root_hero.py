@@ -15,7 +15,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj
 RES = 120
 PAD = 0.05
 K = 0.11
-FLUTE_AMT = 0.028
+FLUTE_AMT = 0.036
 BASE_R = 0.40
 TOP_R = 0.18
 TRUNK_H = 1.75
@@ -43,9 +43,10 @@ def main():
     for i in range(4):
         a = i / 4 * math.tau + 0.55
         ca, sa = math.cos(a), math.sin(a)
-        specs.append((ca * BASE_R * 0.45, 0.18, sa * BASE_R * 0.45, 0.17, 0.14, 0.15))
-        specs.append((ca * (BASE_R + 0.05), 0.12, sa * (BASE_R + 0.05), 0.15, 0.11, 0.12))
-        specs.append((ca * (BASE_R + 0.12), 0.09, sa * (BASE_R + 0.12), 0.11, 0.09, 0.10))
+        # 低い扁平趾（膨らんだ足球禁止）
+        specs.append((ca * BASE_R * 0.50, 0.14, sa * BASE_R * 0.50, 0.18, 0.10, 0.14))
+        specs.append((ca * (BASE_R + 0.08), 0.10, sa * (BASE_R + 0.08), 0.14, 0.08, 0.11))
+        specs.append((ca * (BASE_R + 0.16), 0.07, sa * (BASE_R + 0.16), 0.10, 0.06, 0.08))
 
     rs = [max(s[3], s[4], s[5]) for s in specs]
     xs = [s[0] for s in specs]

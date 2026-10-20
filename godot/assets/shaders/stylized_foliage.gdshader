@@ -67,12 +67,11 @@ void fragment() {
 	// ほぼフラットなラップ（ホットスポット＝プラスチック禁止）
 	ndl = clamp(ndl * 0.12 + 0.88, 0.0, 1.0);
 	float up = clamp(n.y * 0.18 + 0.82, 0.78, 1.0);
-	// ソフトなリムでフェルトの毛羽感
-	float rim = pow(1.0 - clamp(n.y * 0.55 + 0.45, 0.0, 1.0), 1.8) * 0.08;
+	// フェルトの繊維散乱：ソフトリム（スペキュラではない）
+	float rim = pow(1.0 - clamp(dot(n, vec3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0, 1.0), 2.2) * 0.14;
 	vec3 base = mix(leaf_dark, leaf_color, 0.48 + ndl * 0.20 + up * 0.10);
 	base = mix(base, tex * leaf_color, flock_mix);
-	// フェルト明暗を強めに（平坦プラスチック禁止）
-	base *= mix(0.82, 1.14, flock);
+	base *= mix(0.84, 1.12, flock);
 	base *= lobe_ao;
 	base += leaf_color * rim;
 	float under = clamp(0.28 - v_obj.y * 0.18, 0.0, 0.22);

@@ -59,23 +59,23 @@ func _build_stage() -> void:
 	# 参照シート相当：ホットスポット禁止の柔らかい拡散光
 	var key: DirectionalLight3D = $KeyLight
 	key.light_color = Color(1.0, 0.98, 0.94)
-	key.light_energy = 0.48
+	key.light_energy = 0.58
 	key.light_specular = 0.0
 	key.shadow_enabled = true
-	key.shadow_blur = 5.0
-	key.shadow_opacity = 0.08
+	key.shadow_blur = 4.5
+	key.shadow_opacity = 0.10
 	key.rotation_degrees = Vector3(-48, -30, 0)
 
 	var fill: DirectionalLight3D = $FillLight
 	fill.light_color = Color(0.93, 0.94, 0.96)
-	fill.light_energy = 0.55
+	fill.light_energy = 0.50
 	fill.light_specular = 0.0
 	fill.shadow_enabled = false
 	fill.rotation_degrees = Vector3(-28, 55, 0)
 
 	var rim: DirectionalLight3D = $RimLight
 	rim.light_color = Color(0.96, 0.96, 0.98)
-	rim.light_energy = 0.22
+	rim.light_energy = 0.26
 	rim.light_specular = 0.0
 	rim.shadow_enabled = false
 	rim.rotation_degrees = Vector3(-12, 155, 0)
