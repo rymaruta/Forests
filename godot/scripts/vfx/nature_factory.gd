@@ -6,10 +6,10 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.7
-const HERO_BASE_R := 0.72
-const HERO_TOP_R := 0.4
-const HERO_CANOPY_R := 1.45
+const HERO_TRUNK_H := 1.75
+const HERO_BASE_R := 0.5
+const HERO_TOP_R := 0.28
+const HERO_CANOPY_R := 1.55
 const HERO_SEED := 2901
 
 
@@ -51,9 +51,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var leaf := Color(0.36, 0.44, 0.30) if hero else Color(0.38, 0.46, 0.32).lerp(Color(0.34, 0.42, 0.28), rng.randf())
 	var leaf_dark := Color(0.22, 0.30, 0.20)
 
-	# 幹：参照どおり太く短め、根元フレア強め
+	# 幹：参照どおり太く短め。ヒーローは天蓋を冠に埋めて平面キャップを出さない
 	var trunk := MeshInstance3D.new()
-	trunk.mesh = CraftMeshes.trunk(h * 0.92, base_r, top_r, 20 if hero else 16, lean, 0.035)
+	trunk.mesh = CraftMeshes.trunk(h * (1.05 if hero else 0.92), base_r, top_r, 20 if hero else 16, lean, 0.035, not hero)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
 	root.add_child(trunk)
 
@@ -86,8 +86,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 雲冠：参照どおり重なりフェルト房。
 	# （放射メタボールは凹み方向で原点スパイク＝破片の原因だった）
 	var canopy_root := Node3D.new()
-	canopy_root.position = Vector3(lean * 0.08, h * 1.05, 0.0)
-	canopy_root.scale = Vector3(1.2, 0.78, 1.14)
+	canopy_root.position = Vector3(lean * 0.08, h * 0.98, 0.0)
+	# 全体を縦に潰さない（円盤化の主因だった）
+	canopy_root.scale = Vector3(1.08, 1.0, 1.05)
 	root.add_child(canopy_root)
 	var felt := VisualKit.foliage_material(leaf, leaf_dark)
 	for lobe in CraftMeshes.canopy_felt_lobes(rng, canopy_r):
