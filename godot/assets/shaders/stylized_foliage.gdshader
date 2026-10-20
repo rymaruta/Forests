@@ -77,9 +77,12 @@ void fragment() {
 	float rim = pow(1.0 - clamp(dot(n, vec3(0.0, 1.0, 0.0)) * 0.5 + 0.5, 0.0, 1.0), 2.2) * 0.14;
 	vec3 base = mix(leaf_dark, leaf_color, 0.48 + ndl * 0.20 + up * 0.10);
 	base = mix(base, tex * leaf_color, flock_mix);
-	base *= mix(0.84, 1.12, flock);
+	base *= mix(0.80, 1.16, flock);
 	base *= lobe_ao;
 	base += leaf_color * rim;
+	// 微細フロック影（テクスチャ周波数で毛羽の自己影）
+	float micro = _vnoise(v_world * 40.0 + 5.0);
+	base *= mix(0.92, 1.05, micro);
 	float under = clamp(0.28 - v_obj.y * 0.18, 0.0, 0.22);
 	base *= 1.0 - under;
 	ALBEDO = base;
