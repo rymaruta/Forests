@@ -14,7 +14,8 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj"
 RES = 120
 PAD = 0.05
-K = 0.14
+K = 0.11
+FLUTE_AMT = 0.028
 BASE_R = 0.40
 TOP_R = 0.18
 TRUNK_H = 1.75
@@ -42,9 +43,9 @@ def main():
     for i in range(4):
         a = i / 4 * math.tau + 0.55
         ca, sa = math.cos(a), math.sin(a)
-        # 裾フレアの一部として埋め込み（独立した足球に見えないように）
-        specs.append((ca * BASE_R * 0.55, 0.18, sa * BASE_R * 0.55, 0.20, 0.14, 0.18))
-        specs.append((ca * (BASE_R * 0.95), 0.12, sa * (BASE_R * 0.95), 0.15, 0.11, 0.13))
+        specs.append((ca * BASE_R * 0.45, 0.18, sa * BASE_R * 0.45, 0.17, 0.14, 0.15))
+        specs.append((ca * (BASE_R + 0.05), 0.12, sa * (BASE_R + 0.05), 0.15, 0.11, 0.12))
+        specs.append((ca * (BASE_R + 0.12), 0.09, sa * (BASE_R + 0.12), 0.11, 0.09, 0.10))
 
     rs = [max(s[3], s[4], s[5]) for s in specs]
     xs = [s[0] for s in specs]
@@ -100,6 +101,25 @@ def main():
         else:
             new_faces.append(list(f))
     faces = np.array(new_faces)
+
+    # 縦フルートを幾何で刻む（裾は弱め）
+    normals = np.zeros_like(verts)
+    for f in faces:
+        a, b, c = verts[f[0]], verts[f[1]], verts[f[2]]
+        n = np.cross(b - a, c - a)
+        ln = np.linalg.norm(n)
+        if ln > 1e-12:
+            n = n / ln
+            normals[f[0]] += n
+            normals[f[1]] += n
+            normals[f[2]] += n
+    nlen = np.maximum(np.linalg.norm(normals, axis=1, keepdims=True), 1e-12)
+    normals = normals / nlen
+    ang = np.arctan2(verts[:, 2], verts[:, 0])
+    y = verts[:, 1]
+    flute_mask = np.clip((y - 0.15) / 0.35, 0.0, 1.0)
+    flute = np.sin(ang * 7.0) * 0.7 + np.sin(ang * 4.0 + y * 2.0) * 0.3
+    verts = verts + normals * (flute[:, None] * FLUTE_AMT * flute_mask[:, None])
 
     with OUT.open("w") as fo:
         fo.write("# full-trunk+toes soft-union k=%.2f h=%.2f\n" % (K, TRUNK_H))
