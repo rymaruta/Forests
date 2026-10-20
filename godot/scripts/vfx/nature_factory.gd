@@ -6,10 +6,10 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.55
-const HERO_BASE_R := 0.62
-const HERO_TOP_R := 0.26
-const HERO_CANOPY_R := 1.95
+const HERO_TRUNK_H := 1.7
+const HERO_BASE_R := 0.72
+const HERO_TOP_R := 0.4
+const HERO_CANOPY_R := 1.45
 const HERO_SEED := 2901
 
 
