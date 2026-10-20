@@ -7,14 +7,14 @@
 [ext_resource type="Script" path="res://scripts/player/camera_orbit.gd" id="5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
-sky_top_color = Color(0.42, 0.66, 0.95, 1)
-sky_horizon_color = Color(0.92, 0.88, 0.78, 1)
-ground_bottom_color = Color(0.35, 0.45, 0.30, 1)
-ground_horizon_color = Color(0.75, 0.8, 0.6, 1)
-sun_angle_max = 25.0
-sky_curve = 0.07
-sky_energy_multiplier = 1.25
-ground_energy_multiplier = 0.9
+sky_top_color = Color(0.38, 0.62, 0.82, 1)
+sky_horizon_color = Color(0.98, 0.86, 0.68, 1)
+ground_bottom_color = Color(0.28, 0.4, 0.26, 1)
+ground_horizon_color = Color(0.7, 0.78, 0.52, 1)
+sun_angle_max = 22.0
+sky_curve = 0.06
+sky_energy_multiplier = 1.35
+ground_energy_multiplier = 0.85
 
 [sub_resource type="Sky" id="Sky_1"]
 sky_material = SubResource("ProceduralSkyMaterial_1")
@@ -23,29 +23,29 @@ sky_material = SubResource("ProceduralSkyMaterial_1")
 background_mode = 2
 sky = SubResource("Sky_1")
 ambient_light_source = 3
-ambient_light_color = Color(0.7, 0.78, 0.62, 1)
-ambient_light_sky_contribution = 0.85
-ambient_light_energy = 1.0
+ambient_light_color = Color(0.62, 0.74, 0.58, 1)
+ambient_light_sky_contribution = 0.88
+ambient_light_energy = 1.05
 tonemap_mode = 3
-tonemap_exposure = 1.05
-tonemap_white = 5.5
+tonemap_exposure = 1.08
+tonemap_white = 5.2
 glow_enabled = true
-glow_levels/2 = 0.5
-glow_levels/3 = 0.7
-glow_levels/4 = 0.4
-glow_intensity = 0.5
-glow_strength = 0.9
-glow_bloom = 0.15
+glow_levels/2 = 0.45
+glow_levels/3 = 0.65
+glow_levels/4 = 0.35
+glow_intensity = 0.42
+glow_strength = 0.85
+glow_bloom = 0.12
 fog_enabled = true
-fog_light_color = Color(0.82, 0.88, 0.8, 1)
-fog_sun_scatter = 0.55
-fog_density = 0.0011
-fog_aerial_perspective = 0.25
-fog_sky_affect = 0.55
+fog_light_color = Color(0.88, 0.9, 0.78, 1)
+fog_sun_scatter = 0.65
+fog_density = 0.00125
+fog_aerial_perspective = 0.3
+fog_sky_affect = 0.5
 adjustment_enabled = true
-adjustment_brightness = 1.04
-adjustment_contrast = 1.06
-adjustment_saturation = 1.22
+adjustment_brightness = 1.05
+adjustment_contrast = 1.08
+adjustment_saturation = 1.18
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1")

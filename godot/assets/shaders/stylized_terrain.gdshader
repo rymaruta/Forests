@@ -3,9 +3,9 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_sc
 
 uniform sampler2D grass_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D dirt_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform vec3 tint : source_color = vec3(1.0, 1.0, 1.0);
-uniform float uv_scale = 0.18;
-uniform float roughness_val : hint_range(0.0, 1.0) = 0.9;
+uniform vec3 tint : source_color = vec3(0.92, 1.0, 0.88);
+uniform float uv_scale = 0.16;
+uniform float roughness_val : hint_range(0.0, 1.0) = 0.92;
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);

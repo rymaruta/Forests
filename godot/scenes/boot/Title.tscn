@@ -51,7 +51,7 @@ horizontal_alignment=1
 layout_mode=2
 theme_override_font_sizes/font_size=20
 theme_override_colors/font_color=Color(0.82, 0.9, 0.84, 0.9)
-text = "自分のペースで、森に暮らす"
+text = "手づくりの森で、自分のペースで暮らす"
 horizontal_alignment=1
 
 [node name="Spacer" type="Control" parent="Center/VBox"]
@@ -72,5 +72,5 @@ text = "つづきから"
 layout_mode=2
 theme_override_font_sizes/font_size=13
 theme_override_colors/font_color=Color(0.7, 0.8, 0.72, 0.7)
-text = "iPhone向け · 横画面推奨 · オリジナル作品"
+text = "外部キット不使用 · 手組みの世界 · 横画面推奨"
 horizontal_alignment=1
