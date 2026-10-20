@@ -29,15 +29,14 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 
 
 static func water_material() -> Material:
-	# 互換性優先：半透明失敗で真っ白になるのを避け、しっかり色の水面にする
+	# 半透明は環境によって白飛びするので、まずは不透明の澄んだ水色
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.35, 0.72, 0.7, 0.88)
-	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	m.roughness = 0.12
-	m.metallic = 0.18
+	m.albedo_color = Color(0.32, 0.68, 0.66, 1.0)
+	m.roughness = 0.18
+	m.metallic = 0.22
 	m.emission_enabled = true
-	m.emission = Color(0.2, 0.45, 0.5)
-	m.emission_energy_multiplier = 0.15
+	m.emission = Color(0.18, 0.42, 0.48)
+	m.emission_energy_multiplier = 0.22
 	return m
 
 
