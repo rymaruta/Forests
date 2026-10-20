@@ -12,7 +12,7 @@ var _toast_timer: float = 0.0
 
 
 func _ready() -> void:
-	camera_pivot.target_path = camera_pivot.get_path_to(player)
+	camera_pivot.target = player
 
 	if not GameState.toast_requested.is_connected(_on_toast):
 		GameState.toast_requested.connect(_on_toast)
@@ -25,7 +25,6 @@ func _ready() -> void:
 	_refresh_item_chip()
 	_update_action_button()
 
-	# Web 安定のため同期生成＋物理ロック
 	player.set_physics_process(false)
 	player.velocity = Vector3.ZERO
 	world_builder.build()
@@ -35,15 +34,24 @@ func _ready() -> void:
 	player.velocity = Vector3.ZERO
 	player.visible = true
 	player.set_physics_process(true)
-	# カメラを即座に正しい位置へ
-	camera_pivot.global_position = spawn + Vector3(0, 1.0, 0)
 	camera_pivot.yaw = 0.55
 	camera_pivot.pitch = -0.22
-	GameState.toast_requested.emit("森が息づいた")
+	camera_pivot.snap_to_target()
 
+	var gen := world_builder.get_node_or_null("Generated")
+	var count := gen.get_child_count() if gen else 0
+	GameState.toast_requested.emit("森が息づいた (%d)" % count)
+
+	# チュートリアルは少し遅らせて世界を先に見せる（await は使わない）
 	if GameState.show_tutorial:
-		hud.get_node("Tutorial").visible = true
-		GameState.is_menu_open = true
+		get_tree().create_timer(1.5).timeout.connect(_show_tutorial_later)
+
+
+func _show_tutorial_later() -> void:
+	if not is_instance_valid(hud):
+		return
+	hud.get_node("Tutorial").visible = true
+	GameState.is_menu_open = true
 
 
 func _wire_hud() -> void:

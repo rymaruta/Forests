@@ -2,12 +2,12 @@ extends Node3D
 class_name CameraOrbit
 ## プレイヤー追従 + 右画面スワイプでオービット
 
-@export var target_path: NodePath
 @export var distance: float = 6.2
 @export var height: float = 2.4
 @export var min_pitch: float = -0.45
 @export var max_pitch: float = 0.2
 
+var target: Node3D = null
 var yaw: float = 0.55
 var pitch: float = -0.22
 var _dragging: bool = false
@@ -21,8 +21,20 @@ func _ready() -> void:
 	camera.current = true
 
 
+func snap_to_target() -> void:
+	if target == null:
+		return
+	global_position = target.global_position + Vector3(0, 1.0, 0)
+	var offset := Vector3(
+		sin(yaw) * cos(pitch) * distance,
+		height + sin(-pitch) * distance * 0.35,
+		cos(yaw) * cos(pitch) * distance
+	)
+	camera.position = offset
+	camera.look_at(global_position + Vector3(0, 0.6, 0), Vector3.UP)
+
+
 func _process(delta: float) -> void:
-	var target := get_node_or_null(target_path) as Node3D
 	if target == null:
 		return
 	var desired := target.global_position
@@ -42,7 +54,6 @@ func _input(event: InputEvent) -> void:
 	if GameState.is_menu_open:
 		return
 
-	# 右半分のドラッグのみカメラ（左はジョイスティック）
 	if event is InputEventScreenTouch:
 		var st := event as InputEventScreenTouch
 		var vp := get_viewport().get_visible_rect().size
@@ -60,7 +71,6 @@ func _input(event: InputEvent) -> void:
 			return
 		_apply_look(sd.relative)
 
-	# マウス（エディタ検証用）
 	elif event is InputEventMouseButton:
 		var mb := event as InputEventMouseButton
 		if mb.button_index == MOUSE_BUTTON_RIGHT:
