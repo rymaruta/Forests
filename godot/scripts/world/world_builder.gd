@@ -4,6 +4,7 @@ class_name WorldBuilder
 
 
 func build() -> void:
+	## 同期ビルド（ヘッドレス検証用）
 	_clear_generated()
 	_make_ground()
 	_make_path()
@@ -16,6 +17,27 @@ func build() -> void:
 	_make_boundary()
 	_add_lights()
 	_add_ambience()
+
+
+func build_async() -> void:
+	## Web向け：フレーム分割で固まりを防ぐ
+	_clear_generated()
+	_make_ground()
+	await get_tree().process_frame
+	_make_path()
+	_make_water()
+	_make_cottage()
+	await get_tree().process_frame
+	_scatter_trees()
+	await get_tree().process_frame
+	_scatter_flowers_bushes_rocks()
+	await get_tree().process_frame
+	_scatter_grass()
+	_make_spawn_garden()
+	_make_boundary()
+	_add_lights()
+	_add_ambience()
+	await get_tree().process_frame
 
 
 func _clear_generated() -> void:
@@ -148,7 +170,7 @@ func _make_cottage() -> void:
 func _scatter_trees() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20261020
-	for i in 52:
+	for i in 40:
 		var p := Vector3(rng.randf_range(-17, 17), 0, rng.randf_range(-17, 17))
 		if p.distance_to(Vector3(8, 0, -6)) < 6.8:
 			continue
@@ -293,7 +315,7 @@ func _scatter_grass() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 77
 	var gmat := VisualKit.grass_material()
-	for i in 380:
+	for i in 240:
 		var p := _rand_point(rng, 1.6, 4.6)
 		p.y = VisualKit._h(p.x, p.z)
 		var grass := MeshInstance3D.new()

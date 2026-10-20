@@ -63,7 +63,7 @@ static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -
 
 	if not backdrop:
 		var cards := MeshInstance3D.new()
-		cards.mesh = CraftMeshes.leaf_cards(rng, 56, rng.randf_range(1.0, 1.35))
+		cards.mesh = CraftMeshes.leaf_cards(rng, 28, rng.randf_range(1.0, 1.3))
 		cards.material_override = VisualKit.foliage_material(leaf.lightened(0.1), leaf_dark)
 		cards.position = canopy.position
 		cards.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

@@ -12,7 +12,6 @@ var _toast_timer: float = 0.0
 
 
 func _ready() -> void:
-	world_builder.build()
 	camera_pivot.target_path = camera_pivot.get_path_to(player)
 
 	if not GameState.toast_requested.is_connected(_on_toast):
@@ -23,9 +22,13 @@ func _ready() -> void:
 		GameState.inventory_changed.connect(_refresh_item_chip)
 
 	_wire_hud()
-	_apply_loaded_save()
 	_refresh_item_chip()
 	_update_action_button()
+
+	GameState.toast_requested.emit("森を育てています…")
+	await world_builder.build_async()
+	_apply_loaded_save()
+	GameState.toast_requested.emit("森が息づいた")
 
 	if GameState.show_tutorial:
 		hud.get_node("Tutorial").visible = true

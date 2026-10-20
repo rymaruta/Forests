@@ -117,7 +117,7 @@ static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> A
 	## 複数の歪み葉塊を重ねた樹冠ボリューム（AC的なふくらみ）
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var blobs := rng.randi_range(9, 14)
+	var blobs := rng.randi_range(7, 10)
 	for b in blobs:
 		var ang := rng.randf() * TAU
 		var rad_off := rng.randf_range(0.05, 0.55) * base_r
@@ -126,13 +126,10 @@ static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> A
 			rng.randf_range(-0.05, 0.85) * base_r,
 			sin(ang) * rad_off
 		)
-		# keep denser near middle
-		center *= Vector3(1.0, 1.0, 1.0)
-		var rad := base_r * rng.randf_range(0.32, 0.62)
+		var rad := base_r * rng.randf_range(0.34, 0.64)
 		var squash := rng.randf_range(0.52, 0.82)
-		_append_displaced_sphere(st, center, rad, squash, 9, 14, 0.38, float(b) * 17.0 + rng.randf() * 20.0)
-	# soft top crown
-	_append_displaced_sphere(st, Vector3(0, base_r * 0.55, 0), base_r * 0.55, 0.7, 8, 12, 0.28, 99.0)
+		_append_displaced_sphere(st, center, rad, squash, 7, 10, 0.36, float(b) * 17.0 + rng.randf() * 20.0)
+	_append_displaced_sphere(st, Vector3(0, base_r * 0.55, 0), base_r * 0.55, 0.7, 6, 10, 0.28, 99.0)
 	st.generate_normals()
 	return st.commit()
 
