@@ -79,12 +79,19 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		root.add_child(toe)
 		if hero:
 			var join := MeshInstance3D.new()
-			join.mesh = CraftMeshes.uv_sphere(0.18, 12, 14, 0.008, float(i) * 1.7, 0.9)
+			join.mesh = CraftMeshes.uv_sphere(0.22, 12, 14, 0.008, float(i) * 1.7, 0.92)
 			join.material_override = VisualKit.bark_shader_material(bark_tint)
-			join.position = Vector3(cos(a) * (base_r * 0.40), 0.24, sin(a) * (base_r * 0.40))
-			join.scale = Vector3(1.15, 1.0, 1.1)
+			join.position = Vector3(cos(a) * (base_r * 0.55), 0.22, sin(a) * (base_r * 0.55))
+			join.scale = Vector3(1.35, 1.05, 1.2)
 			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(join)
+			var join2 := MeshInstance3D.new()
+			join2.mesh = CraftMeshes.uv_sphere(0.16, 10, 12, 0.006, float(i) * 2.3, 0.95)
+			join2.material_override = VisualKit.bark_shader_material(bark_tint)
+			join2.position = Vector3(cos(a) * (base_r * 0.25), 0.32, sin(a) * (base_r * 0.25))
+			join2.scale = Vector3(1.2, 1.1, 1.15)
+			join2.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(join2)
 
 	# 短い Y 枝（ヒーローは冠にほぼ埋めて突き出しを抑える）
 	if not hero:
