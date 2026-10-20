@@ -57,12 +57,12 @@ func _build_stage() -> void:
 	env.ambient_light_color = Color(0.90, 0.90, 0.88)
 	# アンビエント過多だと繊維法線が消える。参照級の柔らかい方向光を残す
 	# 参照：高キー柔らか光。深影で粘土がプラスチックに見えるのを避ける
-	env.ambient_light_energy = 0.82
+	env.ambient_light_energy = 0.88
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 0.94
+	env.tonemap_exposure = 0.96
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.86
-	env.adjustment_contrast = 0.94
+	env.adjustment_saturation = 0.84
+	env.adjustment_contrast = 0.92
 	$WorldEnvironment.environment = env
 
 	# 参照シート相当：ホットスポット禁止の柔らかい拡散光

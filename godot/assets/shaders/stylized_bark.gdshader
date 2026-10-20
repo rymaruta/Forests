@@ -41,20 +41,22 @@ void fragment() {
 	float warp = _n2(vec2(ang * 0.9, y * 0.55)) * 1.1
 		+ _n2(vec2(ang * 2.1 + 3.0, y * 1.1)) * 0.55
 		+ _n2(vec2(y * 0.8, ang * 0.4)) * 0.40;
-	float bands = 4.5;
-	float u = fract((ang / 6.2831853) * bands + warp + y * 0.18);
-	float width = 0.18 + 0.14 * _n2(vec2(floor((ang / 6.2831853) * bands + warp * 2.0), y * 0.35));
-	float groove = 1.0 - smoothstep(0.0, width, abs(u - 0.5));
-	groove = pow(groove, 1.55) * trunk_mask;
+	// 不規則な縦溝：一定バンド禁止。ノイズで本数・位置を揺らす
+	float a01 = ang / 6.2831853;
+	float gA = 0.5 + 0.5 * sin((a01 * 4.0 + warp) * 6.2831853);
+	float gB = 0.5 + 0.5 * sin((a01 * 6.5 + warp * 1.4 + 0.7) * 6.2831853);
+	float gC = 0.5 + 0.5 * sin((a01 * 3.2 + y * 0.2 + 1.3) * 6.2831853);
+	float groove = gA * 0.48 + gB * 0.32 + gC * 0.20;
+	groove = smoothstep(0.35, 0.78, groove) * trunk_mask;
 	float grain = _n2(vec2(ang * 4.5, y * 3.2));
-	groove = mix(groove, groove * (0.72 + grain * 0.55), 0.45);
+	groove = mix(groove, groove * (0.75 + grain * 0.5), 0.40);
 
 	float tex_g = tex.r * 0.55 + 0.22;
-	groove = mix(tex_g * trunk_mask, groove, 0.70);
+	groove = mix(tex_g * trunk_mask, groove, 0.62);
 
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.86, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.38 + groove * 0.44);
+	vec3 base = mix(bark_dark, bark_color, 0.42 + groove * 0.38);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
