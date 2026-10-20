@@ -57,11 +57,12 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var bark_mat := VisualKit.bark_shader_material(bark_tint)
 	var toe_n := 4 if hero else (0 if backdrop else 4)
 	var trunk := MeshInstance3D.new()
+	# ヒーローは root_toes=0（メッシュ押し出し＋球チェーンの二重隆起禁止）
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_h, base_r, top_r,
 		48 if hero else 16, lean,
 		0.0 if hero else 0.028, true,
-		toe_n if hero else toe_n
+		0 if hero else toe_n
 	)
 	trunk.material_override = bark_mat
 	root.add_child(trunk)
