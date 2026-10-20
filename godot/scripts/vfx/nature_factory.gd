@@ -66,29 +66,41 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	)
 	trunk.material_override = bark_mat
 	root.add_child(trunk)
-	for i in toe_n:
-		var a := float(i) / float(toe_n) * TAU + 0.55
-		var ca := cos(a)
-		var sa := sin(a)
-		if hero:
-			# 密度の高い球チェーンで粘土趾（テーパー管はフィン化のため使わない）
+	if hero:
+		# 裾＋趾だけ CSG ユニオン（幹円柱は含めない＝facet溝を避ける）
+		var toe_csg := CSGCombiner3D.new()
+		toe_csg.name = "HeroToeCSG"
+		toe_csg.set_meta("bake_material", bark_mat)
+		var core := CSGSphere3D.new()
+		core.radius = base_r * 1.05
+		core.radial_segments = 24
+		core.rings = 14
+		core.position = Vector3(0.0, 0.28, 0.0)
+		core.scale = Vector3(1.1, 0.85, 1.1)
+		toe_csg.add_child(core)
+		for i in toe_n:
+			var a := float(i) / float(toe_n) * TAU + 0.55
+			var ca := cos(a)
+			var sa := sin(a)
 			for k in 5:
 				var t := float(k) / 4.0
-				var blob := MeshInstance3D.new()
-				var br := lerpf(0.22, 0.14, t)
-				blob.mesh = CraftMeshes.uv_sphere(br, 14, 16, 0.015, float(i) * 2.1 + float(k), 0.97)
-				blob.material_override = bark_mat
-				var rch := lerpf(base_r * 0.25, base_r * 1.15, t)
-				var by := lerpf(0.42, 0.14, t * t)
+				var blob := CSGSphere3D.new()
+				blob.radius = lerpf(0.22, 0.13, t)
+				blob.radial_segments = 14
+				blob.rings = 10
+				var rch := lerpf(base_r * 0.35, base_r * 1.18, t)
+				var by := lerpf(0.40, 0.12, t * t)
 				blob.position = Vector3(ca * rch, by, sa * rch)
-				blob.scale = Vector3(lerpf(1.35, 1.15, t), lerpf(1.2, 0.95, t), lerpf(1.25, 1.1, t))
-				blob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				root.add_child(blob)
-		else:
+				blob.scale = Vector3(lerpf(1.3, 1.15, t), lerpf(1.15, 0.95, t), lerpf(1.2, 1.1, t))
+				toe_csg.add_child(blob)
+		root.add_child(toe_csg)
+	else:
+		for i in toe_n:
+			var a := float(i) / float(toe_n) * TAU + 0.55
 			var toe := MeshInstance3D.new()
 			toe.mesh = CraftMeshes.uv_sphere(0.17, 10, 12, 0.018, float(i) * 2.7, 0.94)
 			toe.material_override = bark_mat
-			toe.position = Vector3(ca * base_r * 0.85, 0.13, sa * base_r * 0.85)
+			toe.position = Vector3(cos(a) * base_r * 0.85, 0.13, sin(a) * base_r * 0.85)
 			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(toe)
 
