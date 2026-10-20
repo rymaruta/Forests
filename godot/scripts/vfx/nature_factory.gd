@@ -57,7 +57,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_h, base_r, top_r,
 		32 if hero else 16, lean,
-		0.030 if hero else 0.028, true,
+		0.038 if hero else 0.028, true,
 		0
 	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
@@ -65,23 +65,23 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var toe_n := 4 if hero else (0 if backdrop else 4)
 	for i in toe_n:
 		var a := float(i) / float(toe_n) * TAU + 0.55
-		# 扁平な粘土趾：幹から明確に突き出し、床で切らない
-		var toe_r := 0.24 if hero else 0.16
+		# 丸い粘土趾（板状・尖り禁止）。幹に埋めつつ外へ
+		var toe_r := 0.26 if hero else 0.16
 		var toe := MeshInstance3D.new()
-		toe.mesh = CraftMeshes.uv_sphere(toe_r, 14 if hero else 10, 16 if hero else 12, 0.01, float(i) * 2.7, 0.70)
+		toe.mesh = CraftMeshes.uv_sphere(toe_r, 14 if hero else 10, 16 if hero else 12, 0.012, float(i) * 2.7, 0.88)
 		toe.material_override = VisualKit.bark_shader_material(bark_tint)
-		var reach := (base_r * 0.95) if hero else (base_r + 0.08)
-		toe.position = Vector3(cos(a) * reach, toe_r * 0.58, sin(a) * reach)
-		toe.scale = Vector3(1.45, 0.70, 1.2)
-		toe.rotation = Vector3(0.40, a, 0.0)
+		var reach := (base_r * 0.88) if hero else (base_r + 0.08)
+		toe.position = Vector3(cos(a) * reach, toe_r * 0.85, sin(a) * reach)
+		toe.scale = Vector3(1.2, 0.95, 1.1)
+		toe.rotation = Vector3(0.2, a, 0.0)
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
 		if hero:
 			var join := MeshInstance3D.new()
-			join.mesh = CraftMeshes.uv_sphere(0.18, 12, 14, 0.008, float(i) * 1.7, 0.82)
+			join.mesh = CraftMeshes.uv_sphere(0.18, 12, 14, 0.008, float(i) * 1.7, 0.9)
 			join.material_override = VisualKit.bark_shader_material(bark_tint)
-			join.position = Vector3(cos(a) * (base_r * 0.42), 0.20, sin(a) * (base_r * 0.42))
-			join.scale = Vector3(1.2, 0.9, 1.1)
+			join.position = Vector3(cos(a) * (base_r * 0.40), 0.24, sin(a) * (base_r * 0.40))
+			join.scale = Vector3(1.15, 1.0, 1.1)
 			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(join)
 
