@@ -51,8 +51,8 @@ void fragment() {
 
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.86, 1.0, ndl);
-	// 浅い手彫り風（深い機械溝禁止）
-	vec3 base = mix(bark_dark, bark_color, 0.48 + groove * 0.28);
+	// 手彫り風：浅すぎると溝が消える
+	vec3 base = mix(bark_dark, bark_color, 0.40 + groove * 0.40);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
