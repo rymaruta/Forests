@@ -46,10 +46,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r = (0.14 if not backdrop else 0.2)
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
-	var bark_tint := Color(0.34, 0.22, 0.14) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	# セージ／オリーブ（参照：くすんだセージ。黄み過多禁止）
-	var leaf := Color(0.44, 0.52, 0.40) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.28, 0.36, 0.26)
+	var bark_tint := Color(0.40, 0.28, 0.18) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	# セージ／オリーブ（参照：明るいくすみセージ）
+	var leaf := Color(0.52, 0.58, 0.44) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.34, 0.42, 0.30)
 
 	# 幹：円柱（裾は短い）。ヒーロー根は soft-union OBJ
 	var trunk := MeshInstance3D.new()
@@ -61,7 +61,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_mesh_h, base_r * (0.92 if trunk_start_y > 0.0 else 1.0), top_r,
 		28 if hero else 16, lean,
-		0.022 if hero else 0.028, true,
+		0.014 if hero else 0.028, true,
 		0
 	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
@@ -86,16 +86,16 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(toe)
 
-	# 短い Y 枝（参照：幹側面に短く太い・冠の下で見える）
+	# 短い Y 枝（参照：冠の下に短く、突き出しすぎない）
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.55 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.14 if hero else 0.06, 0.07 if hero else 0.022, 12, 0.06)
+		var blen := 0.38 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.05 if hero else 0.022, 12, 0.05)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.45 if b == 0 else PI - 0.45) + lean * 1.5
-		var by := h * (0.52 if b == 0 else 0.48)
-		br.position = Vector3(cos(ang) * (0.32 if hero else 0.2) + lean * 0.15, by, 0.10 if b == 0 else -0.08)
-		br.rotation = Vector3(0.85, ang, 0.1 if b == 0 else -0.1)
+		var ang := (0.5 if b == 0 else PI - 0.5) + lean * 1.5
+		var by := h * (0.58 if b == 0 else 0.54)
+		br.position = Vector3(cos(ang) * (0.26 if hero else 0.2) + lean * 0.15, by, 0.06 if b == 0 else -0.05)
+		br.rotation = Vector3(1.05, ang, 0.06 if b == 0 else -0.06)
 		root.add_child(br)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ

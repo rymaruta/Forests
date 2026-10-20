@@ -11,8 +11,8 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj"
 RES = 110
 PAD = 0.05
-K_TRUNK = 0.10
-K_TOE = 0.07  # 趾は幹とつなぐが趾同士は溶かさない
+K_TRUNK = 0.11
+K_TOE = 0.11  # 幹へしっかり溶かす（浮き球禁止）。趾の谷は配置で残す
 BASE_R = 0.32
 
 
@@ -35,10 +35,11 @@ def main():
     toe_specs = []
     for i in range(4):
         a = i / 4 * math.tau + 0.55
-        # 明確に外へ
-        reach = BASE_R + 0.12
-        toe_specs.append((math.cos(a) * reach, 0.15, math.sin(a) * reach, 0.19, 0.155, 0.17))
-        toe_specs.append((math.cos(a) * (BASE_R * 0.55), 0.22, math.sin(a) * (BASE_R * 0.55), 0.13, 0.12, 0.12))
+        # 幹に深く埋めつつ外へ。つなぎ球で溶け合わせ
+        reach = BASE_R + 0.08
+        toe_specs.append((math.cos(a) * reach, 0.14, math.sin(a) * reach, 0.18, 0.15, 0.16))
+        toe_specs.append((math.cos(a) * (BASE_R * 0.62), 0.20, math.sin(a) * (BASE_R * 0.62), 0.15, 0.14, 0.14))
+        toe_specs.append((math.cos(a) * (BASE_R * 0.30), 0.28, math.sin(a) * (BASE_R * 0.30), 0.12, 0.12, 0.12))
 
     all_specs = trunk_specs + toe_specs
     rs = [max(s[3], s[4], s[5]) for s in all_specs]
@@ -70,11 +71,11 @@ def main():
         d = ell(*s)
         field = d if field is None else soft_min(field, d, K_TRUNK)
 
-    # 各趾は個別に soft-union（趾同士は直接溶かさない）
-    for i in range(0, len(toe_specs), 2):
-        toe = ell(*toe_specs[i])
-        join = ell(*toe_specs[i + 1])
-        toe_field = soft_min(toe, join, K_TOE)
+    # 各趾グループ（趾+つなぎ2）を幹へ soft-union
+    for i in range(0, len(toe_specs), 3):
+        toe_field = ell(*toe_specs[i])
+        toe_field = soft_min(toe_field, ell(*toe_specs[i + 1]), K_TOE)
+        toe_field = soft_min(toe_field, ell(*toe_specs[i + 2]), K_TOE)
         field = soft_min(field, toe_field, K_TOE)
 
     # 床カットは弱め（鋭い穴・白縁を出さない）。底はわずかに丸く残す

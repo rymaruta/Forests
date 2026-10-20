@@ -49,10 +49,11 @@ void vertex() {
 void fragment() {
 	// フェルト：低〜中周波の毛羽＋房AO。プラスチック平坦を避ける
 	vec3 tex = texture(leaf_tex, v_world.xy * 0.55 + v_world.zx * 0.38).rgb;
-	float f_lo = _vnoise(v_world * 9.0);
-	float f_mid = _vnoise(v_world * 22.0 + 1.7);
-	float f_hi = _vnoise(v_world * 48.0 + 4.2);
-	float flock = f_lo * 0.40 + f_mid * 0.38 + f_hi * 0.22;
+	// Bench距離でも読める中周波を主に（高周波は潰れる）
+	float f_lo = _vnoise(v_world * 5.5);
+	float f_mid = _vnoise(v_world * 12.0 + 1.7);
+	float f_hi = _vnoise(v_world * 28.0 + 4.2);
+	float flock = f_lo * 0.46 + f_mid * 0.36 + f_hi * 0.18;
 	float crevice = clamp(1.0 - NORMAL.y * 1.1, 0.0, 1.0);
 	crevice = pow(crevice, 1.25);
 	float lobe_ao = mix(1.0, 0.55, crevice);
