@@ -90,10 +90,11 @@ void fragment() {
 
 	vec3 base = mix(leaf_dark, leaf_color, 0.48 + fiber_catch * 0.28 + up * 0.10);
 	base = mix(base, leaf_color * (0.88 + tex.g * 0.22), flock_mix * 0.55);
-	base *= mix(0.95, 1.05, flock);
+	// 粒立ちすぎ禁止（ベルベット寄り）
+	base *= mix(0.97, 1.03, flock);
 	base *= lobe_ao;
 	base += leaf_color * rim;
-	base *= mix(0.96, 1.04, fiber2);
+	base *= mix(0.98, 1.02, fiber2);
 
 	float under = clamp(0.22 - v_obj.y * 0.16, 0.0, 0.16);
 	base *= 1.0 - under;
