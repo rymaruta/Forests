@@ -86,7 +86,7 @@ void fragment() {
 
 	// 繊維散乱リム（スペキュラではない）
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 2.0) * 0.28;
+	float rim = pow(1.0 - facing, 1.8) * 0.36;
 
 	vec3 base = mix(leaf_dark, leaf_color, 0.48 + fiber_catch * 0.28 + up * 0.10);
 	base = mix(base, leaf_color * (0.88 + tex.g * 0.22), flock_mix * 0.55);
