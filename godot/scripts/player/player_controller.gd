@@ -185,7 +185,7 @@ func _build_visual() -> void:
 	tail.rotation_degrees.x = 12
 	mesh_root.add_child(tail)
 
-	mesh_root.scale = Vector3(1.12, 1.12, 1.12)
+	mesh_root.scale = Vector3(1.05, 1.05, 1.05)
 
 
 func set_move_input(v: Vector2) -> void:
