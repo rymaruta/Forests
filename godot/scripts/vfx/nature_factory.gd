@@ -71,19 +71,22 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var ca := cos(a)
 		var sa := sin(a)
 		if hero:
-			for k in 4:
-				var t := float(k) / 3.0
-				var jr := lerpf(0.22, 0.15, t)
-				var blob := MeshInstance3D.new()
-				blob.mesh = CraftMeshes.uv_sphere(jr, 14, 16, 0.012, float(i) * 1.7 + float(k), 0.98)
-				blob.material_override = bark_mat
-				var rch := lerpf(base_r * 0.40, base_r * 0.98, t)
-				var by := lerpf(0.52, 0.14, t * t)
-				blob.position = Vector3(ca * rch, by, sa * rch)
-				blob.rotation = Vector3(0.0, a, lerpf(0.35, 0.05, t))
-				blob.scale = Vector3(lerpf(1.15, 1.35, t), lerpf(1.35, 0.95, t), lerpf(1.15, 1.1, t))
-				blob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-				root.add_child(blob)
+			var toe := MeshInstance3D.new()
+			toe.mesh = CraftMeshes.clay_root_toe(0.72, 0.22, 0.08, 14, 18, float(i) * 2.3)
+			toe.material_override = bark_mat
+			# 幹側面に深く食い込ませ、下へ弧を描く
+			toe.position = Vector3(ca * base_r * 0.28, 0.32, sa * base_r * 0.28)
+			toe.rotation = Vector3(0.0, a, 0.72)
+			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(toe)
+			# 接合を埋める小さな球
+			var join := MeshInstance3D.new()
+			join.mesh = CraftMeshes.uv_sphere(0.18, 12, 14, 0.01, float(i) * 1.5, 0.98)
+			join.material_override = bark_mat
+			join.position = Vector3(ca * base_r * 0.22, 0.34, sa * base_r * 0.22)
+			join.scale = Vector3(1.3, 1.15, 1.25)
+			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(join)
 		else:
 			var toe := MeshInstance3D.new()
 			toe.mesh = CraftMeshes.uv_sphere(0.17, 10, 12, 0.018, float(i) * 2.7, 0.94)

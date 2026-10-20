@@ -42,6 +42,43 @@ static func uv_sphere(radius: float, rings: int, segments: int, displace: float 
 	return st.commit()
 
 
+static func clay_root_toe(length: float, base_r: float, tip_r: float, rings: int = 10, segments: int = 14, seed: float = 1.0) -> ArrayMesh:
+	## 幹側が太く先端へ細る粘土趾（単球禁止）。ローカル +X が外向き。
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in rings:
+		var t0 := float(i) / float(rings)
+		var t1 := float(i + 1) / float(rings)
+		# 幹側(t=0)太・先端(t=1)細。縦に少し潰して接地感
+		var r0 := lerpf(base_r, tip_r, t0 * t0)
+		var r1 := lerpf(base_r, tip_r, t1 * t1)
+		var x0 := t0 * length
+		var x1 := t1 * length
+		for j in segments:
+			var a0 := float(j) / float(segments) * TAU
+			var a1 := float(j + 1) / float(segments) * TAU
+			var n0 := 1.0 + (_noise3(Vector3(cos(a0), t0, sin(a0)), seed) - 0.5) * 0.06
+			var n1 := 1.0 + (_noise3(Vector3(cos(a1), t0, sin(a1)), seed) - 0.5) * 0.06
+			var n2 := 1.0 + (_noise3(Vector3(cos(a0), t1, sin(a0)), seed) - 0.5) * 0.06
+			var n3 := 1.0 + (_noise3(Vector3(cos(a1), t1, sin(a1)), seed) - 0.5) * 0.06
+			var p00 := Vector3(x0, cos(a0) * r0 * 0.82 * n0, sin(a0) * r0 * n0)
+			var p10 := Vector3(x0, cos(a1) * r0 * 0.82 * n1, sin(a1) * r0 * n1)
+			var p01 := Vector3(x1, cos(a0) * r1 * 0.82 * n2, sin(a0) * r1 * n2)
+			var p11 := Vector3(x1, cos(a1) * r1 * 0.82 * n3, sin(a1) * r1 * n3)
+			_tri_uv(st, p00, p10, p01, Vector2(t0, a0 / TAU), Vector2(t0, a1 / TAU), Vector2(t1, a0 / TAU))
+			_tri_uv(st, p10, p11, p01, Vector2(t0, a1 / TAU), Vector2(t1, a1 / TAU), Vector2(t1, a0 / TAU))
+	# 先端キャップ
+	var tip := Vector3(length, 0, 0)
+	for j in segments:
+		var a0 := float(j) / float(segments) * TAU
+		var a1 := float(j + 1) / float(segments) * TAU
+		var p0 := Vector3(length, cos(a0) * tip_r * 0.82, sin(a0) * tip_r)
+		var p1 := Vector3(length, cos(a1) * tip_r * 0.82, sin(a1) * tip_r)
+		_tri(st, tip, p0, p1)
+	st.generate_normals()
+	return st.commit()
+
+
 static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true, root_toes: int = 0) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
