@@ -10,10 +10,10 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.28
+BASE_R = 1.35  # nature_factory HERO_CANOPY_R
 RES = 128
 PAD = 0.14
-K_BLEND = 0.15
+K_BLEND = 0.10  # 谷を深く（溶けすぎると房が消える）
 SEED = 2901
 
 
@@ -31,10 +31,11 @@ def lobe_specs():
     ]
     for i in range(6):
         a = i / 6 * math.tau + 0.18
+        # 房を少し外へ：谷が読める
         specs.append(
             (
-                (math.cos(a) * 0.52, 0.50 + 0.04 * math.sin(i), math.sin(a) * 0.52),
-                0.36,
+                (math.cos(a) * 0.58, 0.50 + 0.04 * math.sin(i), math.sin(a) * 0.58),
+                0.34,
             )
         )
     for i in range(5):

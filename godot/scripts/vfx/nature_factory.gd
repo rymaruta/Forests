@@ -48,8 +48,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 
 	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — Bench露出で明るく出るので少し暗め
 	var bark_tint := Color(0.27, 0.19, 0.12) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	var leaf := Color(0.30, 0.34, 0.22) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.18, 0.24, 0.14)
+	var leaf := Color(0.33, 0.37, 0.24) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.20, 0.26, 0.15)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋趾丘）。CSG球列／MC白欠けは捨てた。
 	var trunk_h := h * (1.05 if hero else 0.92)
@@ -71,24 +71,24 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# 参照：幹上端が短い V に割れて冠を支える
+	# 参照：幹上端が短い V に割れて冠を支える（正面から見える位置）
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.58 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.11 if hero else 0.06, 0.04 if hero else 0.022, 12, 0.06)
+		var blen := 0.62 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.045 if hero else 0.022, 12, 0.06)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.85 if b == 0 else PI - 0.85) + lean * 1.5
-		var by := h * (0.58 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (0.14 if hero else 0.2) + lean * 0.15, by, 0.02 if b == 0 else -0.02)
-		br.rotation = Vector3(0.48 if hero else 0.55, ang, 0.12 if b == 0 else -0.12)
+		# ほぼ ±X 方向に出して正面カメラで読む
+		var ang := (0.35 if b == 0 else PI - 0.35) + lean * 1.5
+		var by := h * (0.55 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (0.18 if hero else 0.2) + lean * 0.15, by, 0.08 if b == 0 else -0.08)
+		br.rotation = Vector3(0.42 if hero else 0.55, ang, 0.10 if b == 0 else -0.10)
 		root.add_child(br)
 		if hero:
-			# 二股の先をもう一段
 			var br2 := MeshInstance3D.new()
-			br2.mesh = CraftMeshes.branch(0.28, 0.055, 0.03, 10, 0.04)
+			br2.mesh = CraftMeshes.branch(0.30, 0.06, 0.032, 10, 0.04)
 			br2.material_override = VisualKit.bark_shader_material(bark_tint)
-			br2.position = br.position + Vector3(cos(ang) * 0.22, 0.32, sin(ang) * 0.02)
-			br2.rotation = Vector3(0.35, ang + (0.35 if b == 0 else -0.35), 0.0)
+			br2.position = br.position + Vector3(cos(ang) * 0.28, 0.28, sin(ang) * 0.04)
+			br2.rotation = Vector3(0.28, ang + (0.28 if b == 0 else -0.28), 0.0)
 			root.add_child(br2)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
