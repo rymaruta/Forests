@@ -86,18 +86,18 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var ca := cos(a)
 			var sa := sin(a)
-			# 幹から外へ連なる細長い粘土マウンド（単球禁止）
-			for k in 5:
-				var t := float(k) / 4.0
+			# 幹に深く食い込む短いマウンド（外へ飛び出す別球禁止）
+			for k in 4:
+				var t := float(k) / 3.0
 				var blob := CSGSphere3D.new()
-				blob.radius = lerpf(0.22, 0.13, t)
-				blob.radial_segments = 14
-				blob.rings = 10
-				var rch := lerpf(base_r * 0.35, base_r * 1.38, t)
-				var by := lerpf(0.34, 0.10, t)
+				blob.radius = lerpf(0.26, 0.16, t)
+				blob.radial_segments = 16
+				blob.rings = 12
+				var rch := lerpf(base_r * 0.22, base_r * 1.05, t)
+				var by := lerpf(0.36, 0.16, t)
 				blob.position = Vector3(ca * rch, by, sa * rch)
-				blob.rotation = Vector3(0.0, a, 0.08)
-				blob.scale = Vector3(lerpf(1.25, 1.6, t), lerpf(1.05, 0.85, t), lerpf(1.15, 1.05, t))
+				blob.rotation = Vector3(0.0, a, 0.06)
+				blob.scale = Vector3(lerpf(1.4, 1.35, t), lerpf(1.15, 0.9, t), lerpf(1.25, 1.1, t))
 				comb.add_child(blob)
 		root.add_child(comb)
 	else:
