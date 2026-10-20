@@ -64,10 +64,10 @@ void fragment() {
 	float fiber2 = _vnoise(v_world * 92.0 + 7.4);
 	float flock = pile * 0.22 + fiber * 0.48 + fiber2 * 0.30;
 
-	// 房のすき間AO（参照：谷をはっきり読ませる）
-	float crevice = clamp(1.0 - NORMAL.y * 1.25, 0.0, 1.0);
-	crevice = pow(crevice, 1.25);
-	float lobe_ao = mix(1.0, 0.55, crevice);
+	// 房のすき間AO（深すぎる峡谷禁止・参照の柔らかい谷）
+	float crevice = clamp(1.0 - NORMAL.y * 1.10, 0.0, 1.0);
+	crevice = pow(crevice, 1.55);
+	float lobe_ao = mix(1.0, 0.68, crevice);
 
 	// 毛羽擬似法線：アルベドではなく照明で繊維を読む
 	vec3 n = NORMAL;

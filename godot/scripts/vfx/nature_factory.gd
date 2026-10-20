@@ -48,8 +48,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 
 	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — 薄タン／ミント禁止
 	var bark_tint := Color(0.30, 0.21, 0.14) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	var leaf := Color(0.28, 0.34, 0.20) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.16, 0.22, 0.12)
+	var leaf := Color(0.30, 0.35, 0.22) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.18, 0.24, 0.14)
 
 	# ヒーロー幹＋趾: CSGユニオン→AssetBenchで weld bake（別球継ぎ目禁止）
 	# 非ヒーロー: CraftMeshes＋埋め込み趾
@@ -86,18 +86,19 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var ca := cos(a)
 			var sa := sin(a)
-			# 幹に深く食い込む短いマウンド（外へ飛び出す別球禁止）
+			# 参照：趾はフレア中腹から下へ弧を描く（水平ソーセージ禁止）
 			for k in 4:
 				var t := float(k) / 3.0
 				var blob := CSGSphere3D.new()
-				blob.radius = lerpf(0.26, 0.16, t)
+				blob.radius = lerpf(0.24, 0.17, t)
 				blob.radial_segments = 16
 				blob.rings = 12
-				var rch := lerpf(base_r * 0.22, base_r * 1.05, t)
-				var by := lerpf(0.36, 0.16, t)
+				var rch := lerpf(base_r * 0.40, base_r * 0.98, t)
+				# 高い位置から接地へ（縦の流れ）
+				var by := lerpf(0.52, 0.14, t * t)
 				blob.position = Vector3(ca * rch, by, sa * rch)
-				blob.rotation = Vector3(0.0, a, 0.06)
-				blob.scale = Vector3(lerpf(1.4, 1.35, t), lerpf(1.15, 0.9, t), lerpf(1.25, 1.1, t))
+				blob.rotation = Vector3(0.0, a, lerpf(0.35, 0.05, t))
+				blob.scale = Vector3(lerpf(1.15, 1.35, t), lerpf(1.35, 0.95, t), lerpf(1.15, 1.1, t))
 				comb.add_child(blob)
 		root.add_child(comb)
 	else:
