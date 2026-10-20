@@ -18,9 +18,11 @@ void fragment() {
 	vec3 tex = texture(bark_tex, uv).rgb;
 	float ang = atan(v_world.z, v_world.x);
 	// Bench距離でも読める縦溝（コントラスト強め）
-	float g1 = 0.5 + 0.5 * sin(ang * 11.0 + v_world.y * 0.7);
-	float g2 = 0.5 + 0.5 * sin(ang * 19.0 + 1.2);
-	float world_groove = mix(g1, g2, 0.35);
+	// わずかにねじれた縦溝（完全な規則配管禁止）
+	float twist = v_world.y * 0.55 + sin(v_world.y * 1.7) * 0.35;
+	float g1 = 0.5 + 0.5 * sin(ang * 10.0 + twist);
+	float g2 = 0.5 + 0.5 * sin(ang * 17.0 + twist * 1.3 + 1.2);
+	float world_groove = mix(g1, g2, 0.34);
 	world_groove = smoothstep(0.12, 0.88, world_groove);
 	float groove = mix(tex.r * 0.55 + 0.15, world_groove, 0.92);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
