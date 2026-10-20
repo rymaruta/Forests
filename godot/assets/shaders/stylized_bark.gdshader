@@ -23,12 +23,12 @@ void fragment() {
 	float g1 = 0.5 + 0.5 * sin(ang * 10.0 + twist);
 	float g2 = 0.5 + 0.5 * sin(ang * 17.0 + twist * 1.3 + 1.2);
 	float world_groove = mix(g1, g2, 0.34);
-	world_groove = smoothstep(0.12, 0.88, world_groove);
-	float groove = mix(tex.r * 0.55 + 0.15, world_groove, 0.92);
+	world_groove = smoothstep(0.22, 0.82, world_groove);
+	float groove = mix(tex.r * 0.6 + 0.15, world_groove, 0.88);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.70, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.18 + groove * 0.70);
-	base *= 0.86 + ndl * 0.18;
+	ndl = mix(0.78, 1.0, ndl);
+	vec3 base = mix(bark_dark, bark_color, 0.28 + groove * 0.55);
+	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
 	SPECULAR = 0.0;
