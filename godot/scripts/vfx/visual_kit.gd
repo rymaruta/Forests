@@ -56,20 +56,22 @@ static func stone_material(tint: Color = ForestsPalette.STONE) -> Material:
 
 static func plaster_material() -> Material:
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.94, 0.9, 0.82)
+	m.albedo_color = Color(0.92, 0.88, 0.78)
 	m.albedo_texture = load("res://assets/textures/plaster.png")
-	m.uv1_scale = Vector3(1.8, 1.8, 1.0)
-	m.roughness = 0.95
+	m.uv1_scale = Vector3(2.4, 2.4, 2.4)
+	m.uv1_triplanar = true
+	m.roughness = 0.97
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	return m
 
 
 static func roof_tile_material() -> Material:
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.95, 0.72, 0.55)
+	m.albedo_color = Color(0.88, 0.55, 0.38)
 	m.albedo_texture = load("res://assets/textures/roof_tile.png")
-	m.uv1_scale = Vector3(2.8, 1.8, 1.0)
-	m.roughness = 0.88
+	m.uv1_scale = Vector3(2.2, 2.2, 2.2)
+	m.uv1_triplanar = true
+	m.roughness = 0.92
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	return m
 

@@ -45,18 +45,22 @@ void vertex() {
 }
 
 void fragment() {
-	// フェルト：高密度フロック。艶なし。黒割れ禁止。
-	vec3 tex = texture(leaf_tex, v_world.xz * 0.85 + v_world.y * 0.28).rgb;
-	float f1 = _vnoise(v_world * 26.0);
-	float f2 = _vnoise(v_world * 54.0 + 2.3);
-	float f3 = _vnoise(v_world * 110.0 + 8.0);
-	float flock = f1 * 0.4 + f2 * 0.35 + f3 * 0.25;
-	float ndl = clamp(dot(NORMAL, normalize(vec3(0.1, 1.0, 0.15))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.28 + 0.72, 0.0, 1.0);
-	float up = clamp(NORMAL.y * 0.12 + 0.88, 0.8, 1.0);
-	vec3 base = mix(leaf_dark, leaf_color, 0.58 + ndl * 0.16 + up * 0.06);
-	base = mix(base, tex * leaf_color, flock_mix);
-	base *= mix(0.94, 1.06, flock);
+	// フェルト：等方高密度フロック（斜めストリーク禁止）
+	vec3 tex = texture(leaf_tex, v_world.xy * 0.55 + v_world.zx * 0.35).rgb;
+	float f1 = _vnoise(v_world * 32.0);
+	float f2 = _vnoise(v_world * 68.0 + 2.3);
+	float f3 = _vnoise(v_world * 140.0 + 8.0);
+	float flock = f1 * 0.38 + f2 * 0.34 + f3 * 0.28;
+	// 疑似毛羽：ノーマルを極小に揺らす（互換レンダラ向け）
+	vec3 n = NORMAL;
+	n += (f2 - 0.5) * 0.12 * normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
+	n = normalize(n);
+	float ndl = clamp(dot(n, normalize(vec3(0.1, 1.0, 0.15))), 0.0, 1.0);
+	ndl = clamp(ndl * 0.30 + 0.70, 0.0, 1.0);
+	float up = clamp(n.y * 0.12 + 0.88, 0.8, 1.0);
+	vec3 base = mix(leaf_dark, leaf_color, 0.56 + ndl * 0.18 + up * 0.06);
+	base = mix(base, tex * leaf_color, flock_mix * 0.9);
+	base *= mix(0.93, 1.07, flock);
 	ALBEDO = base;
 	ROUGHNESS = max(roughness_val, 0.98);
 	SPECULAR = 0.0;
