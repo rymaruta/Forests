@@ -40,18 +40,19 @@ void fragment() {
 		+ _n2(vec2(ang * 2.1 + 3.0, y * 1.1)) * 0.25;
 	float u = fract((ang / 6.2831853) * 7.0 + warp + y * 0.08);
 	// 溝の中心からの距離 → 幅のばらつき
-	float width = 0.10 + 0.08 * _n2(vec2(floor((ang / 6.2831853) * 7.0), y * 0.3));
+	float width = 0.14 + 0.10 * _n2(vec2(floor((ang / 6.2831853) * 6.0), y * 0.3));
 	float groove = 1.0 - smoothstep(0.0, width, abs(u - 0.5));
-	groove = pow(groove, 1.35);
-	float grain = _n2(vec2(ang * 6.0, y * 4.0));
-	groove = mix(groove, groove * (0.7 + grain * 0.6), 0.35);
+	groove = pow(groove, 1.6);
+	float grain = _n2(vec2(ang * 5.0, y * 3.5));
+	groove = mix(groove, groove * (0.75 + grain * 0.5), 0.40);
 
-	float tex_g = tex.r * 0.7 + 0.15;
-	groove = mix(tex_g, groove, 0.72);
+	float tex_g = tex.r * 0.65 + 0.18;
+	groove = mix(tex_g, groove, 0.58);
 
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.84, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.42 + groove * 0.36);
+	ndl = mix(0.86, 1.0, ndl);
+	// 浅い手彫り風（深い機械溝禁止）
+	vec3 base = mix(bark_dark, bark_color, 0.48 + groove * 0.28);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
