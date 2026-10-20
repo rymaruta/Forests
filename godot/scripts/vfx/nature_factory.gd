@@ -51,70 +51,43 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var leaf := Color(0.30, 0.35, 0.22) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.18, 0.24, 0.14)
 
-	# ヒーロー幹＋趾: CSGユニオン→AssetBenchで weld bake（別球継ぎ目禁止）
-	# 非ヒーロー: CraftMeshes＋埋め込み趾
+	# CraftMeshes 幹（高分割・無 ripple）。趾は弧マウンド球チェーンで埋め込み
+	# （CSG円柱 facets／球スタック横筋は規則溝に見えるので使わない）
 	var trunk_h := h * (1.05 if hero else 0.92)
 	var bark_mat := VisualKit.bark_shader_material(bark_tint)
 	var toe_n := 4 if hero else (0 if backdrop else 4)
-	if hero:
-		var comb := CSGCombiner3D.new()
-		comb.name = "HeroTrunkCSG"
-		comb.set_meta("bake_material", bark_mat)
-		var cyl := CSGCylinder3D.new()
-		cyl.radius = lerpf(base_r, top_r, 0.35)
-		cyl.height = trunk_h
-		cyl.sides = 48
-		cyl.cone = false
-		cyl.position = Vector3(0.0, trunk_h * 0.5, lean * 0.5)
-		cyl.rotation.y = 0.17  # CSG継ぎ目を正面から外す
-		comb.add_child(cyl)
-		var top_cap := CSGSphere3D.new()
-		top_cap.radius = top_r * 1.15
-		top_cap.radial_segments = 16
-		top_cap.rings = 10
-		top_cap.position = Vector3(0.0, trunk_h * 0.92, lean * 0.9)
-		comb.add_child(top_cap)
-		# 軽い裾のみ（平スカート禁止。趾チェーンが幅を担う）
-		var flare := CSGSphere3D.new()
-		flare.radius = base_r * 0.95
-		flare.radial_segments = 24
-		flare.rings = 14
-		flare.position = Vector3(0.0, base_r * 0.48, 0.0)
-		flare.scale = Vector3(1.05, 0.78, 1.05)
-		comb.add_child(flare)
-		for i in toe_n:
-			var a := float(i) / float(toe_n) * TAU + 0.55
-			var ca := cos(a)
-			var sa := sin(a)
-			# 参照：趾はフレア中腹から下へ弧を描く（水平ソーセージ禁止）
+	var trunk := MeshInstance3D.new()
+	trunk.mesh = CraftMeshes.trunk(
+		trunk_h, base_r, top_r,
+		48 if hero else 16, lean,
+		0.0 if hero else 0.028, true,
+		toe_n if hero else toe_n
+	)
+	trunk.material_override = bark_mat
+	root.add_child(trunk)
+	for i in toe_n:
+		var a := float(i) / float(toe_n) * TAU + 0.55
+		var ca := cos(a)
+		var sa := sin(a)
+		if hero:
 			for k in 4:
 				var t := float(k) / 3.0
-				var blob := CSGSphere3D.new()
-				blob.radius = lerpf(0.24, 0.17, t)
-				blob.radial_segments = 16
-				blob.rings = 12
+				var jr := lerpf(0.22, 0.15, t)
+				var blob := MeshInstance3D.new()
+				blob.mesh = CraftMeshes.uv_sphere(jr, 14, 16, 0.012, float(i) * 1.7 + float(k), 0.98)
+				blob.material_override = bark_mat
 				var rch := lerpf(base_r * 0.40, base_r * 0.98, t)
-				# 高い位置から接地へ（縦の流れ）
 				var by := lerpf(0.52, 0.14, t * t)
 				blob.position = Vector3(ca * rch, by, sa * rch)
 				blob.rotation = Vector3(0.0, a, lerpf(0.35, 0.05, t))
 				blob.scale = Vector3(lerpf(1.15, 1.35, t), lerpf(1.35, 0.95, t), lerpf(1.15, 1.1, t))
-				comb.add_child(blob)
-		root.add_child(comb)
-	else:
-		var trunk := MeshInstance3D.new()
-		trunk.mesh = CraftMeshes.trunk(
-			trunk_h, base_r, top_r,
-			16, lean, 0.028, true, toe_n
-		)
-		trunk.material_override = bark_mat
-		root.add_child(trunk)
-		for i in toe_n:
-			var a := float(i) / float(toe_n) * TAU + 0.55
+				blob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+				root.add_child(blob)
+		else:
 			var toe := MeshInstance3D.new()
 			toe.mesh = CraftMeshes.uv_sphere(0.17, 10, 12, 0.018, float(i) * 2.7, 0.94)
 			toe.material_override = bark_mat
-			toe.position = Vector3(cos(a) * base_r * 0.85, 0.13, sin(a) * base_r * 0.85)
+			toe.position = Vector3(ca * base_r * 0.85, 0.13, sa * base_r * 0.85)
 			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(toe)
 
