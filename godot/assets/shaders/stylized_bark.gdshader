@@ -46,7 +46,7 @@ void fragment() {
 	float groove = mix(world_groove, tex.r * 0.85 + 0.08, 0.78);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.82, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.36 + groove * 0.44);
+	vec3 base = mix(bark_dark, bark_color, 0.28 + groove * 0.55);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;

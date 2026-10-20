@@ -46,10 +46,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r = (0.14 if not backdrop else 0.2)
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
-	var bark_tint := Color(0.40, 0.30, 0.20) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	# セージ／オリーブ（参照：くすみ・ホットスポット禁止・薄ミント禁止）
-	var leaf := Color(0.40, 0.48, 0.32) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.28, 0.36, 0.24)
+	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — 薄タン／ミント禁止
+	var bark_tint := Color(0.30, 0.21, 0.14) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var leaf := Color(0.28, 0.34, 0.20) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.16, 0.22, 0.12)
 
 	# 幹: CraftMeshes（MC soft-union は接合白欠けで破棄）。趾は深く埋め込み＋接合球
 	var trunk_h := h * (1.05 if hero else 0.92)

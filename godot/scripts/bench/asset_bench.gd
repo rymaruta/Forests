@@ -51,10 +51,10 @@ func _build_stage() -> void:
 	# アンビエント過多だと繊維法線が消える。参照級の柔らかい方向光を残す
 	env.ambient_light_energy = 0.72
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 0.98
+	env.tonemap_exposure = 0.92
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.90
-	env.adjustment_contrast = 0.96
+	env.adjustment_saturation = 0.86
+	env.adjustment_contrast = 0.98
 	$WorldEnvironment.environment = env
 
 	# 参照シート相当：ホットスポット禁止の柔らかい拡散光
