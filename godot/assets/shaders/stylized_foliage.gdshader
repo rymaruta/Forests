@@ -81,7 +81,8 @@ void fragment() {
 
 	// ソフトラップ＋繊維キャッチ（スペキュラ禁止）
 	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.28 + 0.78, 0.0, 1.0);
+	// さらにラップ：参照級の柔らかい体積
+	ndl = clamp(ndl * 0.16 + 0.86, 0.0, 1.0);
 	float up = clamp(n.y * 0.16 + 0.84, 0.80, 1.0);
 	float fiber_catch = mix(0.92, 1.10, flock) * ndl;
 
