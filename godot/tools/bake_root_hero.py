@@ -15,9 +15,9 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj
 RES = 120
 PAD = 0.05
 K = 0.11
-BASE_R = 0.34
-TOP_R = 0.17
-TRUNK_H = 1.95
+BASE_R = 0.40
+TOP_R = 0.18
+TRUNK_H = 1.75
 
 
 def soft_min(a, b, k):
@@ -75,7 +75,8 @@ def main():
         d = ell(*s)
         field = d if field is None else soft_min(field, d, K)
 
-    field = soft_max(field, -Y + 0.002, 0.05)
+    # 床カットは弱く（白縁・穴禁止）。趾の底は丸く残す
+    field = soft_max(field, -Y - 0.02, 0.08)
 
     verts, faces, _, _ = marching_cubes(
         field,

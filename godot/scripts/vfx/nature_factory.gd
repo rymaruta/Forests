@@ -6,9 +6,9 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.95
-const HERO_BASE_R := 0.34
-const HERO_TOP_R := 0.17
+const HERO_TRUNK_H := 1.75
+const HERO_BASE_R := 0.40
+const HERO_TOP_R := 0.18
 const HERO_CANOPY_R := 1.28
 const HERO_SEED := 2901
 
@@ -75,17 +75,27 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(toe)
 
-	# 短い Y 枝（参照：冠の下に短く、突き出しすぎない）
-	for b in 2:
-		var br := MeshInstance3D.new()
-		var blen := 0.38 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.05 if hero else 0.022, 12, 0.05)
-		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.5 if b == 0 else PI - 0.5) + lean * 1.5
-		var by := h * (0.58 if b == 0 else 0.54)
-		br.position = Vector3(cos(ang) * (0.26 if hero else 0.2) + lean * 0.15, by, 0.06 if b == 0 else -0.05)
-		br.rotation = Vector3(1.05, ang, 0.06 if b == 0 else -0.06)
-		root.add_child(br)
+	# 短い Y 枝（ヒーローは冠にほぼ埋めて突き出しを抑える）
+	if not hero:
+		for b in 2:
+			var br := MeshInstance3D.new()
+			var blen := rng.randf_range(0.35, 0.5)
+			br.mesh = CraftMeshes.branch(blen, 0.06, 0.022, 12, 0.05)
+			br.material_override = VisualKit.bark_shader_material(bark_tint)
+			var ang := (0.5 if b == 0 else PI - 0.5) + lean * 1.5
+			var by := h * (0.58 if b == 0 else 0.54)
+			br.position = Vector3(cos(ang) * 0.2 + lean * 0.15, by, 0.06 if b == 0 else -0.05)
+			br.rotation = Vector3(1.05, ang, 0.06 if b == 0 else -0.06)
+			root.add_child(br)
+	else:
+		for b in 2:
+			var br := MeshInstance3D.new()
+			br.mesh = CraftMeshes.branch(0.32, 0.11, 0.05, 12, 0.04)
+			br.material_override = VisualKit.bark_shader_material(bark_tint)
+			var ang := (0.55 if b == 0 else PI - 0.55)
+			br.position = Vector3(cos(ang) * 0.20, h * 0.72, 0.0)
+			br.rotation = Vector3(1.15, ang, 0.0)
+			root.add_child(br)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
 	var canopy := MeshInstance3D.new()
