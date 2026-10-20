@@ -14,16 +14,16 @@ const BOUNCE_GREEN := Color(0.55, 0.72, 0.42)
 const GRASS_A := Color(0.34, 0.58, 0.3)
 const GRASS_B := Color(0.42, 0.64, 0.34)
 const DIRT := Color(0.48, 0.36, 0.24)
-const STONE := Color(0.62, 0.58, 0.5)
-const STONE_MOSS := Color(0.48, 0.52, 0.4)
+const STONE := Color(0.58, 0.54, 0.46)
+const STONE_MOSS := Color(0.42, 0.48, 0.36)
 
 # 樹皮・葉
 const BARK_WARM := Color(0.46, 0.3, 0.18)
 const BARK_COOL := Color(0.36, 0.24, 0.16)
-const LEAF_SUN := Color(0.4, 0.64, 0.34)
-const LEAF_SHADE := Color(0.18, 0.38, 0.22)
-const PINE := Color(0.22, 0.44, 0.32)
-const PINE_DARK := Color(0.1, 0.26, 0.16)
+const LEAF_SUN := Color(0.30, 0.54, 0.28)
+const LEAF_SHADE := Color(0.12, 0.30, 0.16)
+const PINE := Color(0.18, 0.40, 0.28)
+const PINE_DARK := Color(0.08, 0.22, 0.14)
 
 # 花
 const PETAL_SUN := Color(0.98, 0.74, 0.38)

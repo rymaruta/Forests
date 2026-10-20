@@ -8,8 +8,8 @@ static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -
 	var h := rng.randf_range(2.15, 3.15) * (1.6 if backdrop else 1.0)
 	var lean := rng.randf_range(-0.14, 0.14)
 	var bark_tint := ForestsPalette.BARK_WARM.lerp(ForestsPalette.BARK_COOL, rng.randf())
-	var leaf := ForestsPalette.LEAF_SUN.lerp(Color(0.32, 0.56, 0.3), rng.randf())
-	var leaf_dark := ForestsPalette.LEAF_SHADE.lerp(leaf.darkened(0.35), 0.5)
+	var leaf := ForestsPalette.LEAF_SUN.lerp(Color(0.26, 0.48, 0.26), rng.randf())
+	var leaf_dark := ForestsPalette.LEAF_SHADE.lerp(leaf.darkened(0.42), 0.55)
 
 	var trunk := MeshInstance3D.new()
 	trunk.mesh = CraftMeshes.trunk(h, 0.28 if not backdrop else 0.4, 0.1 if not backdrop else 0.15, 16, lean, 0.055)
@@ -61,11 +61,12 @@ static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -
 	crown2.position = Vector3(lean * 0.5 + rng.randf_range(-0.2, 0.2), h * 1.05, rng.randf_range(-0.2, 0.2))
 	root.add_child(crown2)
 
-	if not backdrop:
+	# 葉カードはシルエットを荒らすので、ごく控えめに内側だけ
+	if not backdrop and rng.randf() > 0.45:
 		var cards := MeshInstance3D.new()
-		cards.mesh = CraftMeshes.leaf_cards(rng, 28, rng.randf_range(1.0, 1.3))
-		cards.material_override = VisualKit.foliage_material(leaf.lightened(0.1), leaf_dark)
-		cards.position = canopy.position
+		cards.mesh = CraftMeshes.leaf_cards(rng, 12, rng.randf_range(0.55, 0.75))
+		cards.material_override = VisualKit.foliage_material(leaf, leaf_dark)
+		cards.position = canopy.position + Vector3(0, 0.15, 0)
 		cards.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cards)
 

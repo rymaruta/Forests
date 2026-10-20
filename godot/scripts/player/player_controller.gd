@@ -176,22 +176,24 @@ func _build_visual() -> void:
 	mouth.scale = Vector3(1.5, 0.4, 0.55)
 	mesh_root.add_child(mouth)
 
-	# 帽子
+	# 帽子（少し柔らかく傾ける）
 	var brim := MeshInstance3D.new()
 	var brim_m := CylinderMesh.new()
-	brim_m.top_radius = 0.36
-	brim_m.bottom_radius = 0.36
-	brim_m.height = 0.03
-	brim_m.radial_segments = 24
+	brim_m.top_radius = 0.38
+	brim_m.bottom_radius = 0.38
+	brim_m.height = 0.028
+	brim_m.radial_segments = 28
 	brim.mesh = brim_m
 	brim.material_override = _cm(ForestsPalette.HAT, ForestsPalette.HAT.darkened(0.3))
-	brim.position.y = 1.18
+	brim.position = Vector3(0.02, 1.17, 0)
+	brim.rotation_degrees.z = -6
 	mesh_root.add_child(brim)
 
 	var crown := MeshInstance3D.new()
-	crown.mesh = CraftMeshes.trunk(0.2, 0.19, 0.1, 14)
-	crown.material_override = _cm(ForestsPalette.HAT, ForestsPalette.HAT.darkened(0.28))
-	crown.position.y = 1.2
+	crown.mesh = CraftMeshes.trunk(0.22, 0.185, 0.095, 14)
+	crown.material_override = _cm(ForestsPalette.HAT.lightened(0.05), ForestsPalette.HAT.darkened(0.28))
+	crown.position = Vector3(0.02, 1.19, 0)
+	crown.rotation_degrees.z = -6
 	mesh_root.add_child(crown)
 
 	var band := MeshInstance3D.new()

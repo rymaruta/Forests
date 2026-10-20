@@ -114,22 +114,25 @@ static func branch(length: float, start_r: float, end_r: float, segments: int = 
 
 
 static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
-	## 複数の歪み葉塊を重ねた樹冠ボリューム（AC的なふくらみ）
+	## 横に広がる雲状の葉層（丸い棒キャンディではなく、ふんわり重なる）
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var blobs := rng.randi_range(7, 10)
-	for b in blobs:
+	# 下層：広い・薄い
+	_append_displaced_sphere(st, Vector3(0, 0.08 * base_r, 0), base_r * 0.95, 0.38, 8, 12, 0.22, 1.0 + rng.randf())
+	# 中層：少しずれて重ねる
+	var mid_n := rng.randi_range(4, 6)
+	for b in mid_n:
+		var ang := float(b) / float(mid_n) * TAU + rng.randf() * 0.4
+		var off := rng.randf_range(0.15, 0.45) * base_r
+		var c := Vector3(cos(ang) * off, rng.randf_range(0.25, 0.55) * base_r, sin(ang) * off)
+		_append_displaced_sphere(st, c, base_r * rng.randf_range(0.42, 0.62), rng.randf_range(0.32, 0.48), 7, 11, 0.28, 10.0 + float(b) * 7.0)
+	# 上層：小さめの頂き
+	_append_displaced_sphere(st, Vector3(rng.randf_range(-0.1, 0.1) * base_r, 0.72 * base_r, rng.randf_range(-0.1, 0.1) * base_r), base_r * 0.55, 0.45, 7, 10, 0.24, 50.0)
+	# 縁の小さなこぶ（シルエットを崩す）
+	for e in rng.randi_range(3, 5):
 		var ang := rng.randf() * TAU
-		var rad_off := rng.randf_range(0.05, 0.55) * base_r
-		var center := Vector3(
-			cos(ang) * rad_off,
-			rng.randf_range(-0.05, 0.85) * base_r,
-			sin(ang) * rad_off
-		)
-		var rad := base_r * rng.randf_range(0.34, 0.64)
-		var squash := rng.randf_range(0.52, 0.82)
-		_append_displaced_sphere(st, center, rad, squash, 7, 10, 0.36, float(b) * 17.0 + rng.randf() * 20.0)
-	_append_displaced_sphere(st, Vector3(0, base_r * 0.55, 0), base_r * 0.55, 0.7, 6, 10, 0.28, 99.0)
+		var c := Vector3(cos(ang) * base_r * 0.7, rng.randf_range(0.15, 0.5) * base_r, sin(ang) * base_r * 0.7)
+		_append_displaced_sphere(st, c, base_r * rng.randf_range(0.22, 0.34), 0.4, 6, 8, 0.3, 80.0 + float(e))
 	st.generate_normals()
 	return st.commit()
 

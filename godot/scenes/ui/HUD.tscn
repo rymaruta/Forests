@@ -289,7 +289,7 @@ anchor_right=1.0
 anchor_bottom=1.0
 grow_horizontal=2
 grow_vertical=2
-color = Color(0.04, 0.08, 0.06, 0.75)
+color = Color(0.04, 0.08, 0.06, 0.45)
 
 [node name="Panel" type="VBoxContainer" parent="Tutorial"]
 layout_mode=1

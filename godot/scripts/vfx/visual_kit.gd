@@ -29,10 +29,15 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 
 
 static func water_material() -> Material:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_water.gdshader")
-	m.set_shader_parameter("shallow_color", Vector3(ForestsPalette.WATER_SHALLOW.r, ForestsPalette.WATER_SHALLOW.g, ForestsPalette.WATER_SHALLOW.b))
-	m.set_shader_parameter("deep_color", Vector3(ForestsPalette.WATER_DEEP.r, ForestsPalette.WATER_DEEP.g, ForestsPalette.WATER_DEEP.b))
+	# 互換性優先：半透明失敗で真っ白になるのを避け、しっかり色の水面にする
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.35, 0.72, 0.7, 0.88)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.roughness = 0.12
+	m.metallic = 0.18
+	m.emission_enabled = true
+	m.emission = Color(0.2, 0.45, 0.5)
+	m.emission_energy_multiplier = 0.15
 	return m
 
 

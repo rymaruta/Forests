@@ -51,9 +51,9 @@ light_energy = 1.2
 light_indirect_energy = 1.9
 light_specular = 0.22
 shadow_enabled = true
-shadow_blur = 3.5
-shadow_opacity = 0.32
-shadow_bias = 0.04
+shadow_blur = 4.5
+shadow_opacity = 0.22
+shadow_bias = 0.045
 directional_shadow_mode = 1
 directional_shadow_max_distance = 70.0
 
