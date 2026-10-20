@@ -100,10 +100,10 @@ func _build_visual() -> void:
 		side_hair.position = Vector3(0.24 * side, 1.1, -0.08)
 		mesh_root.add_child(side_hair)
 	var bang := MeshInstance3D.new()
-	bang.mesh = CraftMeshes.uv_sphere(0.12, 8, 10, 0.08, 4.0, 0.45)
+	bang.mesh = CraftMeshes.uv_sphere(0.09, 8, 10, 0.1, 4.0, 0.5)
 	bang.material_override = _cm(hair_c, hair_c.darkened(0.18))
-	bang.position = Vector3(0, 1.26, 0.2)
-	bang.scale = Vector3(1.7, 0.45, 0.55)
+	bang.position = Vector3(0, 1.28, 0.18)
+	bang.scale = Vector3(1.5, 0.35, 0.6)
 	mesh_root.add_child(bang)
 
 	# 大きな茶色の目
