@@ -46,7 +46,7 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	# 根付近を密にして厚い粘土裾を作る
-	var rings := 20 if root_toes > 0 else 14
+	var rings := 28 if root_toes > 0 else 14
 	for i in rings:
 		var t0 := float(i) / float(rings)
 		var t1 := float(i + 1) / float(rings)
@@ -106,29 +106,28 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：幹すそが趾と連続して広がる
-	if t >= 0.26:
+	## 参照：軽い裾広がりのみ（強い半径ブースト＝平スカート）
+	if t >= 0.22:
 		return 1.0
-	var ft := 1.0 - t / 0.26
+	var ft := 1.0 - t / 0.22
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.42 * ft
+	return 1.0 + 0.22 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 丸い趾を幹側面に押し出す（星型・全周スカート禁止）
-	if toes <= 0 or t > 0.28:
+	## 幹側面の軽い丘。丸い体積は別球埋め込みで足す（半径だけ伸ばすとスカートになる）
+	if toes <= 0 or t > 0.22:
 		return 1.0
-	var fall := 1.0 - t / 0.28
+	var fall := 1.0 - t / 0.22
 	fall = fall * fall * (3.0 - 2.0 * fall)
 	var best := 0.0
 	for i in toes:
-		var center := float(i) / float(toes) * TAU + 0.35
+		var center := float(i) / float(toes) * TAU + 0.55
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		# 趾同士の谷を残す（全周ブースト禁止）
-		var lobe: float = clampf(1.0 - d / 0.55, 0.0, 1.0)
+		var lobe: float = clampf(1.0 - d / 0.58, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.58 * best * fall
+	return 1.0 + 0.28 * best * fall
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

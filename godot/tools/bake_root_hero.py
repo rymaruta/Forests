@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Bake root_hero.obj — 幹全体＋趾を一本の soft-union（水平継ぎ目禁止）。
-
-縦溝はシェーダ側。ここでは形の一体感だけ作る。
-"""
+"""Bake root_hero.obj — 幹＋趾を一本の soft-union（水平継ぎ目・別球・平面カット禁止）。"""
 from __future__ import annotations
 
 import math
@@ -12,13 +9,13 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj"
-RES = 120
-PAD = 0.05
-K = 0.11
-FLUTE_AMT = 0.032
+RES = 140
+PAD = 0.06
+K = 0.08
+FLUTE_AMT = 0.024
 BASE_R = 0.40
 TOP_R = 0.18
-TRUNK_H = 1.75
+TRUNK_H = 1.84  # nature_factory trunk_h ≈ HERO_TRUNK_H * 1.05
 
 
 def soft_min(a, b, k):
@@ -26,42 +23,48 @@ def soft_min(a, b, k):
     return (1.0 - h) * b + h * a - k * h * (1.0 - h)
 
 
-def soft_max(a, b, k):
-    return -soft_min(-a, -b, k)
-
-
 def main():
     specs = []
-    n = 14
+    # 幹を縦に積んだ楕円（なだらかテーパー）
+    n = 18
     for i in range(n):
         t = i / (n - 1)
-        y = 0.06 + t * (TRUNK_H - 0.06)
-        flare = 1.0 + 0.30 * max(0.0, 1.0 - y / 0.40) ** 2
+        y = 0.08 + t * (TRUNK_H - 0.08)
+        # 裾は軽く広げるだけ（平スカート禁止）
+        flare = 1.0 + 0.18 * max(0.0, 1.0 - y / 0.38) ** 2
         r = (BASE_R * (1.0 - t) + TOP_R * t) * flare
-        specs.append((0.0, y, 0.0, r, r * 0.88, r))
+        ry = r * 0.55 if i < 2 else r * 0.95
+        specs.append((0.0, y, 0.0, r, ry, r))
 
+    # 丸い粘土趾（扁平板・全周スカート禁止）。やや外へ出して谷を残す
     for i in range(4):
         a = i / 4 * math.tau + 0.55
         ca, sa = math.cos(a), math.sin(a)
-        # 低い扁平趾（膨らんだ足球禁止）
-        specs.append((ca * BASE_R * 0.50, 0.14, sa * BASE_R * 0.50, 0.18, 0.10, 0.14))
-        specs.append((ca * (BASE_R + 0.08), 0.10, sa * (BASE_R + 0.08), 0.14, 0.08, 0.11))
-        specs.append((ca * (BASE_R + 0.16), 0.07, sa * (BASE_R + 0.16), 0.10, 0.06, 0.08))
+        # 細い接合ネック（幹→趾）
+        specs.append((ca * BASE_R * 0.55, 0.18, sa * BASE_R * 0.55, 0.16, 0.14, 0.15))
+        # 主趾：ほぼ球・接地・幹から明確に突き出す
+        specs.append((ca * BASE_R * 1.05, 0.22, sa * BASE_R * 1.05, 0.28, 0.26, 0.27))
+        # 外側の小さな丸み
+        specs.append((ca * (BASE_R * 1.28), 0.12, sa * (BASE_R * 1.28), 0.14, 0.12, 0.13))
 
     rs = [max(s[3], s[4], s[5]) for s in specs]
     xs = [s[0] for s in specs]
     ys = [s[1] for s in specs]
     zs = [s[2] for s in specs]
-    mn = np.array([
-        min(xs[i] - rs[i] for i in range(len(xs))),
-        min(ys[i] - rs[i] for i in range(len(ys))),
-        min(zs[i] - rs[i] for i in range(len(zs))),
-    ]) - PAD
-    mx = np.array([
-        max(xs[i] + rs[i] for i in range(len(xs))),
-        max(ys[i] + rs[i] for i in range(len(ys))),
-        max(zs[i] + rs[i] for i in range(len(zs))),
-    ]) + PAD
+    mn = np.array(
+        [
+            min(xs[i] - rs[i] for i in range(len(xs))),
+            min(ys[i] - rs[i] for i in range(len(ys))),
+            min(zs[i] - rs[i] for i in range(len(zs))),
+        ]
+    ) - PAD
+    mx = np.array(
+        [
+            max(xs[i] + rs[i] for i in range(len(xs))),
+            max(ys[i] + rs[i] for i in range(len(ys))),
+            max(zs[i] + rs[i] for i in range(len(zs))),
+        ]
+    ) + PAD
 
     linx = np.linspace(mn[0], mx[0], RES)
     liny = np.linspace(mn[1], mx[1], RES)
@@ -77,8 +80,6 @@ def main():
         d = ell(*s)
         field = d if field is None else soft_min(field, d, K)
 
-    # 床カットは弱く（白縁・穴禁止）。趾の底は丸く残す
-    # 床の平面カットは白円盤を作るので使わない。生成後に接地シフトする。
     verts, faces, _, _ = marching_cubes(
         field,
         level=0.0,
@@ -89,7 +90,6 @@ def main():
         ),
     )
     verts = verts + mn
-    # 最下点をわずかに床上へ
     verts[:, 1] -= verts[:, 1].min() - 0.01
     cent = verts.mean(0)
     new_faces = []
@@ -103,7 +103,7 @@ def main():
             new_faces.append(list(f))
     faces = np.array(new_faces)
 
-    # 縦フルートを幾何で刻む（裾は弱め）
+    # 縦フルート幾何（裾・趾は弱め）
     normals = np.zeros_like(verts)
     for f in faces:
         a, b, c = verts[f[0]], verts[f[1]], verts[f[2]]
@@ -118,14 +118,18 @@ def main():
     normals = normals / nlen
     ang = np.arctan2(verts[:, 2], verts[:, 0])
     y = verts[:, 1]
-    # 趾・裾にはフルートを入れない（白欠け・裂け禁止）
-    flute_mask = np.clip((y - 0.42) / 0.40, 0.0, 1.0)
+    flute_mask = np.clip((y - 0.38) / 0.45, 0.0, 1.0)
     flute_mask = flute_mask * flute_mask * (3.0 - 2.0 * flute_mask)
-    flute = np.sin(ang * 7.0) * 0.7 + np.sin(ang * 4.0 + y * 2.0) * 0.3
+    # 有機ゆらぎ：周波数と位相を高さでずらす
+    flute = (
+        np.sin(ang * 6.5 + y * 0.9 + np.sin(y * 2.2) * 0.4) * 0.55
+        + np.sin(ang * 11.0 + y * 1.4 + 0.8) * 0.30
+        + np.sin(ang * 4.0 + y * 0.5) * 0.15
+    )
     verts = verts + normals * (flute[:, None] * FLUTE_AMT * flute_mask[:, None])
 
     with OUT.open("w") as fo:
-        fo.write("# full-trunk+toes soft-union k=%.2f h=%.2f\n" % (K, TRUNK_H))
+        fo.write("# full-trunk+round-toes soft-union k=%.2f h=%.2f\n" % (K, TRUNK_H))
         for v in verts:
             fo.write("v %.5f %.5f %.5f\n" % tuple(v))
         for f in faces:

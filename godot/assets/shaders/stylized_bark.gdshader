@@ -13,21 +13,40 @@ void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
+float _hash21(vec2 p) {
+	p = fract(p * vec2(123.34, 456.21));
+	p += dot(p, p + 45.32);
+	return fract(p.x * p.y);
+}
+float _n2(vec2 p) {
+	vec2 i = floor(p);
+	vec2 f = fract(p);
+	f = f * f * (3.0 - 2.0 * f);
+	float a = _hash21(i);
+	float b = _hash21(i + vec2(1, 0));
+	float c = _hash21(i + vec2(0, 1));
+	float d = _hash21(i + vec2(1, 1));
+	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
 void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
 	float ang = atan(v_world.z, v_world.x);
-	// Bench距離でも読める縦溝（コントラスト強め）
-	// わずかにねじれた縦溝（完全な規則配管禁止）
-	float twist = v_world.y * 0.55 + sin(v_world.y * 1.7) * 0.35;
-	float g1 = 0.5 + 0.5 * sin(ang * 10.0 + twist);
-	float g2 = 0.5 + 0.5 * sin(ang * 17.0 + twist * 1.3 + 1.2);
-	float world_groove = mix(g1, g2, 0.34);
-	world_groove = smoothstep(0.22, 0.82, world_groove);
-	float groove = mix(tex.r * 0.6 + 0.15, world_groove, 0.88);
+	float y = v_world.y;
+	// 有機縦溝：位相・幅・深さを高さで揺らす（規則フルート禁止）
+	float twist = y * 0.48 + sin(y * 1.35) * 0.55 + _n2(vec2(ang * 0.7, y * 0.55)) * 1.1;
+	float wiggle = _n2(vec2(ang * 1.4 + 2.1, y * 0.9)) * 0.55;
+	float g1 = 0.5 + 0.5 * sin(ang * (8.5 + wiggle) + twist);
+	float g2 = 0.5 + 0.5 * sin(ang * (14.0 + wiggle * 0.6) + twist * 1.25 + 1.1);
+	float g3 = 0.5 + 0.5 * sin(ang * 5.5 + y * 0.7 + 0.4);
+	float world_groove = g1 * 0.50 + g2 * 0.32 + g3 * 0.18;
+	world_groove = smoothstep(0.32, 0.74, world_groove);
+	float groove = mix(tex.r * 0.55 + 0.18, world_groove, 0.78);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.78, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.28 + groove * 0.55);
+	ndl = mix(0.82, 1.0, ndl);
+	// コントラスト控えめ（規則柱っぽい強溝を避ける）
+	vec3 base = mix(bark_dark, bark_color, 0.38 + groove * 0.40);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
