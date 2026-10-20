@@ -150,17 +150,22 @@ static func canopy_felt_lobes(rng: RandomNumberGenerator, base_r: float = 1.15) 
 	## 参照の主シルエット＝横に広がる重なりフェルト房。
 	## 戻り値: [{mesh, pos, scale}, ...]
 	var out: Array = []
+	# 参照：小さめ房をたくさん重ねて「雲」にする（大玉少数だと継ぎ目が目立つ）
 	var specs := [
-		{"pos": Vector3(0.0, 0.62, 0.0), "r": 0.88, "sx": 1.2, "sy": 0.9, "sz": 1.15},
-		{"pos": Vector3(-0.82, 0.55, 0.12), "r": 0.68, "sx": 1.08, "sy": 0.92, "sz": 1.02},
-		{"pos": Vector3(0.88, 0.58, -0.08), "r": 0.72, "sx": 1.1, "sy": 0.88, "sz": 1.05},
-		{"pos": Vector3(0.12, 0.5, -0.78), "r": 0.64, "sx": 1.02, "sy": 0.92, "sz": 1.08},
-		{"pos": Vector3(-0.15, 0.48, 0.82), "r": 0.66, "sx": 1.04, "sy": 0.9, "sz": 1.1},
-		{"pos": Vector3(0.38, 1.05, 0.22), "r": 0.52, "sx": 1.06, "sy": 0.82, "sz": 1.0},
-		{"pos": Vector3(-0.42, 1.0, -0.18), "r": 0.5, "sx": 1.02, "sy": 0.8, "sz": 0.98},
-		{"pos": Vector3(0.5, 0.7, 0.5), "r": 0.55, "sx": 1.05, "sy": 0.88, "sz": 1.02},
-		{"pos": Vector3(-0.55, 0.68, -0.45), "r": 0.52, "sx": 1.0, "sy": 0.86, "sz": 1.0},
-		{"pos": Vector3(0.0, 0.28, 0.0), "r": 0.7, "sx": 1.25, "sy": 0.72, "sz": 1.2},
+		{"pos": Vector3(0.0, 0.55, 0.0), "r": 0.7, "sx": 1.15, "sy": 0.92, "sz": 1.1},
+		{"pos": Vector3(-0.55, 0.5, 0.1), "r": 0.58, "sx": 1.05, "sy": 0.9, "sz": 1.0},
+		{"pos": Vector3(0.58, 0.52, -0.05), "r": 0.6, "sx": 1.08, "sy": 0.88, "sz": 1.02},
+		{"pos": Vector3(0.08, 0.48, -0.55), "r": 0.55, "sx": 1.0, "sy": 0.9, "sz": 1.05},
+		{"pos": Vector3(-0.1, 0.46, 0.58), "r": 0.56, "sx": 1.02, "sy": 0.9, "sz": 1.06},
+		{"pos": Vector3(-0.85, 0.58, -0.15), "r": 0.5, "sx": 1.0, "sy": 0.88, "sz": 0.98},
+		{"pos": Vector3(0.88, 0.6, 0.12), "r": 0.52, "sx": 1.02, "sy": 0.86, "sz": 1.0},
+		{"pos": Vector3(0.35, 0.85, 0.35), "r": 0.48, "sx": 1.05, "sy": 0.82, "sz": 1.0},
+		{"pos": Vector3(-0.4, 0.82, -0.3), "r": 0.46, "sx": 1.0, "sy": 0.8, "sz": 0.98},
+		{"pos": Vector3(0.15, 0.95, -0.1), "r": 0.44, "sx": 1.04, "sy": 0.78, "sz": 1.0},
+		{"pos": Vector3(-0.2, 0.92, 0.2), "r": 0.42, "sx": 1.0, "sy": 0.78, "sz": 0.98},
+		{"pos": Vector3(0.55, 0.7, -0.55), "r": 0.45, "sx": 1.0, "sy": 0.85, "sz": 1.0},
+		{"pos": Vector3(-0.6, 0.68, 0.5), "r": 0.45, "sx": 1.0, "sy": 0.85, "sz": 1.0},
+		{"pos": Vector3(0.0, 0.32, 0.0), "r": 0.5, "sx": 1.1, "sy": 0.65, "sz": 1.05},
 	]
 	for i in specs.size():
 		var s: Dictionary = specs[i]
@@ -171,7 +176,8 @@ static func canopy_felt_lobes(rng: RandomNumberGenerator, base_r: float = 1.15) 
 		)
 		var pos: Vector3 = (s["pos"] as Vector3) * base_r + jitter * base_r
 		var rr: float = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
-		var mesh := uv_sphere(rr, 16, 20, 0.035, float(i) * 11.7 + 3.0, 1.0)
+		# 高分割＋弱い変位でシルエットを粘土っぽく（正球の継ぎ目感を弱める）
+		var mesh := uv_sphere(rr, 18, 24, 0.055, float(i) * 11.7 + 3.0, 1.0)
 		out.append({
 			"mesh": mesh,
 			"pos": pos,
