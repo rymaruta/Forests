@@ -37,13 +37,12 @@ void fragment() {
 	// 有機縦溝：位相・幅・深さを高さで揺らす（規則フルート禁止）
 	float twist = y * 0.48 + sin(y * 1.35) * 0.55 + _n2(vec2(ang * 0.7, y * 0.55)) * 1.1;
 	float wiggle = _n2(vec2(ang * 1.4 + 2.1, y * 0.9)) * 0.55;
-	float g1 = 0.5 + 0.5 * sin(ang * (8.5 + wiggle) + twist);
-	float g2 = 0.5 + 0.5 * sin(ang * (14.0 + wiggle * 0.6) + twist * 1.25 + 1.1);
-	float g3 = 0.5 + 0.5 * sin(ang * 5.5 + y * 0.7 + 0.4);
-	float world_groove = g1 * 0.50 + g2 * 0.32 + g3 * 0.18;
-	world_groove = smoothstep(0.32, 0.74, world_groove);
-	// テクスチャの有機溝を主に、ワールド sine はごく弱く（規則柱禁止）
-	float groove = mix(world_groove, tex.r * 0.85 + 0.08, 0.78);
+	float g1 = 0.5 + 0.5 * sin(ang * (5.5 + wiggle) + twist);
+	float g2 = 0.5 + 0.5 * sin(ang * (8.5 + wiggle * 0.6) + twist * 1.25 + 1.1);
+	float world_groove = g1 * 0.62 + g2 * 0.38;
+	world_groove = smoothstep(0.35, 0.72, world_groove);
+	// テクスチャ主導（規則 sine 柱禁止）
+	float groove = mix(world_groove, tex.r * 0.88 + 0.06, 0.88);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.82, 1.0, ndl);
 	// ゼブラ強溝禁止：コントラストは参照級に抑える

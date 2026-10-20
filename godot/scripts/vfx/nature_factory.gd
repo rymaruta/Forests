@@ -63,25 +63,24 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var cyl := CSGCylinder3D.new()
 		cyl.radius = lerpf(base_r, top_r, 0.35)
 		cyl.height = trunk_h
-		cyl.sides = 28
+		cyl.sides = 48
 		cyl.cone = false
 		cyl.position = Vector3(0.0, trunk_h * 0.5, lean * 0.5)
-		# 上を細く（円錐ではなくスケールでテーパー）
-		cyl.scale = Vector3(1.0, 1.0, 1.0)
+		cyl.rotation.y = 0.17  # CSG継ぎ目を正面から外す
 		comb.add_child(cyl)
 		var top_cap := CSGSphere3D.new()
 		top_cap.radius = top_r * 1.15
-		top_cap.radial_segments = 14
-		top_cap.rings = 8
+		top_cap.radial_segments = 16
+		top_cap.rings = 10
 		top_cap.position = Vector3(0.0, trunk_h * 0.92, lean * 0.9)
 		comb.add_child(top_cap)
-		# 裾フレア
+		# 軽い裾のみ（平スカート禁止。趾チェーンが幅を担う）
 		var flare := CSGSphere3D.new()
-		flare.radius = base_r * 1.15
-		flare.radial_segments = 20
-		flare.rings = 12
-		flare.position = Vector3(0.0, base_r * 0.55, 0.0)
-		flare.scale = Vector3(1.15, 0.72, 1.15)
+		flare.radius = base_r * 0.95
+		flare.radial_segments = 24
+		flare.rings = 14
+		flare.position = Vector3(0.0, base_r * 0.48, 0.0)
+		flare.scale = Vector3(1.05, 0.78, 1.05)
 		comb.add_child(flare)
 		for i in toe_n:
 			var a := float(i) / float(toe_n) * TAU + 0.55
