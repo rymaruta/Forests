@@ -50,12 +50,13 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: canopy_hero.obj（大房 soft-union k=0.16）
-      幹: CraftMeshes＋埋め込み丸趾＋接合球（MC幹 soft-union は白欠けで再破棄）
+  形: canopy_hero.obj（大房 soft-union k=0.20）
+      幹: ヒーローは CSG 円柱＋趾球→weld bake（MC幹は白欠けで再破棄）
       HERO_TRUNK_H=1.75 / BASE_R=0.40 / SEED=2901
-  質感: パイル＋繊維フロック＋bark 有機ゆらぎ縦溝＋弱いメッシュ ripple
-  Bench: アンビエント強め・ホットスポット抑制・カメラ寄り
+  質感: パイル＋繊維＋頂点ファズ／樹皮はテクスチャ主導（ゼブラ抑制）
+  色: 参照画素 mean に寄せた（冠≈90,99,62／幹≈107,80,57）
+  Bench: アンビエント抑制で繊維法線が読める設定
   捨てた: MC幹全体 / 床平面カット / 幹二分割 / 細粒密集樹冠 / 板状趾 / 強い半径スカート
   未達: 参照級フェルト毛羽・趾の粘土フレア一体感・樹皮彫刻の自然さ
-  次のレバー: ①趾埋め込み深さ／接合 ②フェルト ③樹皮コントラスト ④Y枝
+  次のレバー: ①趾 CSG 形状（細長いマウンド）②冠の谷を深く ③樹皮有機ゆらぎ
   ワールドへは戻さない（Bench合格まで）
