@@ -61,10 +61,11 @@ static func clay_root_toe(length: float, base_r: float, tip_r: float, rings: int
 			var n1 := 1.0 + (_noise3(Vector3(cos(a1), t0, sin(a1)), seed) - 0.5) * 0.06
 			var n2 := 1.0 + (_noise3(Vector3(cos(a0), t1, sin(a0)), seed) - 0.5) * 0.06
 			var n3 := 1.0 + (_noise3(Vector3(cos(a1), t1, sin(a1)), seed) - 0.5) * 0.06
-			var p00 := Vector3(x0, cos(a0) * r0 * 0.82 * n0, sin(a0) * r0 * n0)
-			var p10 := Vector3(x0, cos(a1) * r0 * 0.82 * n1, sin(a1) * r0 * n1)
-			var p01 := Vector3(x1, cos(a0) * r1 * 0.82 * n2, sin(a0) * r1 * n2)
-			var p11 := Vector3(x1, cos(a1) * r1 * 0.82 * n3, sin(a1) * r1 * n3)
+			# 断面はほぼ円（扁平＝板状趾禁止）
+			var p00 := Vector3(x0, cos(a0) * r0 * n0, sin(a0) * r0 * n0)
+			var p10 := Vector3(x0, cos(a1) * r0 * n1, sin(a1) * r0 * n1)
+			var p01 := Vector3(x1, cos(a0) * r1 * n2, sin(a0) * r1 * n2)
+			var p11 := Vector3(x1, cos(a1) * r1 * n3, sin(a1) * r1 * n3)
 			_tri_uv(st, p00, p10, p01, Vector2(t0, a0 / TAU), Vector2(t0, a1 / TAU), Vector2(t1, a0 / TAU))
 			_tri_uv(st, p10, p11, p01, Vector2(t0, a1 / TAU), Vector2(t1, a1 / TAU), Vector2(t1, a0 / TAU))
 	# 先端キャップ
@@ -72,8 +73,8 @@ static func clay_root_toe(length: float, base_r: float, tip_r: float, rings: int
 	for j in segments:
 		var a0 := float(j) / float(segments) * TAU
 		var a1 := float(j + 1) / float(segments) * TAU
-		var p0 := Vector3(length, cos(a0) * tip_r * 0.82, sin(a0) * tip_r)
-		var p1 := Vector3(length, cos(a1) * tip_r * 0.82, sin(a1) * tip_r)
+		var p0 := Vector3(length, cos(a0) * tip_r, sin(a0) * tip_r)
+		var p1 := Vector3(length, cos(a1) * tip_r, sin(a1) * tip_r)
 		_tri(st, tip, p0, p1)
 	st.generate_normals()
 	return st.commit()
