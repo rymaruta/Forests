@@ -1,11 +1,12 @@
 shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_burley, specular_schlick_ggx;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_toon, specular_schlick_ggx;
 
 uniform sampler2D grass_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D dirt_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform vec3 tint : source_color = vec3(0.92, 1.0, 0.88);
-uniform float uv_scale = 0.16;
-uniform float roughness_val : hint_range(0.0, 1.0) = 0.92;
+uniform vec3 tint : source_color = vec3(0.88, 0.98, 0.82);
+uniform float uv_scale = 0.14;
+uniform float roughness_val : hint_range(0.0, 1.0) = 0.9;
+uniform float soft_wrap = 0.4;
 
 float hash(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -26,12 +27,16 @@ void fragment() {
 	vec2 wp = (INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xz;
 	vec2 uv = wp * uv_scale;
 	vec3 g = texture(grass_tex, uv).rgb;
-	vec3 d = texture(dirt_tex, uv * 0.85 + 0.17).rgb;
-	float blend = smoothstep(0.35, 0.75, noise(wp * 0.08));
-	vec3 col = mix(g, d, blend * 0.35);
-	// micro variation
-	col *= 0.92 + 0.16 * noise(wp * 0.35);
-	ALBEDO = col * tint;
+	vec3 d = texture(dirt_tex, uv * 0.8 + 0.13).rgb;
+	float blend = smoothstep(0.32, 0.78, noise(wp * 0.07));
+	float pathish = smoothstep(2.6, 4.2, length(wp - vec2(0.0, 2.5)));
+	vec3 col = mix(g, d, blend * 0.28 * pathish);
+	col *= 0.9 + 0.18 * noise(wp * 0.4);
+	col *= tint;
+	float ndl = dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15)));
+	ndl = clamp((ndl + soft_wrap) / (1.0 + soft_wrap), 0.0, 1.0);
+	col *= 0.72 + ndl * 0.38;
+	ALBEDO = col;
 	ROUGHNESS = roughness_val;
-	SPECULAR = 0.12;
+	SPECULAR = 0.08;
 }
