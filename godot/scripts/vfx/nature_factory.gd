@@ -87,30 +87,19 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var ca := cos(a)
 			var sa := sin(a)
-			# 接合ネック
-			var neck := CSGSphere3D.new()
-			neck.radius = 0.20
-			neck.radial_segments = 14
-			neck.rings = 10
-			neck.position = Vector3(ca * base_r * 0.55, 0.28, sa * base_r * 0.55)
-			neck.scale = Vector3(1.35, 1.05, 1.2)
-			comb.add_child(neck)
-			# 主趾（外へ長い粘土マウンド）
-			var toe := CSGSphere3D.new()
-			toe.radius = 0.24
-			toe.radial_segments = 16
-			toe.rings = 12
-			toe.position = Vector3(ca * base_r * 1.05, 0.20, sa * base_r * 1.05)
-			toe.rotation = Vector3(0.0, a, 0.12)
-			toe.scale = Vector3(1.55, 0.92, 1.12)
-			comb.add_child(toe)
-			# 外側の小さい丸み
-			var tip := CSGSphere3D.new()
-			tip.radius = 0.14
-			tip.radial_segments = 12
-			tip.rings = 8
-			tip.position = Vector3(ca * base_r * 1.32, 0.12, sa * base_r * 1.32)
-			comb.add_child(tip)
+			# 幹から外へ連なる細長い粘土マウンド（単球禁止）
+			for k in 5:
+				var t := float(k) / 4.0
+				var blob := CSGSphere3D.new()
+				blob.radius = lerpf(0.22, 0.13, t)
+				blob.radial_segments = 14
+				blob.rings = 10
+				var rch := lerpf(base_r * 0.35, base_r * 1.38, t)
+				var by := lerpf(0.34, 0.10, t)
+				blob.position = Vector3(ca * rch, by, sa * rch)
+				blob.rotation = Vector3(0.0, a, 0.08)
+				blob.scale = Vector3(lerpf(1.25, 1.6, t), lerpf(1.05, 0.85, t), lerpf(1.15, 1.05, t))
+				comb.add_child(blob)
 		root.add_child(comb)
 	else:
 		var trunk := MeshInstance3D.new()
