@@ -2,14 +2,12 @@ shader_type spatial;
 render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled;
 
 uniform sampler2D leaf_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D felt_n : hint_normal, filter_linear_mipmap, repeat_enable;
 uniform vec3 leaf_color : source_color = vec3(0.36, 0.44, 0.30);
 uniform vec3 leaf_dark : source_color = vec3(0.22, 0.30, 0.20);
 uniform float wind_strength = 0.012;
 uniform float wind_speed = 0.22;
 uniform float roughness_val : hint_range(0.0, 1.0) = 1.0;
-uniform float flock_mix : hint_range(0.0, 1.0) = 0.32;
-uniform float normal_strength : hint_range(0.0, 2.0) = 0.85;
+uniform float flock_mix : hint_range(0.0, 1.0) = 0.28;
 
 varying vec3 v_world;
 
@@ -47,21 +45,16 @@ void vertex() {
 }
 
 void fragment() {
-	vec2 fuv = v_world.xz * 0.55 + v_world.y * 0.2;
-	vec3 tex = texture(leaf_tex, fuv).rgb;
-	vec3 nn = texture(felt_n, fuv * 2.2).rgb * 2.0 - 1.0;
-	nn.xy *= normal_strength;
-	vec3 n = normalize(NORMAL + TANGENT * nn.x + BINORMAL * nn.y);
-	float flock = _vnoise(v_world * 72.0) * 0.5 + _vnoise(v_world * 140.0 + 2.1) * 0.5;
-	float ndl = clamp(dot(n, normalize(vec3(0.12, 1.0, 0.18))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.4 + 0.6, 0.0, 1.0);
-	float up = clamp(n.y * 0.18 + 0.82, 0.75, 1.0);
-	float valley = mix(0.84, 1.0, up);
-	vec3 base = mix(leaf_dark, leaf_color, 0.5 + ndl * 0.22 + up * 0.08);
+	// フェルト：低周波〜中周波のみ（高周波モアレ禁止）
+	vec3 tex = texture(leaf_tex, v_world.xz * 0.35 + v_world.y * 0.12).rgb;
+	float flock = _vnoise(v_world * 28.0) * 0.55 + _vnoise(v_world * 56.0 + 1.7) * 0.45;
+	float ndl = clamp(dot(NORMAL, normalize(vec3(0.1, 1.0, 0.15))), 0.0, 1.0);
+	ndl = clamp(ndl * 0.42 + 0.58, 0.0, 1.0);
+	float up = clamp(NORMAL.y * 0.2 + 0.8, 0.72, 1.0);
+	vec3 base = mix(leaf_dark, leaf_color, 0.52 + ndl * 0.2 + up * 0.1);
 	base = mix(base, tex * leaf_color, flock_mix);
-	base *= valley * mix(0.96, 1.04, flock);
+	base *= mix(0.97, 1.03, flock);
 	ALBEDO = base;
-	NORMAL = n;
 	ROUGHNESS = roughness_val;
 	SPECULAR = 0.0;
 }

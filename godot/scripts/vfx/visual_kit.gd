@@ -21,14 +21,12 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_foliage.gdshader")
 	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
-	m.set_shader_parameter("felt_n", load("res://assets/textures/felt_n.png"))
 	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
 	var dcol := dark if (dark.a > 0.01 and dark != Color.BLACK) else color.darkened(0.38)
 	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
 	m.set_shader_parameter("wind_strength", 0.012)
 	m.set_shader_parameter("roughness_val", 1.0)
-	m.set_shader_parameter("flock_mix", 0.32)
-	m.set_shader_parameter("normal_strength", 0.85)
+	m.set_shader_parameter("flock_mix", 0.28)
 	return m
 
 
