@@ -60,37 +60,38 @@ void fragment() {
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 
-	float pile = _vnoise(v_world * 14.0 + 0.4);
-	float fiber = _vnoise(v_world * 64.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 128.0 + 7.4);
-	float flock = pile * 0.16 + fiber * 0.50 + fiber2 * 0.34;
+	// ベルベット短パイル：砂粒ノイズ禁止。中高周波を抑えて柔らかい毛羽に
+	float pile = _vnoise(v_world * 11.0 + 0.4);
+	float fiber = _vnoise(v_world * 36.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 72.0 + 7.4);
+	float flock = pile * 0.28 + fiber * 0.46 + fiber2 * 0.26;
 
-	float crevice = clamp(1.0 - NORMAL.y * 1.08, 0.0, 1.0);
-	crevice = pow(crevice, 1.55);
-	float lobe_ao = mix(1.0, 0.68, crevice);
+	float crevice = clamp(1.0 - NORMAL.y * 1.05, 0.0, 1.0);
+	crevice = pow(crevice, 1.70);
+	float lobe_ao = mix(1.0, 0.72, crevice);
 
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
 	vec3 t2 = normalize(cross(NORMAL, t1));
-	n += (fiber - 0.5) * 0.48 * t1;
-	n += (fiber2 - 0.5) * 0.36 * t2;
-	n += (pile - 0.5) * 0.12 * t1;
+	n += (fiber - 0.5) * 0.34 * t1;
+	n += (fiber2 - 0.5) * 0.22 * t2;
+	n += (pile - 0.5) * 0.14 * t1;
 	n = normalize(n);
 
 	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.32 + 0.68, 0.0, 1.0);
-	float up = clamp(n.y * 0.24 + 0.76, 0.70, 1.0);
-	float fiber_catch = mix(0.86, 1.16, flock) * ndl;
+	ndl = clamp(ndl * 0.26 + 0.74, 0.0, 1.0);
+	float up = clamp(n.y * 0.20 + 0.80, 0.74, 1.0);
+	float fiber_catch = mix(0.90, 1.12, flock) * ndl;
 
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 1.7) * 0.62;
+	float rim = pow(1.0 - facing, 1.55) * 0.70;
 
-	vec3 base = mix(leaf_dark, leaf_color, 0.40 + fiber_catch * 0.36 + up * 0.16);
-	base = mix(base, leaf_color * (0.88 + tex.g * 0.20), flock_mix * 0.50);
-	base *= mix(0.97, 1.03, flock);
+	vec3 base = mix(leaf_dark, leaf_color, 0.42 + fiber_catch * 0.34 + up * 0.16);
+	base = mix(base, leaf_color * (0.90 + tex.g * 0.14), flock_mix * 0.45);
+	base *= mix(0.985, 1.02, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim * 1.25;
-	base *= mix(0.98, 1.02, fiber2);
+	base += leaf_color * rim * 1.35;
+	base *= mix(0.99, 1.015, fiber2);
 
 	float under = clamp(0.22 - v_obj.y * 0.16, 0.0, 0.16);
 	base *= 1.0 - under;
