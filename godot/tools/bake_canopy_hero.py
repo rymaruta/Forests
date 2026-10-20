@@ -17,7 +17,8 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.28
 RES = 136
 PAD = 0.14
-K_BLEND = 0.15
+K_BLEND = 0.11
+FLOCK_DISP = 0.016  # 幾何フロック：滑らかな毛羽凹凸
 SEED = 2901
 
 
@@ -126,8 +127,56 @@ def main() -> None:
             new_faces.append(list(f))
     faces = np.array(new_faces)
 
+    # 頂点法線を集計して幾何フロック変位
+    normals = np.zeros_like(verts)
+    for f in faces:
+        a, b, c = verts[f[0]], verts[f[1]], verts[f[2]]
+        n = np.cross(b - a, c - a)
+        ln = np.linalg.norm(n)
+        if ln > 1e-12:
+            n = n / ln
+            normals[f[0]] += n
+            normals[f[1]] += n
+            normals[f[2]] += n
+    nlen = np.linalg.norm(normals, axis=1, keepdims=True)
+    nlen = np.maximum(nlen, 1e-12)
+    normals = normals / nlen
+
+    # 補間付き value noise（非連続ハッシュはファセットになるので禁止）
+    def hash3(ix, iy, iz):
+        n = np.sin(ix * 127.1 + iy * 311.7 + iz * 74.7 + 19.19) * 43758.5453
+        return n - np.floor(n)
+
+    def vnoise(p, scale):
+        sp = p * scale
+        i0 = np.floor(sp)
+        f = sp - i0
+        f = f * f * (3.0 - 2.0 * f)
+        ix, iy, iz = i0[:, 0], i0[:, 1], i0[:, 2]
+        n000 = hash3(ix, iy, iz)
+        n100 = hash3(ix + 1, iy, iz)
+        n010 = hash3(ix, iy + 1, iz)
+        n110 = hash3(ix + 1, iy + 1, iz)
+        n001 = hash3(ix, iy, iz + 1)
+        n101 = hash3(ix + 1, iy, iz + 1)
+        n011 = hash3(ix, iy + 1, iz + 1)
+        n111 = hash3(ix + 1, iy + 1, iz + 1)
+        nx00 = n000 * (1 - f[:, 0]) + n100 * f[:, 0]
+        nx10 = n010 * (1 - f[:, 0]) + n110 * f[:, 0]
+        nx01 = n001 * (1 - f[:, 0]) + n101 * f[:, 0]
+        nx11 = n011 * (1 - f[:, 0]) + n111 * f[:, 0]
+        nxy0 = nx00 * (1 - f[:, 1]) + nx10 * f[:, 1]
+        nxy1 = nx01 * (1 - f[:, 1]) + nx11 * f[:, 1]
+        return nxy0 * (1 - f[:, 2]) + nxy1 * f[:, 2]
+
+    f1 = vnoise(verts, 3.2)
+    f2 = vnoise(verts + 1.7, 6.5)
+    f3 = vnoise(verts + 3.1, 12.0)
+    flock = (f1 * 0.45 + f2 * 0.35 + f3 * 0.20) - 0.5
+    verts = verts + normals * (flock[:, None] * FLOCK_DISP)
+
     with OUT.open("w") as fo:
-        fo.write("# dense MC canopy lobes=%d k=%.2f\n" % (len(centers), K_BLEND))
+        fo.write("# dense MC canopy lobes=%d k=%.2f flock=%.3f\n" % (len(centers), K_BLEND, FLOCK_DISP))
         for v in verts:
             fo.write("v %.5f %.5f %.5f\n" % tuple(v))
         for f in faces:
