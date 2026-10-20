@@ -114,30 +114,58 @@ static func branch(length: float, start_r: float, end_r: float, segments: int = 
 
 
 static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
-	## 房状に重なる樹冠。球ひとつではなく、雲のような塊。
+	## 雲形のひと続きシルエット。球の房ではなく、スカラップ縁の単一体。
+	return canopy_cloud(rng, base_r)
+
+
+static func canopy_cloud(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
+	## 参照ツリー: ふわっと重なるコブが一つの雲に見える。
+	## シェル＋近接した副コブを同じメッシュにまとめ、境目を埋める。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	_append_displaced_sphere(st, Vector3(0, base_r * 0.42, 0), base_r * 0.88, 0.78, 11, 16, 0.28, 3.0 + rng.randf() * 4.0)
-	var n := rng.randi_range(5, 7)
+	var phase := rng.randf() * TAU
+	_append_cloud_shell(st, Vector3.ZERO, base_r, rng.randf_range(0.92, 1.02), rng.randi_range(6, 8), rng.randf_range(0.22, 0.3), phase)
+	# 副コブは数を絞り、中心に寄せて「ぶどう」に見せない
+	var n := 4
 	for b in n:
-		var ang := float(b) / float(n) * TAU + rng.randf() * 0.4
-		var off := rng.randf_range(0.38, 0.72) * base_r
-		var c := Vector3(cos(ang) * off, rng.randf_range(0.15, 0.7) * base_r, sin(ang) * off)
-		_append_displaced_sphere(
-			st, c,
-			base_r * rng.randf_range(0.42, 0.62),
-			rng.randf_range(0.7, 0.92),
-			9, 13, 0.3,
-			11.0 + float(b) * 7.5
-		)
-	_append_displaced_sphere(st, Vector3(rng.randf_range(-0.12, 0.12) * base_r, base_r * 0.95, rng.randf_range(-0.12, 0.12) * base_r), base_r * 0.48, 0.88, 9, 12, 0.2, 55.0)
-	# 下側の小さな房（幹とのつなぎ）
-	for b in 3:
-		var ang := float(b) / 3.0 * TAU + 0.4
-		var c := Vector3(cos(ang) * base_r * 0.35, base_r * 0.08, sin(ang) * base_r * 0.35)
-		_append_displaced_sphere(st, c, base_r * 0.32, 0.7, 7, 10, 0.22, 80.0 + float(b))
+		var ang := float(b) / float(n) * TAU + phase * 0.2
+		var off := base_r * rng.randf_range(0.32, 0.48)
+		var c := Vector3(cos(ang) * off, base_r * rng.randf_range(0.25, 0.55), sin(ang) * off)
+		_append_cloud_shell(st, c, base_r * rng.randf_range(0.42, 0.55), 0.95, 5, 0.18, phase + float(b))
 	st.generate_normals()
 	return st.commit()
+
+
+static func _append_cloud_shell(st: SurfaceTool, center: Vector3, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> void:
+	var rings := 12
+	var segs := 24
+	for i in rings:
+		var v0 := float(i) / float(rings)
+		var v1 := float(i + 1) / float(rings)
+		for j in segs:
+			var u0 := float(j) / float(segs)
+			var u1 := float(j + 1) / float(segs)
+			var p0 := center + _cloud_shell_p(v0, u0, base_r, squash, lobes, lobe_amp, phase)
+			var p1 := center + _cloud_shell_p(v0, u1, base_r, squash, lobes, lobe_amp, phase)
+			var p2 := center + _cloud_shell_p(v1, u0, base_r, squash, lobes, lobe_amp, phase)
+			var p3 := center + _cloud_shell_p(v1, u1, base_r, squash, lobes, lobe_amp, phase)
+			_tri_uv(st, p0, p1, p2, Vector2(u0, v0), Vector2(u1, v0), Vector2(u0, v1))
+			_tri_uv(st, p1, p3, p2, Vector2(u1, v0), Vector2(u1, v1), Vector2(u0, v1))
+
+
+static func _cloud_shell_p(v: float, u: float, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> Vector3:
+	var yaw := u * TAU
+	var elev := (v - 0.5) * 2.0
+	var lat_r: float = pow(max(1.0 - elev * elev, 0.0), 0.45)
+	var edge: float = smoothstep(0.1, 0.9, lat_r)
+	var scallop: float = 1.0 + lobe_amp * abs(sin(0.5 * float(lobes) * yaw + phase)) * edge
+	scallop += lobe_amp * 0.3 * abs(sin(float(lobes - 2) * yaw + phase * 1.4)) * lat_r
+	var tuck: float = 1.0
+	if elev < -0.1:
+		tuck = lerpf(0.32, 1.0, clamp((elev + 1.0) / 0.9, 0.0, 1.0))
+	var r: float = base_r * lat_r * scallop * tuck
+	var y: float = elev * base_r * squash * 0.7 + base_r * 0.4
+	return Vector3(cos(yaw) * r, y, sin(yaw) * r)
 
 
 static func leaf_cards(rng: RandomNumberGenerator, count: int, span: float) -> ArrayMesh:
@@ -159,23 +187,34 @@ static func leaf_cards(rng: RandomNumberGenerator, count: int, span: float) -> A
 
 
 static func pine_canopy(layers: int, base_r: float, height: float) -> ArrayMesh:
-	## 硬いつみコーンではなく、垂れ気味の房を重ねる。
+	## 垂れ気味の段。各段はスカラップ縁の傘状シェル。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in layers:
 		var t := float(i) / float(max(layers - 1, 1))
-		var y := 0.15 + t * height * 0.88
-		var r := base_r * (1.0 - t * 0.78) * (0.9 + 0.1 * sin(i * 1.9))
-		# 各層を変位球の環で作る（黒い平面を出さない）
-		var lobes := 5 + int(t * 2.0)
-		for j in lobes:
-			var a := float(j) / float(lobes) * TAU + float(i) * 0.35
-			var c := Vector3(cos(a) * r * 0.55, y, sin(a) * r * 0.55)
-			_append_displaced_sphere(st, c, r * 0.42, 0.55, 7, 10, 0.22, 20.0 + float(i * 10 + j))
-		_append_displaced_sphere(st, Vector3(0, y + 0.05, 0), r * 0.5, 0.5, 7, 10, 0.18, 100.0 + float(i))
-	_append_displaced_sphere(st, Vector3(0, height * 0.95, 0), base_r * 0.22, 1.1, 7, 9, 0.15, 200.0)
+		var y := 0.2 + t * height * 0.88
+		var r := base_r * (1.0 - t * 0.75) * (0.92 + 0.08 * sin(i * 1.7))
+		_append_pine_skirt(st, y, r, 0.22 + (1.0 - t) * 0.18, 16, 5 + i % 2)
+	# tip
+	_append_displaced_sphere(st, Vector3(0, height * 0.98, 0), base_r * 0.18, 1.15, 8, 10, 0.12, 200.0)
 	st.generate_normals()
 	return st.commit()
+
+
+static func _append_pine_skirt(st: SurfaceTool, y: float, radius: float, depth: float, segs: int, lobes: int) -> void:
+	var tip := Vector3(0, y + depth * 0.85, 0)
+	for j in segs:
+		var a0 := float(j) / float(segs) * TAU
+		var a1 := float(j + 1) / float(segs) * TAU
+		var u0 := float(j) / float(segs)
+		var u1 := float(j + 1) / float(segs)
+		var jag0 := 1.0 + 0.12 * sin(a0 * float(lobes))
+		var jag1 := 1.0 + 0.12 * sin(a1 * float(lobes))
+		var p0 := Vector3(cos(a0) * radius * jag0, y - depth * 0.15, sin(a0) * radius * jag0)
+		var p1 := Vector3(cos(a1) * radius * jag1, y - depth * 0.15, sin(a1) * radius * jag1)
+		_tri_uv(st, tip, p0, p1, Vector2(0.5, 0.0), Vector2(u0, 1.0), Vector2(u1, 1.0))
+		var mid := Vector3(0, y - depth * 0.05, 0)
+		_tri_uv(st, mid, p1, p0, Vector2(0.5, 0.5), Vector2(u1, 1.0), Vector2(u0, 1.0))
 
 
 static func flower_petals(petal_count: int, size: float = 0.16) -> ArrayMesh:
@@ -274,13 +313,8 @@ static func stepping_stone(radius: float = 0.55, seed: float = 1.0) -> ArrayMesh
 
 
 static func bush(rng: RandomNumberGenerator) -> ArrayMesh:
-	var st := SurfaceTool.new()
-	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for b in rng.randi_range(6, 9):
-		var c := Vector3(rng.randf_range(-0.28, 0.28), rng.randf_range(0.12, 0.5), rng.randf_range(-0.28, 0.28))
-		_append_displaced_sphere(st, c, rng.randf_range(0.26, 0.48), 0.68, 7, 10, 0.34, rng.randf() * 40.0)
-	st.generate_normals()
-	return st.commit()
+	## 小さな雲形低木（球の房にしない）
+	return canopy_cloud(rng, rng.randf_range(0.55, 0.75))
 
 
 static func cloak_mesh(width: float = 0.42, length: float = 0.55) -> ArrayMesh:

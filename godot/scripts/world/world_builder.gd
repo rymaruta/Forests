@@ -175,12 +175,13 @@ func _scatter_trees() -> void:
 		var p := Vector3(rng.randf_range(-17, 17), 0, rng.randf_range(-17, 17))
 		if p.distance_to(Vector3(8, 0, -6)) < 6.8:
 			continue
-		if p.distance_to(Vector3(-6, 0, 4)) < 4.5:
+		if p.distance_to(Vector3(-6, 0, 4)) < 6.5:
 			continue
-		if p.length() < 3.5:
+		if p.length() < 4.0:
 			continue
 		p.y = VisualKit._h(p.x, p.z)
-		var is_pine := rng.randf() > 0.72
+		# 参照は広葉樹が主役。針葉は少数に抑える
+		var is_pine := rng.randf() > 0.88
 		var tree: Node3D = NatureFactory.pine_tree(rng) if is_pine else NatureFactory.deciduous_tree(rng)
 		_wrap_interact_tree(tree, p, rng, is_pine)
 

@@ -41,7 +41,7 @@ pointing/emulate_touch_from_mouse=true
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.web="gl_compatibility"
 textures/vram_compression/import_etc2_astc=true
-anti_aliasing/quality/msaa_3d=0
+anti_aliasing/quality/msaa_3d=2
 lights_and_shadows/directional_shadow/size=2048
 environment/defaults/default_clear_color=Color(0.45, 0.7, 0.55, 1)
 

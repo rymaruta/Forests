@@ -53,6 +53,24 @@ static func stone_material(tint: Color = ForestsPalette.STONE) -> Material:
 	return character_material(tint, tint.darkened(0.28).lerp(ForestsPalette.STONE_MOSS, 0.35))
 
 
+static func plaster_material() -> Material:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.92, 0.88, 0.78)
+	m.albedo_texture = load("res://assets/textures/plaster.png")
+	m.uv1_scale = Vector3(2.2, 2.2, 1.0)
+	m.roughness = 0.92
+	return m
+
+
+static func roof_tile_material() -> Material:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(1.0, 1.0, 1.0)
+	m.albedo_texture = load("res://assets/textures/roof_tile.png")
+	m.uv1_scale = Vector3(3.5, 2.2, 1.0)
+	m.roughness = 0.85
+	return m
+
+
 static func bark_material(tint: Color = ForestsPalette.BARK_WARM) -> StandardMaterial3D:
 	var m := StandardMaterial3D.new()
 	m.albedo_color = tint
