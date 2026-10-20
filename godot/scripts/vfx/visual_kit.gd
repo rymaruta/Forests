@@ -24,7 +24,8 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> ShaderM
 		m.set_shader_parameter("leaf_dark", dark)
 	else:
 		m.set_shader_parameter("leaf_dark", color.darkened(0.35))
-	m.set_shader_parameter("wind_strength", 0.1)
+	m.set_shader_parameter("wind_strength", 0.14)
+	m.set_shader_parameter("roughness_val", 0.68)
 	return m
 
 

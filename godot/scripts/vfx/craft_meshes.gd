@@ -34,8 +34,8 @@ static func uv_sphere(radius: float, rings: int, segments: int, displace: float 
 				p10 = p10 * (1.0 + (_noise3(p10, seed) - 0.5) * displace)
 				p01 = p01 * (1.0 + (_noise3(p01, seed) - 0.5) * displace)
 				p11 = p11 * (1.0 + (_noise3(p11, seed) - 0.5) * displace)
-			_tri(st, p00 * radius, p10 * radius, p01 * radius)
-			_tri(st, p10 * radius, p11 * radius, p01 * radius)
+			_tri_uv(st, p00 * radius, p10 * radius, p01 * radius, Vector2(u0, v0), Vector2(u1, v0), Vector2(u0, v1))
+			_tri_uv(st, p10 * radius, p11 * radius, p01 * radius, Vector2(u1, v0), Vector2(u1, v1), Vector2(u0, v1))
 	st.generate_normals()
 	return st.commit()
 
@@ -82,16 +82,16 @@ static func canopy_cluster(rng: RandomNumberGenerator, base_r: float = 1.0) -> A
 	## 複数の歪み球を一つのメッシュに結合した樹冠
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var blobs := rng.randi_range(5, 8)
+	var blobs := rng.randi_range(7, 11)
 	for b in blobs:
 		var center := Vector3(
-			rng.randf_range(-0.45, 0.45) * base_r,
-			rng.randf_range(-0.15, 0.55) * base_r,
-			rng.randf_range(-0.45, 0.45) * base_r
+			rng.randf_range(-0.55, 0.55) * base_r,
+			rng.randf_range(-0.1, 0.7) * base_r,
+			rng.randf_range(-0.55, 0.55) * base_r
 		)
-		var rad := base_r * rng.randf_range(0.45, 0.85)
-		var squash := rng.randf_range(0.65, 0.95)
-		_append_displaced_sphere(st, center, rad, squash, 7, 10, 0.22, float(b) * 13.0 + rng.randf() * 10.0)
+		var rad := base_r * rng.randf_range(0.38, 0.78)
+		var squash := rng.randf_range(0.55, 0.9)
+		_append_displaced_sphere(st, center, rad, squash, 8, 12, 0.32, float(b) * 13.0 + rng.randf() * 10.0)
 	st.generate_normals()
 	return st.commit()
 
@@ -226,8 +226,8 @@ static func _append_displaced_sphere(st: SurfaceTool, center: Vector3, radius: f
 				var p: Vector3 = pts[k]
 				p = p * (1.0 + (_noise3(p + center, seed) - 0.5) * displace)
 				pts[k] = center + p * radius
-			_tri(st, pts[0], pts[1], pts[2])
-			_tri(st, pts[1], pts[3], pts[2])
+			_tri_uv(st, pts[0], pts[1], pts[2], Vector2(u0, v0), Vector2(u1, v0), Vector2(u0, v1))
+			_tri_uv(st, pts[1], pts[3], pts[2], Vector2(u1, v0), Vector2(u1, v1), Vector2(u0, v1))
 
 
 static func _petal_mesh(size: float) -> ArrayMesh:

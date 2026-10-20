@@ -52,7 +52,7 @@ func _make_ground() -> void:
 
 
 func _make_path() -> void:
-	var stone_mat := _mat(Color(0.62, 0.56, 0.46), 0.92)
+	var stone_mat := _mat(Color(0.58, 0.52, 0.42), 0.94)
 	for a in 20:
 		var ang := a / 20.0 * TAU
 		var x := cos(ang) * 3.45
@@ -88,7 +88,7 @@ func _make_water() -> void:
 		var r := 4.55 + randf_range(-0.2, 0.5)
 		var rock := MeshInstance3D.new()
 		rock.mesh = CraftMeshes.rock(10.0 + i * 2.7, randf_range(0.28, 0.55))
-		rock.material_override = _mat(Color(0.52, 0.54, 0.55).lerp(Color(0.45, 0.48, 0.42), randf()), 0.8)
+		rock.material_override = _mat(Color(0.48, 0.46, 0.42).lerp(Color(0.40, 0.44, 0.38), randf()), 0.85)
 		rock.position = Vector3(cos(ang) * r, 0.05, sin(ang) * r)
 		rock.rotation_degrees = Vector3(randf_range(-20, 20), randf() * 360.0, randf_range(-15, 15))
 		rock.scale = Vector3(randf_range(0.9, 1.4), randf_range(0.45, 0.75), randf_range(0.9, 1.35))
@@ -121,7 +121,7 @@ func _add_deciduous(pos: Vector3, rng: RandomNumberGenerator, backdrop: bool = f
 	var h := rng.randf_range(1.9, 2.9) * (1.7 if backdrop else 1.0)
 	var lean := rng.randf_range(-0.18, 0.18)
 	var bark := VisualKit.bark_material(Color(0.42, 0.28, 0.18).lerp(Color(0.35, 0.22, 0.14), rng.randf()))
-	var leaf_col := Color(0.36, 0.58, 0.34).lerp(Color(0.48, 0.68, 0.36), rng.randf())
+	var leaf_col := Color(0.28, 0.52, 0.30).lerp(Color(0.40, 0.62, 0.32), rng.randf())
 
 	var trunk_mi := MeshInstance3D.new()
 	trunk_mi.mesh = CraftMeshes.trunk(h, 0.28 if not backdrop else 0.4, 0.11 if not backdrop else 0.15, 11, lean)
@@ -176,7 +176,7 @@ func _add_pine(pos: Vector3, rng: RandomNumberGenerator) -> void:
 
 	var canopy := MeshInstance3D.new()
 	canopy.mesh = CraftMeshes.pine_canopy(rng.randi_range(4, 6), rng.randf_range(0.95, 1.35), h * 0.85)
-	canopy.material_override = VisualKit.foliage_material(Color(0.22, 0.42, 0.30), Color(0.12, 0.28, 0.18))
+	canopy.material_override = VisualKit.foliage_material(Color(0.18, 0.40, 0.28), Color(0.08, 0.22, 0.14))
 	canopy.position.y = 0.35
 	body.add_child(canopy)
 
@@ -256,7 +256,7 @@ func _scatter_flowers_bushes_rocks() -> void:
 		body.position = p
 		var rock := MeshInstance3D.new()
 		rock.mesh = CraftMeshes.rock(rng.randf() * 100.0, rng.randf_range(0.32, 0.62))
-		rock.material_override = _mat(Color(0.5, 0.52, 0.54).lerp(Color(0.44, 0.48, 0.42), rng.randf()), 0.78)
+		rock.material_override = _mat(Color(0.46, 0.45, 0.42).lerp(Color(0.38, 0.42, 0.36), rng.randf()), 0.82)
 		rock.scale = Vector3(rng.randf_range(0.9, 1.5), rng.randf_range(0.5, 0.8), rng.randf_range(0.9, 1.4))
 		rock.rotation_degrees = Vector3(rng.randf_range(-25, 25), rng.randf() * 360.0, rng.randf_range(-20, 20))
 		body.add_child(rock)
@@ -289,19 +289,16 @@ func _make_flower(rng: RandomNumberGenerator, petal_col: Color) -> Node3D:
 	var pmat := _mat(petal_col, 0.5)
 	pmat.emission_enabled = true
 	pmat.emission = petal_col
-	pmat.emission_energy_multiplier = 0.15
+	pmat.emission_energy_multiplier = 0.18
+	pmat.cull_mode = BaseMaterial3D.CULL_DISABLED
 	var count := rng.randi_range(5, 7)
 	for i in count:
 		var petal := MeshInstance3D.new()
-		# rebuild small petal via sphere squash as safe alternative to look_at
-		var sm := SphereMesh.new()
-		sm.radius = 0.1
-		petal.mesh = sm
+		petal.mesh = CraftMeshes._petal_mesh(0.16)
 		petal.material_override = pmat
 		var ang := float(i) / float(count) * TAU
-		petal.position = Vector3(cos(ang) * 0.1, 0.43, sin(ang) * 0.1)
-		petal.scale = Vector3(1.15, 0.35, 0.7)
-		petal.rotation_degrees.y = rad_to_deg(ang)
+		petal.position = Vector3(cos(ang) * 0.08, 0.42, sin(ang) * 0.08)
+		petal.rotation = Vector3(-0.55, ang, 0.0)
 		root.add_child(petal)
 	return root
 
