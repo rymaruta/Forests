@@ -46,7 +46,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r = (0.14 if not backdrop else 0.2)
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
-	var bark_tint := Color(0.40, 0.28, 0.18) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var bark_tint := Color(0.38, 0.26, 0.16) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# セージ／オリーブ（参照：くすみ・低彩度）
 	var leaf := Color(0.50, 0.54, 0.42) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.36, 0.40, 0.32)
@@ -61,7 +61,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_mesh_h, base_r * (0.92 if trunk_start_y > 0.0 else 1.0), top_r,
 		28 if hero else 16, lean,
-		0.028 if hero else 0.028, true,
+		0.045 if hero else 0.028, true,
 		0
 	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)

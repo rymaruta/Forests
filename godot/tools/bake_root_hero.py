@@ -35,11 +35,14 @@ def main():
     toe_specs = []
     for i in range(4):
         a = i / 4 * math.tau + 0.55
-        # 幹に深く埋めつつ外へ。つなぎ球で溶け合わせ
-        reach = BASE_R + 0.08
-        toe_specs.append((math.cos(a) * reach, 0.14, math.sin(a) * reach, 0.18, 0.15, 0.16))
-        toe_specs.append((math.cos(a) * (BASE_R * 0.62), 0.20, math.sin(a) * (BASE_R * 0.62), 0.15, 0.14, 0.14))
-        toe_specs.append((math.cos(a) * (BASE_R * 0.30), 0.28, math.sin(a) * (BASE_R * 0.30), 0.12, 0.12, 0.12))
+        # 放射方向に細長い趾（丸ブロブ禁止）
+        ca, sa = math.cos(a), math.sin(a)
+        reach = BASE_R + 0.10
+        # 外側の趾：XZ に長く、Y は低め
+        toe_specs.append((ca * reach, 0.12, sa * reach, 0.20, 0.13, 0.14))
+        toe_specs.append((ca * (reach + 0.08), 0.10, sa * (reach + 0.08), 0.12, 0.10, 0.10))
+        toe_specs.append((ca * (BASE_R * 0.55), 0.20, sa * (BASE_R * 0.55), 0.14, 0.14, 0.13))
+        toe_specs.append((ca * (BASE_R * 0.28), 0.30, sa * (BASE_R * 0.28), 0.11, 0.12, 0.11))
 
     all_specs = trunk_specs + toe_specs
     rs = [max(s[3], s[4], s[5]) for s in all_specs]
@@ -71,11 +74,11 @@ def main():
         d = ell(*s)
         field = d if field is None else soft_min(field, d, K_TRUNK)
 
-    # 各趾グループ（趾+つなぎ2）を幹へ soft-union
-    for i in range(0, len(toe_specs), 3):
+    # 各趾グループ（4楕円）を幹へ soft-union
+    for i in range(0, len(toe_specs), 4):
         toe_field = ell(*toe_specs[i])
-        toe_field = soft_min(toe_field, ell(*toe_specs[i + 1]), K_TOE)
-        toe_field = soft_min(toe_field, ell(*toe_specs[i + 2]), K_TOE)
+        for j in range(1, 4):
+            toe_field = soft_min(toe_field, ell(*toe_specs[i + j]), K_TOE)
         field = soft_min(field, toe_field, K_TOE)
 
     # 床カットは弱め（鋭い穴・白縁を出さない）。底はわずかに丸く残す
