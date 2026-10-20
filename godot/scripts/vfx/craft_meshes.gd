@@ -106,12 +106,12 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：幹はほぼ円柱＋足元だけごく軽く広がる（趾球が主役）
-	if t >= 0.18:
+	## 参照：幹すそが趾と連続して広がる
+	if t >= 0.26:
 		return 1.0
-	var ft := 1.0 - t / 0.18
+	var ft := 1.0 - t / 0.26
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.18 * ft
+	return 1.0 + 0.42 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
