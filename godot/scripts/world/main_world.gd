@@ -38,21 +38,35 @@ func _ready() -> void:
 	camera_pivot.pitch = -0.22
 	camera_pivot.snap_to_target()
 
-	# Web描画確認用の無陰影マーカー（必ず見えるはず）
+	# Web描画確認用マーカー＋固定カメラ（オービット障害切り分け）
 	var marker := MeshInstance3D.new()
 	var box := BoxMesh.new()
-	box.size = Vector3(1.6, 1.6, 1.6)
+	box.size = Vector3(2.5, 2.5, 2.5)
 	marker.mesh = box
 	var mm := StandardMaterial3D.new()
 	mm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mm.albedo_color = Color(1.0, 0.15, 0.1)
+	mm.albedo_color = Color(1.0, 0.1, 0.05)
 	marker.material_override = mm
-	marker.position = spawn + Vector3(0, 1.2, -2.0)
+	marker.global_position = spawn + Vector3(0, 2.0, 0)
 	add_child(marker)
+
+	var debug_cam := Camera3D.new()
+	debug_cam.name = "DebugCam"
+	debug_cam.current = true
+	debug_cam.fov = 50.0
+	add_child(debug_cam)
+	debug_cam.global_position = spawn + Vector3(0, 6.0, 10.0)
+	debug_cam.look_at(spawn + Vector3(0, 1.0, 0), Vector3.UP)
+	if camera_pivot and camera_pivot.camera:
+		camera_pivot.camera.current = false
+
+	# Sun shadows can break some WebGL paths
+	if sun:
+		sun.shadow_enabled = false
 
 	var gen := world_builder.get_node_or_null("Generated")
 	var count := gen.get_child_count() if gen else 0
-	GameState.toast_requested.emit("森が息づいた (%d)" % count)
+	GameState.toast_requested.emit("森(%d) cam=%.1f" % [count, debug_cam.global_position.y])
 
 	# チュートリアルは少し遅らせて世界を先に見せる（await は使わない）
 	if GameState.show_tutorial:
