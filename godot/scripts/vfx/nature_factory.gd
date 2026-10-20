@@ -117,20 +117,13 @@ static func flower(rng: RandomNumberGenerator, petal: Color) -> Node3D:
 		leaf.rotation = Vector3(-0.5, 0.2 * side, 1.0 * side)
 		root.add_child(leaf)
 
-	var center := MeshInstance3D.new()
-	center.mesh = CraftMeshes.uv_sphere(0.05, 6, 8, 0.1, rng.randf() * 8.0)
-	center.position.y = stem_h + 0.02
-	var cm := VisualKit.character_material(Color(0.96, 0.84, 0.3), Color(0.8, 0.6, 0.2))
-	cm.set_shader_parameter("rim_strength", 0.2)
-	center.material_override = cm
-	# emission via standard overlay
 	var glow := MeshInstance3D.new()
-	glow.mesh = CraftMeshes.uv_sphere(0.04, 5, 6)
+	glow.mesh = CraftMeshes.uv_sphere(0.05, 6, 8, 0.1, rng.randf() * 8.0)
 	var gm := StandardMaterial3D.new()
 	gm.albedo_color = Color(0.98, 0.86, 0.35)
 	gm.emission_enabled = true
 	gm.emission = Color(0.98, 0.82, 0.3)
-	gm.emission_energy_multiplier = 0.4
+	gm.emission_energy_multiplier = 0.45
 	glow.material_override = gm
 	glow.position.y = stem_h + 0.02
 	root.add_child(glow)
@@ -158,7 +151,6 @@ static func cottage() -> Node3D:
 	var wall_mat := VisualKit.character_material(Color(0.86, 0.78, 0.62), Color(0.62, 0.52, 0.4))
 	var wood := VisualKit.bark_shader_material(Color(0.5, 0.34, 0.2))
 	var roof_mat := VisualKit.character_material(Color(0.55, 0.38, 0.28), Color(0.35, 0.22, 0.16))
-	roof_mat.set_shader_parameter("rim_strength", 0.08)
 
 	# floor pad
 	var floor := MeshInstance3D.new()
