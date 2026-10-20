@@ -36,24 +36,25 @@ void fragment() {
 	float y = v_world.y;
 
 	// 有機縦溝：角度をノイズで曲げ、溝幅もばらつかせる（規則柱・ゼブラ禁止）
-	float warp = _n2(vec2(ang * 0.9, y * 0.55)) * 0.85
-		+ _n2(vec2(ang * 2.1 + 3.0, y * 1.1)) * 0.45
-		+ _n2(vec2(y * 0.8, ang * 0.4)) * 0.35;
-	float u = fract((ang / 6.2831853) * 6.0 + warp + y * 0.12);
-	// 溝の中心からの距離 → 幅のばらつき
-	float width = 0.14 + 0.10 * _n2(vec2(floor((ang / 6.2831853) * 6.0), y * 0.3));
+	// 裾・趾は溝を弱め（マウンドを壊さない）、幹中腹で読む
+	float trunk_mask = smoothstep(0.15, 0.55, y);
+	float warp = _n2(vec2(ang * 0.9, y * 0.55)) * 1.1
+		+ _n2(vec2(ang * 2.1 + 3.0, y * 1.1)) * 0.55
+		+ _n2(vec2(y * 0.8, ang * 0.4)) * 0.40;
+	float bands = 4.5;
+	float u = fract((ang / 6.2831853) * bands + warp + y * 0.18);
+	float width = 0.18 + 0.14 * _n2(vec2(floor((ang / 6.2831853) * bands + warp * 2.0), y * 0.35));
 	float groove = 1.0 - smoothstep(0.0, width, abs(u - 0.5));
-	groove = pow(groove, 1.6);
-	float grain = _n2(vec2(ang * 5.0, y * 3.5));
-	groove = mix(groove, groove * (0.75 + grain * 0.5), 0.40);
+	groove = pow(groove, 1.55) * trunk_mask;
+	float grain = _n2(vec2(ang * 4.5, y * 3.2));
+	groove = mix(groove, groove * (0.72 + grain * 0.55), 0.45);
 
-	float tex_g = tex.r * 0.65 + 0.18;
-	groove = mix(tex_g, groove, 0.58);
+	float tex_g = tex.r * 0.55 + 0.22;
+	groove = mix(tex_g * trunk_mask, groove, 0.70);
 
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.86, 1.0, ndl);
-	// 手彫り風：浅すぎると溝が消える
-	vec3 base = mix(bark_dark, bark_color, 0.40 + groove * 0.40);
+	vec3 base = mix(bark_dark, bark_color, 0.38 + groove * 0.44);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;

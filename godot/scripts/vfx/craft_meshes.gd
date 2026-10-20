@@ -237,7 +237,7 @@ static func canopy_cloud(rng: RandomNumberGenerator, base_r: float = 1.15) -> Ar
 	return st.commit()
 
 
-static func weld_smooth(mesh: Mesh, epsilon: float = 0.0008) -> ArrayMesh:
+static func weld_smooth(mesh: Mesh, epsilon: float = 0.0016) -> ArrayMesh:
 	## CSG等の面割れ頂点を溶接してスムーズノーマルを張る
 	if mesh.get_surface_count() < 1:
 		return mesh as ArrayMesh if mesh is ArrayMesh else ArrayMesh.new()

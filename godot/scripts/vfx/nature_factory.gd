@@ -47,54 +47,69 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
 	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — 薄タン／ミント禁止
-	var bark_tint := Color(0.30, 0.21, 0.14) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	var leaf := Color(0.30, 0.35, 0.22) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.18, 0.24, 0.14)
+	# 参照 mean 冠≈(90,99,62) 幹≈(107,80,57) — Bench露出で明るく出るので暗めに
+	var bark_tint := Color(0.28, 0.20, 0.13) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var leaf := Color(0.27, 0.31, 0.20) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.16, 0.22, 0.12)
 
-	# CraftMeshes 幹（高分割・無 ripple）。趾は弧マウンド球チェーンで埋め込み
-	# （CSG円柱 facets／球スタック横筋は規則溝に見えるので使わない）
+	# ヒーロー：幹＋趾を一本の CSG 球スタック（別体貼り付け禁止）。AssetBench で weld bake。
+	# 非ヒーロー：CraftMeshes＋埋め込み趾
 	var trunk_h := h * (1.05 if hero else 0.92)
 	var bark_mat := VisualKit.bark_shader_material(bark_tint)
 	var toe_n := 4 if hero else (0 if backdrop else 4)
-	var trunk := MeshInstance3D.new()
-	# ヒーローは root_toes=0（メッシュ押し出し＋球チェーンの二重隆起禁止）
-	trunk.mesh = CraftMeshes.trunk(
-		trunk_h, base_r, top_r,
-		48 if hero else 16, lean,
-		0.0 if hero else 0.028, true,
-		0 if hero else toe_n
-	)
-	trunk.material_override = bark_mat
-	root.add_child(trunk)
 	if hero:
-		# 裾＋趾だけ CSG ユニオン（幹円柱は含めない＝facet溝を避ける）
-		var toe_csg := CSGCombiner3D.new()
-		toe_csg.name = "HeroToeCSG"
-		toe_csg.set_meta("bake_material", bark_mat)
-		var core := CSGSphere3D.new()
-		core.radius = base_r * 1.05
-		core.radial_segments = 24
-		core.rings = 14
-		core.position = Vector3(0.0, 0.28, 0.0)
-		core.scale = Vector3(1.1, 0.85, 1.1)
-		toe_csg.add_child(core)
+		var comb := CSGCombiner3D.new()
+		comb.name = "HeroTrunkCSG"
+		comb.set_meta("bake_material", bark_mat)
+		# 高分割シリンダー幹（球スタック横リブ禁止）。趾球とユニオンして一体に
+		var cyl := CSGCylinder3D.new()
+		cyl.radius = lerpf(base_r, top_r, 0.28)
+		cyl.height = trunk_h
+		cyl.sides = 96
+		cyl.cone = false
+		cyl.position = Vector3(lean * 0.35, trunk_h * 0.5, 0.0)
+		cyl.rotation.y = 0.11
+		comb.add_child(cyl)
+		# 上端キャップ
+		var top_cap := CSGSphere3D.new()
+		top_cap.radius = top_r * 1.2
+		top_cap.radial_segments = 18
+		top_cap.rings = 12
+		top_cap.position = Vector3(lean * 0.7, trunk_h * 0.93, 0.0)
+		comb.add_child(top_cap)
+		# 裾コア（趾と幹の橋）
+		var flare := CSGSphere3D.new()
+		flare.radius = base_r * 1.05
+		flare.radial_segments = 24
+		flare.rings = 14
+		flare.position = Vector3(0.0, 0.30, 0.0)
+		flare.scale = Vector3(1.12, 0.88, 1.12)
+		comb.add_child(flare)
+		# 趾：幹に深く食い込み、重なりを大きくして継ぎ目を消す
 		for i in toe_n:
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var ca := cos(a)
 			var sa := sin(a)
-			for k in 5:
-				var t := float(k) / 4.0
+			for k in 6:
+				var t := float(k) / 5.0
 				var blob := CSGSphere3D.new()
-				blob.radius = lerpf(0.22, 0.13, t)
-				blob.radial_segments = 14
-				blob.rings = 10
-				var rch := lerpf(base_r * 0.35, base_r * 1.18, t)
-				var by := lerpf(0.40, 0.12, t * t)
+				blob.radius = lerpf(0.26, 0.12, t)
+				blob.radial_segments = 18
+				blob.rings = 12
+				var rch := lerpf(base_r * 0.18, base_r * 1.05, t)
+				var by := lerpf(0.34, 0.14, t * t)
 				blob.position = Vector3(ca * rch, by, sa * rch)
-				blob.scale = Vector3(lerpf(1.3, 1.15, t), lerpf(1.15, 0.95, t), lerpf(1.2, 1.1, t))
-				toe_csg.add_child(blob)
-		root.add_child(toe_csg)
+				blob.scale = Vector3(lerpf(1.4, 1.15, t), lerpf(1.2, 1.0, t), lerpf(1.3, 1.1, t))
+				comb.add_child(blob)
+		root.add_child(comb)
 	else:
+		var trunk := MeshInstance3D.new()
+		trunk.mesh = CraftMeshes.trunk(
+			trunk_h, base_r, top_r,
+			16, lean, 0.028, true, toe_n
+		)
+		trunk.material_override = bark_mat
+		root.add_child(trunk)
 		for i in toe_n:
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var toe := MeshInstance3D.new()

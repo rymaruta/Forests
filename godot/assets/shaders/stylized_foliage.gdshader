@@ -38,7 +38,7 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	// フェルト毛羽：法線方向の微変位でシルエットをぼかす（粘土平滑禁止）
-	float fuzz = _hash31(VERTEX * 38.0 + 2.7) * 0.045 + _hash31(VERTEX * 71.0) * 0.018;
+	float fuzz = _hash31(VERTEX * 38.0 + 2.7) * 0.055 + _hash31(VERTEX * 71.0) * 0.022;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
