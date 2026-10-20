@@ -11,37 +11,64 @@ func _run() -> void:
 	var packed: PackedScene = load("res://scenes/world/Main.tscn")
 	var main := packed.instantiate()
 	root.add_child(main)
-	await create_timer(1.2).timeout
-	for i in 10:
+	await create_timer(1.5).timeout
+	for i in 12:
 		await process_frame
 	var tut := main.get_node_or_null("HUD/Tutorial")
 	if tut:
 		tut.visible = false
 	if gs:
 		gs.is_menu_open = false
-	var img: Image = root.get_viewport().get_texture().get_image()
-	var path := "/opt/cursor/artifacts/screenshots/63-polish-spawn.png"
-	img.save_png(path)
-	print("SHOT_SAVED ", path, " size=", img.get_width(), "x", img.get_height())
+	var toast := main.get_node_or_null("HUD/Root/Toast")
+	if toast:
+		toast.visible = false
+
 	var pivot := main.get_node_or_null("CameraPivot")
+	var player := main.get_node_or_null("Player")
+	if player:
+		player.global_position = Vector3(0.0, 0.5, 3.0)
+
+	# 1) スポーン全景
 	if pivot and pivot.has_method("snap_to_target"):
-		pivot.yaw = 2.4
-		pivot.pitch = -0.28
+		pivot.distance = 7.5
+		pivot.height = 3.2
+		pivot.yaw = 0.35
+		pivot.pitch = -0.35
 		pivot.snap_to_target()
 	await process_frame
 	await process_frame
 	await process_frame
-	img = root.get_viewport().get_texture().get_image()
-	var path2 := "/opt/cursor/artifacts/screenshots/64-polish-cottage.png"
-	img.save_png(path2)
-	print("SHOT_SAVED ", path2)
+	var img: Image = root.get_viewport().get_texture().get_image()
+	img.save_png("/opt/cursor/artifacts/screenshots/70-checkpoint-spawn.png")
+	print("SHOT_SAVED spawn")
+
+	# 2) 小屋方向
 	if pivot:
-		pivot.yaw = -0.8
+		pivot.yaw = 2.5
+		pivot.pitch = -0.3
+		pivot.distance = 8.0
 		pivot.snap_to_target()
+	if player:
+		player.global_position = Vector3(-2.5, 0.5, 3.5)
+	await process_frame
 	await process_frame
 	await process_frame
 	img = root.get_viewport().get_texture().get_image()
-	var path3 := "/opt/cursor/artifacts/screenshots/65-polish-trees.png"
-	img.save_png(path3)
-	print("SHOT_SAVED ", path3)
+	img.save_png("/opt/cursor/artifacts/screenshots/71-checkpoint-cottage.png")
+	print("SHOT_SAVED cottage")
+
+	# 3) 池・木立
+	if pivot:
+		pivot.yaw = -0.6
+		pivot.pitch = -0.32
+		pivot.distance = 8.5
+		pivot.snap_to_target()
+	if player:
+		player.global_position = Vector3(3.0, 0.5, 0.5)
+	await process_frame
+	await process_frame
+	await process_frame
+	img = root.get_viewport().get_texture().get_image()
+	img.save_png("/opt/cursor/artifacts/screenshots/72-checkpoint-trees.png")
+	print("SHOT_SAVED trees")
 	quit(0)

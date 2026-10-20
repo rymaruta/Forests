@@ -31,12 +31,12 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 static func water_material() -> Material:
 	# 半透明は環境によって白飛びするので、まずは不透明の澄んだ水色
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.32, 0.68, 0.66, 1.0)
-	m.roughness = 0.18
-	m.metallic = 0.22
+	m.albedo_color = Color(0.22, 0.58, 0.62, 1.0)
+	m.roughness = 0.25
+	m.metallic = 0.08
 	m.emission_enabled = true
-	m.emission = Color(0.18, 0.42, 0.48)
-	m.emission_energy_multiplier = 0.22
+	m.emission = Color(0.1, 0.35, 0.4)
+	m.emission_energy_multiplier = 0.12
 	return m
 
 
