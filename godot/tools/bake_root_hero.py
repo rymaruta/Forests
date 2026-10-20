@@ -14,7 +14,7 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj"
 RES = 120
 PAD = 0.05
-K = 0.11
+K = 0.14
 BASE_R = 0.40
 TOP_R = 0.18
 TRUNK_H = 1.75
@@ -42,9 +42,9 @@ def main():
     for i in range(4):
         a = i / 4 * math.tau + 0.55
         ca, sa = math.cos(a), math.sin(a)
-        specs.append((ca * BASE_R * 0.42, 0.20, sa * BASE_R * 0.42, 0.17, 0.15, 0.16))
-        specs.append((ca * (BASE_R + 0.06), 0.13, sa * (BASE_R + 0.06), 0.16, 0.12, 0.13))
-        specs.append((ca * (BASE_R + 0.15), 0.09, sa * (BASE_R + 0.15), 0.12, 0.09, 0.10))
+        # 裾フレアの一部として埋め込み（独立した足球に見えないように）
+        specs.append((ca * BASE_R * 0.55, 0.18, sa * BASE_R * 0.55, 0.20, 0.14, 0.18))
+        specs.append((ca * (BASE_R * 0.95), 0.12, sa * (BASE_R * 0.95), 0.15, 0.11, 0.13))
 
     rs = [max(s[3], s[4], s[5]) for s in specs]
     xs = [s[0] for s in specs]
