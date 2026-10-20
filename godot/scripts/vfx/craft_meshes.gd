@@ -148,30 +148,28 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 裾の連続フレア。全周スカートになりすぎないよう上限を抑える
-	if t >= 0.34:
+	## 参照：太い連続フレアが主役。趾はフレア上の浅い指。
+	if t >= 0.40:
 		return 1.0
-	var ft := 1.0 - t / 0.34
+	var ft := 1.0 - t / 0.40
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.36 * ft
+	return 1.0 + 0.58 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 一本メッシュ内の趾丘。別球貼り付け禁止。狭いローブで谷を残す。
-	if toes <= 0 or t > 0.32:
+	## フレア上の浅い指。大きなソーセージ丘は禁止。
+	if toes <= 0 or t > 0.28:
 		return 1.0
-	# 中腹で最大・接地で少し落とす（粘土マウンド）
-	var mound := sin(clampf(t / 0.20, 0.0, 1.0) * PI)
-	mound = maxf(mound, (1.0 - t / 0.32) * 0.30)
+	var mound := sin(clampf(t / 0.18, 0.0, 1.0) * PI)
+	mound = maxf(mound, (1.0 - t / 0.28) * 0.25)
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.55
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		# 狭いローブ＝指として読む（溶けスカート禁止）
-		var lobe: float = clampf(1.0 - d / 0.36, 0.0, 1.0)
+		var lobe: float = clampf(1.0 - d / 0.32, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.70 * best * mound
+	return 1.0 + 0.38 * best * mound
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

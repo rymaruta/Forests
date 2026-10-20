@@ -64,7 +64,7 @@ void fragment() {
 	float pile = _vnoise(v_world * 9.0 + 0.4);
 	float fiber = _vnoise(v_world * 48.0 + 2.1);
 	float fiber2 = _vnoise(v_world * 92.0 + 7.4);
-	float flock = pile * 0.22 + fiber * 0.48 + fiber2 * 0.30;
+	float flock = pile * 0.18 + fiber * 0.52 + fiber2 * 0.30;
 
 	// 房のすき間AO（参照の柔らかい谷）
 	float crevice = clamp(1.0 - NORMAL.y * 1.12, 0.0, 1.0);
