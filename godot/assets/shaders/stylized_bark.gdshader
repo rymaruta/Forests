@@ -36,9 +36,10 @@ void fragment() {
 	float y = v_world.y;
 
 	// 有機縦溝：角度をノイズで曲げ、溝幅もばらつかせる（規則柱・ゼブラ禁止）
-	float warp = _n2(vec2(ang * 0.9, y * 0.55)) * 0.55
-		+ _n2(vec2(ang * 2.1 + 3.0, y * 1.1)) * 0.25;
-	float u = fract((ang / 6.2831853) * 7.0 + warp + y * 0.08);
+	float warp = _n2(vec2(ang * 0.9, y * 0.55)) * 0.85
+		+ _n2(vec2(ang * 2.1 + 3.0, y * 1.1)) * 0.45
+		+ _n2(vec2(y * 0.8, ang * 0.4)) * 0.35;
+	float u = fract((ang / 6.2831853) * 6.0 + warp + y * 0.12);
 	// 溝の中心からの距離 → 幅のばらつき
 	float width = 0.14 + 0.10 * _n2(vec2(floor((ang / 6.2831853) * 6.0), y * 0.3));
 	float groove = 1.0 - smoothstep(0.0, width, abs(u - 0.5));
