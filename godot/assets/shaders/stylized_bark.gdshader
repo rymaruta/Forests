@@ -18,15 +18,15 @@ void fragment() {
 	vec3 tex = texture(bark_tex, uv).rgb;
 	// 柔らかい縦木目（歯車の鋭い溝禁止）
 	float ang = atan(v_world.z, v_world.x);
-	float g1 = 0.5 + 0.5 * sin(ang * 8.0 + v_world.y * 0.55);
-	float g2 = 0.5 + 0.5 * sin(ang * 14.0 + 0.9);
-	float world_groove = mix(g1, g2, 0.25);
-	world_groove = smoothstep(0.25, 0.78, world_groove);
-	float groove = mix(tex.r * 0.75 + 0.1, world_groove, 0.80);
+	float g1 = 0.5 + 0.5 * sin(ang * 7.0 + v_world.y * 0.5);
+	float g2 = 0.5 + 0.5 * sin(ang * 12.0 + 0.9);
+	float world_groove = mix(g1, g2, 0.28);
+	world_groove = smoothstep(0.20, 0.80, world_groove);
+	float groove = mix(tex.r * 0.7 + 0.12, world_groove, 0.85);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.72, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.32 + groove * 0.50);
-	base *= 0.88 + ndl * 0.18;
+	ndl = mix(0.78, 1.0, ndl);
+	vec3 base = mix(bark_dark, bark_color, 0.28 + groove * 0.55);
+	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.98;
 	SPECULAR = 0.0;
