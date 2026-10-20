@@ -1,0 +1,21 @@
+Forests visual targets (lock these; do not invent blindly)
+
+TREE (ref-tree-deciduous.jpg)
+- One continuous cloud canopy with scalloped bumpy outline
+- NOT stacked spheres / grape blobs / pancake discs
+- Thick tapered trunk, gentle root flare, few short branches
+
+COTTAGE (ref-cottage.jpg)
+- Cream plaster + dark timber frame readable on front
+- Overhanging tiled roof, porch posts, recessed door, flower boxes
+- Stone foundation; cozy proportions, not a bare box
+
+TRAVELER (ref-traveler.jpg)
+- Chibi: big head, short body, flared teal tunic
+- Straw hat soft brim, scarf, arms down at sides
+- Face readable (large eyes, blush)
+
+SCENE (ref-scene-mood.jpg)
+- Muted moss grass, soft morning light
+- Stepping stones grey-brown (not chalk white)
+- Pond with stone shore; trees clear of cottage
