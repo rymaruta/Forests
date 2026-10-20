@@ -35,10 +35,9 @@ func snap_to_target() -> void:
 
 
 func _process(delta: float) -> void:
-	if target == null:
+	if target == null or camera == null:
 		return
-	var desired := target.global_position
-	desired.y += 1.0
+	var desired := target.global_position + Vector3(0, 1.0, 0)
 	global_position = global_position.lerp(desired, 1.0 - exp(-8.0 * delta))
 
 	var offset := Vector3(
@@ -46,8 +45,11 @@ func _process(delta: float) -> void:
 		height + sin(-pitch) * distance * 0.35,
 		cos(yaw) * cos(pitch) * distance
 	)
-	camera.position = camera.position.lerp(offset, 1.0 - exp(-10.0 * delta))
-	camera.look_at(global_position + Vector3(0, 0.6, 0), Vector3.UP)
+	# ローカルオフセットを直接セット（lerpで発散しない）
+	camera.position = offset
+	var look := global_position + Vector3(0, 0.5, 0)
+	if camera.global_position.distance_to(look) > 0.05:
+		camera.look_at(look, Vector3.UP)
 
 
 func _input(event: InputEvent) -> void:
