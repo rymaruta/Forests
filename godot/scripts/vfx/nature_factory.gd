@@ -72,11 +72,11 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var sa := sin(a)
 		if hero:
 			var toe := MeshInstance3D.new()
-			toe.mesh = CraftMeshes.clay_root_toe(0.78, 0.24, 0.07, 16, 18, float(i) * 2.3)
+			toe.mesh = CraftMeshes.clay_root_toe(0.85, 0.23, 0.075, 16, 18, float(i) * 2.3)
 			toe.material_override = bark_mat
-			# 幹に深く埋め、下外へ弧（別球の貼り付け禁止）
-			toe.position = Vector3(ca * base_r * 0.18, 0.38, sa * base_r * 0.18)
-			toe.rotation = Vector3(0.15, a, 0.85)
+			# 根元は埋め、先端は外へ見える（全埋没＝趾消失禁止）
+			toe.position = Vector3(ca * base_r * 0.42, 0.30, sa * base_r * 0.42)
+			toe.rotation = Vector3(0.10, a, 0.70)
 			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(toe)
 			# 接合を埋める球
