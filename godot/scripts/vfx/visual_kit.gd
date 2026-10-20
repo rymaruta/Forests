@@ -92,11 +92,11 @@ static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Mate
 	m.shader = load_shader("res://assets/shaders/stylized_bark.gdshader")
 	m.set_shader_parameter("bark_tex", load("res://assets/textures/bark.png"))
 	m.set_shader_parameter("bark_color", Vector3(tint.r, tint.g, tint.b))
-	var bd := tint.darkened(0.38)
+	# 溝が読めるよう暗部をしっかり落とす（ただしゼブラ帯にはしない）
+	var bd := tint.darkened(0.52)
 	m.set_shader_parameter("bark_dark", Vector3(bd.r, bd.g, bd.b))
-	# 溝本数を減らして有機幅を読ませる（細密ゼブラ禁止）
-	m.set_shader_parameter("uv_scale_x", 1.05)
-	m.set_shader_parameter("uv_scale_y", 2.1)
+	m.set_shader_parameter("uv_scale_x", 0.95)
+	m.set_shader_parameter("uv_scale_y", 1.85)
 	return m
 
 

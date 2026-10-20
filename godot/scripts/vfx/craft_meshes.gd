@@ -104,13 +104,17 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 縦フルート（裾は弱め、幹中腹で読める）
-			var rip_amt0 := bark_ripple * lerpf(0.35, 1.0, clampf(t0 / 0.18, 0.0, 1.0))
-			var rip_amt1 := bark_ripple * lerpf(0.35, 1.0, clampf(t1 / 0.18, 0.0, 1.0))
-			var ripple0 := 1.0 + rip_amt0 * (0.7 * sin(a0 * 7.0) + 0.3 * sin(a0 * 4.5 + t0 * 2.8))
-			var ripple1 := 1.0 + rip_amt0 * (0.7 * sin(a1 * 7.0) + 0.3 * sin(a1 * 4.5 + t0 * 2.8))
-			var ripple2 := 1.0 + rip_amt1 * (0.7 * sin(a0 * 7.0) + 0.3 * sin(a0 * 4.5 + t1 * 2.8))
-			var ripple3 := 1.0 + rip_amt1 * (0.7 * sin(a1 * 7.0) + 0.3 * sin(a1 * 4.5 + t1 * 2.8))
+			# 有機縦溝（規則柱禁止）。裾・趾は弱め、幹中腹で読む
+			var rip_amt0 := bark_ripple * lerpf(0.20, 1.0, clampf((t0 - 0.12) / 0.28, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.20, 1.0, clampf((t1 - 0.12) / 0.28, 0.0, 1.0))
+			var w0 := 0.55 * sin(a0 * 2.2 + t0 * 1.4) + 0.35 * sin(a0 * 5.1 + t0 * 3.1)
+			var w1 := 0.55 * sin(a1 * 2.2 + t0 * 1.4) + 0.35 * sin(a1 * 5.1 + t0 * 3.1)
+			var w2 := 0.55 * sin(a0 * 2.2 + t1 * 1.4) + 0.35 * sin(a0 * 5.1 + t1 * 3.1)
+			var w3 := 0.55 * sin(a1 * 2.2 + t1 * 1.4) + 0.35 * sin(a1 * 5.1 + t1 * 3.1)
+			var ripple0 := 1.0 + rip_amt0 * (0.55 * sin(a0 * 6.2 + w0) + 0.45 * sin(a0 * 9.5 + t0 * 2.1 + 0.7))
+			var ripple1 := 1.0 + rip_amt0 * (0.55 * sin(a1 * 6.2 + w1) + 0.45 * sin(a1 * 9.5 + t0 * 2.1 + 0.7))
+			var ripple2 := 1.0 + rip_amt1 * (0.55 * sin(a0 * 6.2 + w2) + 0.45 * sin(a0 * 9.5 + t1 * 2.1 + 0.7))
+			var ripple3 := 1.0 + rip_amt1 * (0.55 * sin(a1 * 6.2 + w3) + 0.45 * sin(a1 * 9.5 + t1 * 2.1 + 0.7))
 			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 + lean0, y0, sin(a0) * r0 * ripple0 * toe0)
 			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 + lean0, y0, sin(a1) * r0 * ripple1 * toe1)
 			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 + lean1, y1, sin(a0) * r1 * ripple2 * toe2)
@@ -144,28 +148,30 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 軽い裾。趾メッシュと連続する程度（平スカート禁止）
-	if t >= 0.30:
+	## 裾の連続フレア。全周スカートになりすぎないよう上限を抑える
+	if t >= 0.34:
 		return 1.0
-	var ft := 1.0 - t / 0.30
+	var ft := 1.0 - t / 0.34
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.30 * ft
+	return 1.0 + 0.36 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 幹側面の軽い丘。丸い体積は別球埋め込みで足す（半径だけ伸ばすとスカートになる）
-	if toes <= 0 or t > 0.22:
+	## 一本メッシュ内の趾丘。別球貼り付け禁止。狭いローブで谷を残す。
+	if toes <= 0 or t > 0.32:
 		return 1.0
-	var fall := 1.0 - t / 0.22
-	fall = fall * fall * (3.0 - 2.0 * fall)
+	# 中腹で最大・接地で少し落とす（粘土マウンド）
+	var mound := sin(clampf(t / 0.20, 0.0, 1.0) * PI)
+	mound = maxf(mound, (1.0 - t / 0.32) * 0.30)
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.55
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.58, 0.0, 1.0)
+		# 狭いローブ＝指として読む（溶けスカート禁止）
+		var lobe: float = clampf(1.0 - d / 0.36, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.28 * best * fall
+	return 1.0 + 0.70 * best * mound
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

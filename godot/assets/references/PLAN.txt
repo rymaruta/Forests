@@ -50,13 +50,17 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: canopy_hero.obj（大房 soft-union k=0.20）
-      幹: ヒーローは CSG 円柱＋趾球→weld bake（MC幹は白欠けで再破棄）
-      HERO_TRUNK_H=1.75 / BASE_R=0.40 / SEED=2901
-  質感: パイル＋繊維＋頂点ファズ／樹皮はテクスチャ主導（ゼブラ抑制）
+  形: canopy_hero.obj（大房 soft-union）
+      幹: ヒーロー CSG 96-side 円柱＋裾フレア＋細長い趾マウンド→weld bake
+      HERO_TRUNK_H=1.85 / BASE_R=0.32 / TOP_R=0.14 / SEED=2901
+  質感: パイル＋繊維＋弱ファズ／樹皮はノイズ主導溝＋有機 bark.png
   色: 参照画素 mean に寄せた（冠≈90,99,62／幹≈107,80,57）
-  Bench: アンビエント抑制で繊維法線が読める設定
-  捨てた: MC幹全体 / 床平面カット / 幹二分割 / 細粒密集樹冠 / 板状趾 / 強い半径スカート
-  未達: 参照級フェルト毛羽・趾の粘土フレア一体感・樹皮彫刻の自然さ
-  次のレバー: ①趾 CSG 形状（細長いマウンド）②冠の谷を深く ③樹皮有機ゆらぎ
-  ワールドへは戻さない（Bench合格まで）
+  Bench: 柔らか3灯・灰背景。ワールド写真は最終確認だけ
+  捨てた: MC幹全体 / 床平面カット / 幹二分割 / 細粒密集樹冠 / 板状趾 /
+         強い半径スカート / 趾の球チェーン（ソーセージ）
+  進行中レバー: ①趾＝CraftMeshes 一本メッシュ連続丘（CSG球列破棄）
+               ②樹皮＝ノイズ溝＋有機アルベド（趾を別色にしない）
+               ③冠を上げて Vフォーク露出／葉色を参照寄りへ
+  再破棄: soft-union MC 幹（白欠け）／CSG 趾球列（継ぎ目・ソーセージ）
+  未達: 参照級フェルト毛羽・趾の掃引カーブ・溝の手彫り感
+  次: Bench撮→cmp→趾ローブ幅／押し出しだけ調整。合格までワールド戻さない
