@@ -4,7 +4,7 @@
 // Incrementing CACHE_VERSION will kick off the install event and force
 // previously cached resources to be updated from the network.
 /** @type {string} */
-const CACHE_VERSION = '1792458451|3181265';
+const CACHE_VERSION = '1792460313|3789130';
 /** @type {string} */
 const CACHE_PREFIX = 'Forests-sw-cache-';
 const CACHE_NAME = CACHE_PREFIX + CACHE_VERSION;

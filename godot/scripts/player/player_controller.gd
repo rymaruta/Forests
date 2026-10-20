@@ -24,38 +24,68 @@ func _build_visual_if_needed() -> void:
 	if mesh_root.get_child_count() > 0:
 		_visual = mesh_root
 		return
-	# オリジナル人型（カプセル+頭）— 既存作品の動物アバターは使わない
+	# オリジナル人型（マント旅人）— 既存作品の動物アバターは使わない
 	var body := MeshInstance3D.new()
 	var cap := CapsuleMesh.new()
-	cap.radius = 0.28
-	cap.height = 0.95
+	cap.radius = 0.26
+	cap.height = 0.9
 	body.mesh = cap
 	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.22, 0.42, 0.36)
-	mat.roughness = 0.85
+	mat.albedo_color = Color(0.20, 0.40, 0.34)
+	mat.roughness = 0.8
 	body.material_override = mat
 	body.position = Vector3(0, 0.55, 0)
 	mesh_root.add_child(body)
 
+	# マント
+	var cloak := MeshInstance3D.new()
+	var cloak_mesh := SphereMesh.new()
+	cloak_mesh.radius = 0.38
+	cloak_mesh.height = 0.7
+	cloak.mesh = cloak_mesh
+	var cmat := StandardMaterial3D.new()
+	cmat.albedo_color = Color(0.18, 0.32, 0.28)
+	cmat.roughness = 0.9
+	cloak.material_override = cmat
+	cloak.position = Vector3(0, 0.62, -0.05)
+	cloak.scale = Vector3(1.15, 1.0, 0.85)
+	mesh_root.add_child(cloak)
+
 	var head := MeshInstance3D.new()
 	var sphere := SphereMesh.new()
-	sphere.radius = 0.22
+	sphere.radius = 0.2
 	head.mesh = sphere
 	var hmat := StandardMaterial3D.new()
-	hmat.albedo_color = Color(0.91, 0.82, 0.70)
+	hmat.albedo_color = Color(0.93, 0.84, 0.72)
+	hmat.roughness = 0.65
 	head.material_override = hmat
-	head.position = Vector3(0, 1.15, 0)
+	head.position = Vector3(0, 1.12, 0)
 	mesh_root.add_child(head)
+
+	# 帽子
+	var hat := MeshInstance3D.new()
+	var hat_mesh := CylinderMesh.new()
+	hat_mesh.top_radius = 0.08
+	hat_mesh.bottom_radius = 0.28
+	hat_mesh.height = 0.18
+	hat.mesh = hat_mesh
+	var hatmat := StandardMaterial3D.new()
+	hatmat.albedo_color = Color(0.55, 0.32, 0.18)
+	hatmat.roughness = 0.85
+	hat.material_override = hatmat
+	hat.position = Vector3(0, 1.28, 0)
+	mesh_root.add_child(hat)
 
 	var scarf := MeshInstance3D.new()
 	var torus := TorusMesh.new()
-	torus.inner_radius = 0.12
-	torus.outer_radius = 0.2
+	torus.inner_radius = 0.1
+	torus.outer_radius = 0.18
 	scarf.mesh = torus
 	var smat := StandardMaterial3D.new()
-	smat.albedo_color = Color(0.75, 0.45, 0.28)
+	smat.albedo_color = Color(0.82, 0.48, 0.28)
+	smat.roughness = 0.7
 	scarf.material_override = smat
-	scarf.position = Vector3(0, 0.95, 0)
+	scarf.position = Vector3(0, 0.92, 0)
 	scarf.rotation_degrees = Vector3(90, 0, 0)
 	mesh_root.add_child(scarf)
 	_visual = mesh_root
