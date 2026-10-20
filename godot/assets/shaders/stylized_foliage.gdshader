@@ -48,7 +48,13 @@ void vertex() {
 
 void fragment() {
 	// フェルト：低〜中周波の毛羽＋房AO。プラスチック平坦を避ける
-	vec3 tex = texture(leaf_tex, v_world.xy * 0.55 + v_world.zx * 0.38).rgb;
+	// 等方サンプリング（斜めストリーク禁止）
+	vec3 tex_a = texture(leaf_tex, v_world.xz * 0.55).rgb;
+	vec3 tex_b = texture(leaf_tex, v_world.xy * 0.55).rgb;
+	vec3 tex_c = texture(leaf_tex, v_world.zy * 0.55).rgb;
+	vec3 wn = abs(NORMAL);
+	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
+	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 	// Bench距離でも読める中周波を主に（高周波は潰れる）
 	float f_lo = _vnoise(v_world * 5.5);
 	float f_mid = _vnoise(v_world * 12.0 + 1.7);
