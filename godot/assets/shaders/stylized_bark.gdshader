@@ -54,10 +54,18 @@ void fragment() {
 	float tex_g = tex.r * 0.55 + 0.22;
 	groove = mix(tex_g * trunk_mask, groove, 0.62);
 
-	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.86, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.42 + groove * 0.38);
-	base *= 0.90 + ndl * 0.14;
+	// 溝の擬似凹凸（アルベドだけだと平坦に見える）
+	vec3 n = NORMAL;
+	vec3 t_ang = normalize(cross(NORMAL, vec3(0.0, 1.0, 0.0)));
+	if (length(t_ang) < 1e-3) {
+		t_ang = vec3(1.0, 0.0, 0.0);
+	}
+	n += t_ang * (groove - 0.5) * 0.55 * trunk_mask;
+	n = normalize(n);
+	float ndl = clamp(dot(n, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
+	ndl = mix(0.84, 1.0, ndl);
+	vec3 base = mix(bark_dark, bark_color, 0.40 + groove * 0.42);
+	base *= 0.88 + ndl * 0.16;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
 	SPECULAR = 0.0;

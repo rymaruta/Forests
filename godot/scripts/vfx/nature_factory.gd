@@ -6,9 +6,9 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.75
-const HERO_BASE_R := 0.40
-const HERO_TOP_R := 0.18
+const HERO_TRUNK_H := 1.85
+const HERO_BASE_R := 0.32
+const HERO_TOP_R := 0.14
 const HERO_CANOPY_R := 1.28
 const HERO_SEED := 2901
 
@@ -63,43 +63,42 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		comb.set_meta("bake_material", bark_mat)
 		# 高分割シリンダー幹（球スタック横リブ禁止）。趾球とユニオンして一体に
 		var cyl := CSGCylinder3D.new()
-		cyl.radius = lerpf(base_r, top_r, 0.28)
+		cyl.radius = lerpf(base_r, top_r, 0.22)
 		cyl.height = trunk_h
 		cyl.sides = 96
 		cyl.cone = false
 		cyl.position = Vector3(lean * 0.35, trunk_h * 0.5, 0.0)
 		cyl.rotation.y = 0.11
 		comb.add_child(cyl)
-		# 上端キャップ
 		var top_cap := CSGSphere3D.new()
-		top_cap.radius = top_r * 1.2
+		top_cap.radius = top_r * 1.15
 		top_cap.radial_segments = 18
 		top_cap.rings = 12
 		top_cap.position = Vector3(lean * 0.7, trunk_h * 0.93, 0.0)
 		comb.add_child(top_cap)
-		# 裾コア（趾と幹の橋）
+		# 裾コアは控えめ（全周スカートで趾が溶けるのを防ぐ）
 		var flare := CSGSphere3D.new()
-		flare.radius = base_r * 1.05
-		flare.radial_segments = 24
-		flare.rings = 14
-		flare.position = Vector3(0.0, 0.30, 0.0)
-		flare.scale = Vector3(1.12, 0.88, 1.12)
+		flare.radius = base_r * 0.95
+		flare.radial_segments = 22
+		flare.rings = 12
+		flare.position = Vector3(0.0, 0.26, 0.0)
+		flare.scale = Vector3(1.05, 0.90, 1.05)
 		comb.add_child(flare)
-		# 趾：幹に深く食い込み、重なりを大きくして継ぎ目を消す
+		# 趾：谷を残しつつ幹に食い込む（溶かしすぎ禁止）
 		for i in toe_n:
 			var a := float(i) / float(toe_n) * TAU + 0.55
 			var ca := cos(a)
 			var sa := sin(a)
-			for k in 6:
-				var t := float(k) / 5.0
+			for k in 5:
+				var t := float(k) / 4.0
 				var blob := CSGSphere3D.new()
-				blob.radius = lerpf(0.26, 0.12, t)
-				blob.radial_segments = 18
+				blob.radius = lerpf(0.22, 0.12, t)
+				blob.radial_segments = 16
 				blob.rings = 12
-				var rch := lerpf(base_r * 0.18, base_r * 1.05, t)
-				var by := lerpf(0.34, 0.14, t * t)
+				var rch := lerpf(base_r * 0.35, base_r * 1.20, t)
+				var by := lerpf(0.32, 0.13, t * t)
 				blob.position = Vector3(ca * rch, by, sa * rch)
-				blob.scale = Vector3(lerpf(1.4, 1.15, t), lerpf(1.2, 1.0, t), lerpf(1.3, 1.1, t))
+				blob.scale = Vector3(lerpf(1.2, 1.15, t), lerpf(1.15, 1.0, t), lerpf(1.15, 1.1, t))
 				comb.add_child(blob)
 		root.add_child(comb)
 	else:
@@ -122,13 +121,13 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 短い Y 枝（冠の下に見える位置へ）
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.42 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.05 if hero else 0.022, 12, 0.04)
+		var blen := 0.52 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.10 if hero else 0.06, 0.045 if hero else 0.022, 12, 0.05)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.5
-		var by := h * (0.58 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (0.28 if hero else 0.2) + lean * 0.15, by, 0.06 if b == 0 else -0.06)
-		br.rotation = Vector3(0.95, ang, 0.05 if b == 0 else -0.05)
+		var ang := (0.72 if b == 0 else PI - 0.72) + lean * 1.5
+		var by := h * (0.52 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (0.18 if hero else 0.2) + lean * 0.15, by, 0.08 if b == 0 else -0.08)
+		br.rotation = Vector3(0.85, ang, 0.08 if b == 0 else -0.08)
 		root.add_child(br)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
