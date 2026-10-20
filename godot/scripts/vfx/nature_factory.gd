@@ -60,15 +60,24 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var toe_n := 5 if hero else (0 if backdrop else 4)
 	for i in toe_n:
 		var toe := MeshInstance3D.new()
-		toe.mesh = CraftMeshes.uv_sphere(0.24 if hero else 0.18, 14 if hero else 8, 16 if hero else 10, 0.025, float(i) * 2.7, 0.82)
+		toe.mesh = CraftMeshes.uv_sphere(0.28 if hero else 0.18, 14 if hero else 8, 16 if hero else 10, 0.03, float(i) * 2.7, 0.7)
 		toe.material_override = VisualKit.bark_shader_material(bark_tint)
 		var a := float(i) / float(toe_n) * TAU + 0.4
-		var reach := 0.36 if hero else 0.26
-		toe.position = Vector3(cos(a) * reach, 0.14, sin(a) * reach * 0.95)
-		toe.scale = Vector3(1.15, 0.95, 1.1)
-		toe.rotation.y = a
+		var reach := 0.42 if hero else 0.26
+		toe.position = Vector3(cos(a) * reach, 0.16, sin(a) * reach * 0.92)
+		toe.scale = Vector3(1.35, 0.85, 1.2)
+		toe.rotation = Vector3(0.25, a, 0.0)
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
+		# 内側の埋め込み球で幹とつなぐ
+		if hero:
+			var join := MeshInstance3D.new()
+			join.mesh = CraftMeshes.uv_sphere(0.2, 10, 12, 0.02, float(i) * 1.9, 0.85)
+			join.material_override = VisualKit.bark_shader_material(bark_tint)
+			join.position = Vector3(cos(a) * 0.22, 0.2, sin(a) * 0.22)
+			join.scale = Vector3(1.1, 0.9, 1.1)
+			join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(join)
 
 	# 短い Y 枝（参照：幹側面に短く、冠に突き刺さらない）
 	for b in 2:
@@ -166,22 +175,28 @@ static func cottage() -> Node3D:
 	var wall := VisualKit.plaster_material()
 	var wood := VisualKit.bark_shader_material(Color(0.26, 0.16, 0.09))
 	var roof := VisualKit.roof_tile_material()
-	var stone := VisualKit.bark_shader_material(Color(0.48, 0.46, 0.42))
+	var stone := StandardMaterial3D.new()
+	stone.albedo_color = Color(0.52, 0.50, 0.46)
+	stone.roughness = 0.96
+	stone.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 
-	# 石積み基壇（参照：丸い cobble で前面を埋める）
+	# 石積み基壇（参照：丸い cobble。白い板は出さない）
 	var plinth := MeshInstance3D.new()
 	var pm := BoxMesh.new()
-	pm.size = Vector3(3.9, 0.42, 3.1)
+	pm.size = Vector3(3.7, 0.36, 2.9)
 	plinth.mesh = pm
 	plinth.material_override = stone
-	plinth.position.y = 0.21
+	plinth.position.y = 0.12
+	plinth.position.z = -0.05
 	root.add_child(plinth)
 	for i in 12:
 		var cob := MeshInstance3D.new()
 		cob.mesh = CraftMeshes.uv_sphere(0.20 + fmod(float(i) * 0.04, 0.09), 9, 11, 0.12, float(i) * 5.0, 0.78)
-		cob.material_override = VisualKit.bark_shader_material(
-			Color(0.50, 0.48, 0.44).lerp(Color(0.38, 0.40, 0.36), fmod(float(i) * 0.27, 1.0))
-		)
+		var cm := StandardMaterial3D.new()
+		cm.albedo_color = Color(0.50, 0.48, 0.44).lerp(Color(0.38, 0.40, 0.36), fmod(float(i) * 0.27, 1.0))
+		cm.roughness = 0.97
+		cm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+		cob.material_override = cm
 		var row := i / 6
 		var col := i % 6
 		cob.position = Vector3(-1.45 + float(col) * 0.58, 0.22 + float(row) * 0.18, 1.55 + float(row) * 0.08)
@@ -291,24 +306,25 @@ static func cottage() -> Node3D:
 	knob.position = Vector3(0.26, 0.9, 1.38)
 	root.add_child(knob)
 
-	# 窓＋花箱（参照どおり左右）
+	# 窓＋花箱（発光ガラスを前面に）
 	for side in [-1.0, 1.0]:
-		_beam(root, wood, Vector3(side * 1.1, 1.3, 1.35), Vector3(0.7, 0.7, 0.12))
+		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.30), Vector3(0.78, 0.78, 0.12))
 		var glass := MeshInstance3D.new()
 		var glm := BoxMesh.new()
-		glm.size = Vector3(0.52, 0.52, 0.04)
+		glm.size = Vector3(0.56, 0.56, 0.05)
 		glass.mesh = glm
 		var gmat := StandardMaterial3D.new()
-		gmat.albedo_color = Color(0.7, 0.85, 0.9)
+		gmat.albedo_color = Color(1.0, 0.9, 0.55)
 		gmat.emission_enabled = true
-		gmat.emission = Color(0.95, 0.82, 0.4)
-		gmat.emission_energy_multiplier = 1.4
-		gmat.roughness = 0.2
+		gmat.emission = Color(1.0, 0.85, 0.35)
+		gmat.emission_energy_multiplier = 2.2
+		gmat.roughness = 0.35
+		gmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		glass.material_override = gmat
-		glass.position = Vector3(side * 1.1, 1.3, 1.42)
+		glass.position = Vector3(side * 1.1, 1.35, 1.40)
 		root.add_child(glass)
-		_beam(root, wood, Vector3(side * 1.1, 1.3, 1.42), Vector3(0.52, 0.05, 0.02))
-		_beam(root, wood, Vector3(side * 1.1, 1.3, 1.42), Vector3(0.05, 0.52, 0.02))
+		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.43), Vector3(0.56, 0.05, 0.02))
+		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.43), Vector3(0.05, 0.56, 0.02))
 
 	# 煙突（石の丸み）
 	var chim := MeshInstance3D.new()
@@ -330,11 +346,12 @@ static func cottage() -> Node3D:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 88
 	for side in [-1.0, 1.0]:
-		_beam(root, wood, Vector3(side * 1.1, 0.95, 1.48), Vector3(0.75, 0.2, 0.32))
+		# 花箱は窓の下（窓ガラスと被せない）
+		_beam(root, wood, Vector3(side * 1.1, 0.92, 1.48), Vector3(0.78, 0.18, 0.34))
 		for j in 4:
 			var f := flower(rng, ForestsPalette.petals()[j % 6])
-			f.scale = Vector3.ONE * 0.62
-			f.position = Vector3(side * 1.1 + (j - 1.5) * 0.13, 1.08, 1.52)
+			f.scale = Vector3.ONE * 0.5
+			f.position = Vector3(side * 1.1 + (j - 1.5) * 0.13, 1.0, 1.58)
 			root.add_child(f)
 
 	return root

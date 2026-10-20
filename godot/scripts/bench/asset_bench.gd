@@ -135,9 +135,9 @@ func _spawn_subject() -> void:
 			var mr := p.get_node_or_null("MeshRoot")
 			if mr:
 				mr.rotation.y = 0.0
-			cam.position = Vector3(0.0, 1.05, 3.0)
-			cam.look_at(Vector3(0.0, 0.9, 0.0), Vector3.UP)
-			cam.fov = 26.0
+			cam.position = Vector3(0.0, 0.95, 3.8)
+			cam.look_at(Vector3(0.0, 0.85, 0.0), Vector3.UP)
+			cam.fov = 28.0
 		_:
 			push_warning("AssetBench: unknown subject '%s'" % subject)
 
