@@ -83,8 +83,8 @@ static func clay_root_toe(length: float, base_r: float, tip_r: float, rings: int
 static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true, root_toes: int = 0) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# 根付近を密にして厚い粘土裾を作る
-	var rings := 28 if root_toes > 0 else 14
+	# 根付近を密にして厚い粘土裾を作る（ヒーローは溝・趾の解像度を上げる）
+	var rings := 40 if root_toes > 0 else 14
 	for i in rings:
 		var t0 := float(i) / float(rings)
 		var t1 := float(i + 1) / float(rings)
@@ -104,17 +104,18 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 有機縦溝（規則柱禁止）。裾・趾は弱め、幹中腹で読む
-			var rip_amt0 := bark_ripple * lerpf(0.20, 1.0, clampf((t0 - 0.12) / 0.28, 0.0, 1.0))
-			var rip_amt1 := bark_ripple * lerpf(0.20, 1.0, clampf((t1 - 0.12) / 0.28, 0.0, 1.0))
-			var w0 := 0.55 * sin(a0 * 2.2 + t0 * 1.4) + 0.35 * sin(a0 * 5.1 + t0 * 3.1)
-			var w1 := 0.55 * sin(a1 * 2.2 + t0 * 1.4) + 0.35 * sin(a1 * 5.1 + t0 * 3.1)
-			var w2 := 0.55 * sin(a0 * 2.2 + t1 * 1.4) + 0.35 * sin(a0 * 5.1 + t1 * 3.1)
-			var w3 := 0.55 * sin(a1 * 2.2 + t1 * 1.4) + 0.35 * sin(a1 * 5.1 + t1 * 3.1)
-			var ripple0 := 1.0 + rip_amt0 * (0.55 * sin(a0 * 6.2 + w0) + 0.45 * sin(a0 * 9.5 + t0 * 2.1 + 0.7))
-			var ripple1 := 1.0 + rip_amt0 * (0.55 * sin(a1 * 6.2 + w1) + 0.45 * sin(a1 * 9.5 + t0 * 2.1 + 0.7))
-			var ripple2 := 1.0 + rip_amt1 * (0.55 * sin(a0 * 6.2 + w2) + 0.45 * sin(a0 * 9.5 + t1 * 2.1 + 0.7))
-			var ripple3 := 1.0 + rip_amt1 * (0.55 * sin(a1 * 6.2 + w3) + 0.45 * sin(a1 * 9.5 + t1 * 2.1 + 0.7))
+			# 太い少数の有機縦溝（細密ゼブラ禁止）。裾・趾は弱め
+			var rip_amt0 := bark_ripple * lerpf(0.15, 1.0, clampf((t0 - 0.14) / 0.30, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.15, 1.0, clampf((t1 - 0.14) / 0.30, 0.0, 1.0))
+			var w0 := 0.7 * sin(a0 * 1.6 + t0 * 1.1) + 0.4 * sin(a0 * 3.3 + t0 * 2.4)
+			var w1 := 0.7 * sin(a1 * 1.6 + t0 * 1.1) + 0.4 * sin(a1 * 3.3 + t0 * 2.4)
+			var w2 := 0.7 * sin(a0 * 1.6 + t1 * 1.1) + 0.4 * sin(a0 * 3.3 + t1 * 2.4)
+			var w3 := 0.7 * sin(a1 * 1.6 + t1 * 1.1) + 0.4 * sin(a1 * 3.3 + t1 * 2.4)
+			# 約7本の太溝＋弱い副溝
+			var ripple0 := 1.0 + rip_amt0 * (0.72 * sin(a0 * 3.5 + w0) + 0.28 * sin(a0 * 7.0 + t0 * 1.6 + 0.9))
+			var ripple1 := 1.0 + rip_amt0 * (0.72 * sin(a1 * 3.5 + w1) + 0.28 * sin(a1 * 7.0 + t0 * 1.6 + 0.9))
+			var ripple2 := 1.0 + rip_amt1 * (0.72 * sin(a0 * 3.5 + w2) + 0.28 * sin(a0 * 7.0 + t1 * 1.6 + 0.9))
+			var ripple3 := 1.0 + rip_amt1 * (0.72 * sin(a1 * 3.5 + w3) + 0.28 * sin(a1 * 7.0 + t1 * 1.6 + 0.9))
 			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 + lean0, y0, sin(a0) * r0 * ripple0 * toe0)
 			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 + lean0, y0, sin(a1) * r0 * ripple1 * toe1)
 			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 + lean1, y1, sin(a0) * r1 * ripple2 * toe2)
@@ -148,28 +149,29 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：太い連続フレアが主役。趾はフレア上の浅い指。
-	if t >= 0.40:
+	## 参照：太い連続フレアが主役。趾はフレア上の指。
+	if t >= 0.42:
 		return 1.0
-	var ft := 1.0 - t / 0.40
+	var ft := 1.0 - t / 0.42
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.58 * ft
+	return 1.0 + 0.52 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## フレア上の浅い指。大きなソーセージ丘は禁止。
-	if toes <= 0 or t > 0.28:
+	## フレアから下外へ掃引する指。単球ソーセージ禁止。
+	if toes <= 0 or t > 0.30:
 		return 1.0
-	var mound := sin(clampf(t / 0.18, 0.0, 1.0) * PI)
-	mound = maxf(mound, (1.0 - t / 0.28) * 0.25)
+	# 接地寄りで最大、上へ滑らかに消える
+	var fall := 1.0 - t / 0.30
+	fall = fall * fall * (3.0 - 2.0 * fall)
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.55
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.32, 0.0, 1.0)
+		var lobe: float = clampf(1.0 - d / 0.40, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.38 * best * mound
+	return 1.0 + 0.48 * best * fall
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

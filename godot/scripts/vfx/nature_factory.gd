@@ -47,9 +47,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
 	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — Bench露出で明るく出るので少し暗め
-	var bark_tint := Color(0.27, 0.19, 0.12) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	var leaf := Color(0.33, 0.37, 0.24) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.20, 0.26, 0.15)
+	# 参照 mean 幹≈(107,80,57) 冠≈(90,99,62) — オレンジ寄り／濃緑禁止
+	var bark_tint := Color(0.26, 0.18, 0.12) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var leaf := Color(0.30, 0.34, 0.23) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.18, 0.24, 0.14)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋趾丘）。CSG球列／MC白欠けは捨てた。
 	var trunk_h := h * (1.05 if hero else 0.92)
@@ -61,9 +62,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		trunk_h,
 		base_r,
 		top_r,
-		48 if hero else 16,
+		72 if hero else 16,
 		lean,
-		0.048 if hero else 0.028,
+		0.085 if hero else 0.028,
 		true,
 		toe_n
 	)

@@ -62,8 +62,8 @@ func _build_stage() -> void:
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.00
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.84
-	env.adjustment_contrast = 0.94
+	env.adjustment_saturation = 0.86
+	env.adjustment_contrast = 0.98
 	$WorldEnvironment.environment = env
 
 	# 参照：柔らかい方向光（片側の深い影禁止、ただし形は読む）

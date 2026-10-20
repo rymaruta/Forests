@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.35  # nature_factory HERO_CANOPY_R
 RES = 128
 PAD = 0.14
-K_BLEND = 0.10  # 谷を深く（溶けすぎると房が消える）
+K_BLEND = 0.13  # 房の一体感と谷の両立（葡萄球列禁止）
 SEED = 2901
 
 

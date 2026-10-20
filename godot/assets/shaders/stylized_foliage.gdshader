@@ -37,10 +37,10 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	// フェルト毛羽：法線方向の微変位でシルエットをぼかす（粘土平滑禁止）
-	// 強すぎる頂点ファズ＝ジャギー縁。弱くしてリムで毛羽を読む
-	// 弱ファズ＋リムでフェルト。強すぎるとジャギー縁
-	float fuzz = _hash31(VERTEX * 42.0 + 2.7) * 0.028 + _hash31(VERTEX * 78.0) * 0.014;
+	// 短パイル毛羽：密で短い（長いジャギー禁止）
+	float fuzz = _hash31(VERTEX * 56.0 + 2.7) * 0.020
+		+ _hash31(VERTEX * 110.0) * 0.012
+		+ _hash31(VERTEX * 210.0 + 1.1) * 0.006;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -52,52 +52,45 @@ void vertex() {
 }
 
 void fragment() {
-	// AC級フェルト：中周波モトル（石／苔）禁止。微細繊維＋房AO＋ソフト散乱のみ。
-	vec3 tex_a = texture(leaf_tex, v_world.xz * 1.35).rgb;
-	vec3 tex_b = texture(leaf_tex, v_world.xy * 1.35).rgb;
-	vec3 tex_c = texture(leaf_tex, v_world.zy * 1.35).rgb;
+	// AC級フェルト：高周波短繊維のみ。中周波モトル禁止。
+	vec3 tex_a = texture(leaf_tex, v_world.xz * 2.1).rgb;
+	vec3 tex_b = texture(leaf_tex, v_world.xy * 2.1).rgb;
+	vec3 tex_c = texture(leaf_tex, v_world.zy * 2.1).rgb;
 	vec3 wn = abs(NORMAL);
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 
-	// 微細繊維＋ごく弱いパイル厚み（大きな石モトル禁止）
-	float pile = _vnoise(v_world * 9.0 + 0.4);
-	float fiber = _vnoise(v_world * 48.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 92.0 + 7.4);
-	float flock = pile * 0.18 + fiber * 0.52 + fiber2 * 0.30;
+	float pile = _vnoise(v_world * 14.0 + 0.4);
+	float fiber = _vnoise(v_world * 64.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 128.0 + 7.4);
+	float flock = pile * 0.16 + fiber * 0.50 + fiber2 * 0.34;
 
-	// 房のすき間AO（参照の柔らかい谷）
-	float crevice = clamp(1.0 - NORMAL.y * 1.12, 0.0, 1.0);
-	crevice = pow(crevice, 1.45);
-	float lobe_ao = mix(1.0, 0.64, crevice);
+	float crevice = clamp(1.0 - NORMAL.y * 1.08, 0.0, 1.0);
+	crevice = pow(crevice, 1.55);
+	float lobe_ao = mix(1.0, 0.68, crevice);
 
-	// 毛羽擬似法線：アルベドではなく照明で繊維を読む
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
 	vec3 t2 = normalize(cross(NORMAL, t1));
-	n += (fiber - 0.5) * 0.38 * t1;
-	n += (fiber2 - 0.5) * 0.28 * t2;
-	n += (pile - 0.5) * 0.10 * t1;
+	n += (fiber - 0.5) * 0.48 * t1;
+	n += (fiber2 - 0.5) * 0.36 * t2;
+	n += (pile - 0.5) * 0.12 * t1;
 	n = normalize(n);
 
-	// ソフトラップ＋繊維キャッチ（スペキュラ禁止）
-	// ラップしすぎるとフェルト繊維が消えるので体積を残す
 	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.28 + 0.72, 0.0, 1.0);
-	float up = clamp(n.y * 0.22 + 0.78, 0.72, 1.0);
-	float fiber_catch = mix(0.88, 1.14, flock) * ndl;
+	ndl = clamp(ndl * 0.32 + 0.68, 0.0, 1.0);
+	float up = clamp(n.y * 0.24 + 0.76, 0.70, 1.0);
+	float fiber_catch = mix(0.86, 1.16, flock) * ndl;
 
-	// 繊維散乱リム（スペキュラではない）
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 1.85) * 0.55;
+	float rim = pow(1.0 - facing, 1.7) * 0.62;
 
-	// 房ごとの体積感：上向き面を明るく、谷を落とす（平坦ノイズ禁止）
-	vec3 base = mix(leaf_dark, leaf_color, 0.42 + fiber_catch * 0.34 + up * 0.14);
-	base = mix(base, leaf_color * (0.90 + tex.g * 0.16), flock_mix * 0.42);
-	base *= mix(0.98, 1.02, flock);
+	vec3 base = mix(leaf_dark, leaf_color, 0.40 + fiber_catch * 0.36 + up * 0.16);
+	base = mix(base, leaf_color * (0.88 + tex.g * 0.20), flock_mix * 0.50);
+	base *= mix(0.97, 1.03, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim * 1.15;
-	base *= mix(0.985, 1.015, fiber2);
+	base += leaf_color * rim * 1.25;
+	base *= mix(0.98, 1.02, fiber2);
 
 	float under = clamp(0.22 - v_obj.y * 0.16, 0.0, 0.16);
 	base *= 1.0 - under;
