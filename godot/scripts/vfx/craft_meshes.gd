@@ -53,11 +53,13 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 		var y1 := t1 * height
 		var r0 := lerpf(bottom_r, top_r, t0 * t0 * 0.35 + t0 * 0.65)
 		var r1 := lerpf(bottom_r, top_r, t1 * t1 * 0.35 + t1 * 0.65)
-		# root flare near ground
-		if t0 < 0.12:
-			r0 *= lerpf(1.55, 1.0, t0 / 0.12)
-		if t1 < 0.12:
-			r1 *= lerpf(1.55, 1.0, t1 / 0.12)
+		# root flare near ground（参照の太い足元・丸く）
+		if t0 < 0.22:
+			var ft0: float = 1.0 - t0 / 0.22
+			r0 *= 1.0 + 0.7 * ft0 * ft0
+		if t1 < 0.22:
+			var ft1: float = 1.0 - t1 / 0.22
+			r1 *= 1.0 + 0.7 * ft1 * ft1
 		var lean0 := lean * t0 * t0
 		var lean1 := lean * t1 * t1
 		for j in segments:
@@ -119,16 +121,15 @@ static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> A
 
 
 static func canopy_cloud(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
-	## 参照のふわっと雲冠。複数球を重ねず、1枚の高分割シェルでコブを出す。
-	## （球の継ぎ目＝プラスチック感の主因だった）
+	## 参照のふわっと雲冠本体。高分割シェルでシルエットの一体感を保つ。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	var lobes := rng.randi_range(5, 7)
-	var lobe_amp := rng.randf_range(0.18, 0.26)
+	var lobe_amp := rng.randf_range(0.22, 0.32)
 	var phase := rng.randf() * TAU
-	var squash := rng.randf_range(0.9, 1.0)
-	var rings := 18
-	var segs := 36
+	var squash := rng.randf_range(0.88, 0.98)
+	var rings := 20
+	var segs := 40
 	for i in rings:
 		var v0 := float(i) / float(rings)
 		var v1 := float(i + 1) / float(rings)
@@ -143,6 +144,40 @@ static func canopy_cloud(rng: RandomNumberGenerator, base_r: float = 1.15) -> Ar
 			_tri_uv(st, p1, p3, p2, Vector2(u1, v0), Vector2(u1, v1), Vector2(u0, v1))
 	st.generate_normals()
 	return st.commit()
+
+
+static func canopy_felt_lobes(rng: RandomNumberGenerator, base_r: float = 1.15) -> Array:
+	## 参照の主シルエット＝横に広がる重なりフェルト房。
+	## 戻り値: [{mesh, pos, scale}, ...]
+	var out: Array = []
+	var specs := [
+		{"pos": Vector3(0.0, 0.62, 0.0), "r": 0.88, "sx": 1.2, "sy": 0.9, "sz": 1.15},
+		{"pos": Vector3(-0.82, 0.55, 0.12), "r": 0.68, "sx": 1.08, "sy": 0.92, "sz": 1.02},
+		{"pos": Vector3(0.88, 0.58, -0.08), "r": 0.72, "sx": 1.1, "sy": 0.88, "sz": 1.05},
+		{"pos": Vector3(0.12, 0.5, -0.78), "r": 0.64, "sx": 1.02, "sy": 0.92, "sz": 1.08},
+		{"pos": Vector3(-0.15, 0.48, 0.82), "r": 0.66, "sx": 1.04, "sy": 0.9, "sz": 1.1},
+		{"pos": Vector3(0.38, 1.05, 0.22), "r": 0.52, "sx": 1.06, "sy": 0.82, "sz": 1.0},
+		{"pos": Vector3(-0.42, 1.0, -0.18), "r": 0.5, "sx": 1.02, "sy": 0.8, "sz": 0.98},
+		{"pos": Vector3(0.5, 0.7, 0.5), "r": 0.55, "sx": 1.05, "sy": 0.88, "sz": 1.02},
+		{"pos": Vector3(-0.55, 0.68, -0.45), "r": 0.52, "sx": 1.0, "sy": 0.86, "sz": 1.0},
+		{"pos": Vector3(0.0, 0.28, 0.0), "r": 0.7, "sx": 1.25, "sy": 0.72, "sz": 1.2},
+	]
+	for i in specs.size():
+		var s: Dictionary = specs[i]
+		var jitter := Vector3(
+			rng.randf_range(-0.03, 0.03),
+			rng.randf_range(-0.02, 0.02),
+			rng.randf_range(-0.03, 0.03)
+		)
+		var pos: Vector3 = (s["pos"] as Vector3) * base_r + jitter * base_r
+		var rr: float = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
+		var mesh := uv_sphere(rr, 16, 20, 0.035, float(i) * 11.7 + 3.0, 1.0)
+		out.append({
+			"mesh": mesh,
+			"pos": pos,
+			"scale": Vector3(float(s["sx"]), float(s["sy"]), float(s["sz"])),
+		})
+	return out
 
 
 static func _cloud_p(v: float, u: float, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> Vector3:

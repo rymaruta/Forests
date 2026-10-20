@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=3 uid="uid://forests_asset_bench"]
+
+[ext_resource type="Script" path="res://scripts/bench/asset_bench.gd" id="1"]
+
+[node name="AssetBench" type="Node3D"]
+script = ExtResource("1")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+
+[node name="KeyLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.819152, -0.40558, 0.40558, 0, 0.707107, 0.707107, -0.573576, -0.579228, 0.579228, 4, 8, 6)
+
+[node name="FillLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.642788, 0.262003, -0.71934, 0, 0.939693, 0.34202, 0.766044, -0.219846, 0.604023, -4, 5, 2)
+
+[node name="RimLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.939693, 0.084186, 0.331414, 0, 0.969231, -0.246154, -0.34202, -0.231306, -0.910685, 0, 4, -6)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 6)
+fov = 32.0
+near = 0.05
+far = 80.0
+current = true
+
+[node name="Subject" type="Node3D" parent="."]

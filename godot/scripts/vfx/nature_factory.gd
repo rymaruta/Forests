@@ -4,63 +4,105 @@ class_name NatureFactory
 ## TREE: ref-tree-deciduous.jpg — 太い幹・根の指・短い枝・フェルト雲冠
 
 
-static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -> Node3D:
-	## 参照: 厚幹＋根の指＋左右の短い枝＋一体の雲冠（フェルト質）
-	var root := Node3D.new()
-	var h := rng.randf_range(2.35, 2.85) * (1.55 if backdrop else 1.0)
-	var lean := rng.randf_range(-0.06, 0.06)
-	var bark_tint := ForestsPalette.BARK_WARM.lerp(Color(0.45, 0.3, 0.18), rng.randf() * 0.5)
-	# セージ／オリーブ（参照の葉色）
-	var leaf := Color(0.45, 0.55, 0.36).lerp(Color(0.38, 0.5, 0.32), rng.randf())
-	var leaf_dark := Color(0.28, 0.38, 0.24)
+## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
+## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
+const HERO_TRUNK_H := 1.85
+const HERO_BASE_R := 0.55
+const HERO_TOP_R := 0.22
+const HERO_CANOPY_R := 1.85
+const HERO_SEED := 2901
 
-	# 幹：参照どおり太く、根元フレア強め
+
+static func deciduous_tree_hero(rng: RandomNumberGenerator = null) -> Node3D:
+	## Bench合格用。毎回ランダム禁止。比率・シード固定。
+	var r := rng if rng != null else RandomNumberGenerator.new()
+	r.seed = HERO_SEED
+	return _deciduous_build(r, false, true)
+
+
+static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -> Node3D:
+	## ワールド用。ヒーローと同製法、軽いばらつきのみ。
+	return _deciduous_build(rng, backdrop, false)
+
+
+static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: bool) -> Node3D:
+	## 参照: 厚幹＋根の指＋左右の短い枝＋重なるフェルト雲房
+	var root := Node3D.new()
+	var h: float
+	var lean: float
+	var base_r: float
+	var top_r: float
+	var canopy_r: float
+	if hero:
+		h = HERO_TRUNK_H
+		lean = 0.02
+		base_r = HERO_BASE_R
+		top_r = HERO_TOP_R
+		canopy_r = HERO_CANOPY_R
+	else:
+		h = rng.randf_range(2.35, 2.85) * (1.55 if backdrop else 1.0)
+		lean = rng.randf_range(-0.06, 0.06)
+		base_r = (0.38 if not backdrop else 0.5)
+		top_r = (0.14 if not backdrop else 0.2)
+		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
+
+	var bark_tint := ForestsPalette.BARK_WARM.lerp(Color(0.48, 0.32, 0.2), 0.35 if hero else rng.randf() * 0.5)
+	# セージ／オリーブ（参照：くすんだオリーブ、明るいライム禁止）
+	var leaf := Color(0.40, 0.48, 0.32) if hero else Color(0.42, 0.5, 0.34).lerp(Color(0.36, 0.46, 0.3), rng.randf())
+	var leaf_dark := Color(0.26, 0.34, 0.22)
+
+	# 幹：参照どおり太く短め、根元フレア強め
 	var trunk := MeshInstance3D.new()
-	trunk.mesh = CraftMeshes.trunk(
-		h * 0.88,
-		0.38 if not backdrop else 0.5,
-		0.14 if not backdrop else 0.2,
-		16, lean, 0.045
-	)
+	trunk.mesh = CraftMeshes.trunk(h * 0.92, base_r, top_r, 20 if hero else 16, lean, 0.035)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
 	root.add_child(trunk)
 
-	# 根の指（参照の toe-like roots）
+	# 根の指（参照の toe-like roots）— 接地の視覚アンカー
 	var toes := 5 if not backdrop else 4
 	for i in toes:
 		var toe := MeshInstance3D.new()
-		toe.mesh = CraftMeshes.uv_sphere(0.2, 7, 9, 0.12, float(i) * 3.1, 0.55)
-		toe.material_override = VisualKit.bark_shader_material(bark_tint.darkened(0.05))
-		var a := float(i) / float(toes) * TAU + 0.15
-		toe.position = Vector3(cos(a) * 0.28, 0.06, sin(a) * 0.28)
-		toe.scale = Vector3(1.35, 0.55, 1.0)
+		toe.mesh = CraftMeshes.uv_sphere(0.26 if hero else 0.2, 9 if hero else 7, 11 if hero else 9, 0.08, float(i) * 3.1, 0.55)
+		toe.material_override = VisualKit.bark_shader_material(bark_tint.darkened(0.04))
+		var a := float(i) / float(toes) * TAU + 0.2
+		var reach := 0.42 if hero else 0.28
+		toe.position = Vector3(cos(a) * reach, 0.05, sin(a) * reach)
+		toe.scale = Vector3(1.55, 0.48, 1.15)
 		toe.rotation.y = a
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
 
-	# 短い左右の枝（参照の Y 枝・樹冠のすぐ下）
-	var bcount := 2
-	for b in bcount:
+	# 太い Y 枝が樹冠の下から見える（参照の支持枝）
+	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := rng.randf_range(0.4, 0.55)
-		br.mesh = CraftMeshes.branch(blen, 0.055, 0.02, 7, 0.18)
+		var blen := 0.85 if hero else rng.randf_range(0.45, 0.6)
+		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.05 if hero else 0.022, 10, 0.28)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.0 if b == 0 else PI) + lean * 2.0 + rng.randf_range(-0.15, 0.15)
-		var by := h * 0.62
-		br.position = Vector3(cos(ang) * 0.14 + lean * 0.4, by, sin(ang) * 0.08)
-		br.rotation = Vector3(0.75, ang, 0.0)
+		var ang := (0.0 if b == 0 else PI) + lean * 2.0 + (0.0 if hero else rng.randf_range(-0.15, 0.15))
+		var by := h * 0.68
+		br.position = Vector3(cos(ang) * 0.2 + lean * 0.3, by, sin(ang) * 0.05)
+		# やや横に張り出してから上へ（正面から枝が見える）
+		br.rotation = Vector3(0.55, ang, 0.0)
 		root.add_child(br)
 
-	# 雲冠：参照のふわっとした一体シルエット
-	var canopy := MeshInstance3D.new()
-	var cr := rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
-	canopy.mesh = CraftMeshes.canopy_cloud(rng, cr)
-	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	canopy.position = Vector3(lean * 0.45, h * 0.58, 0)
-	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	root.add_child(canopy)
+	# 雲冠：参照どおり重なりフェルト房。
+	# （放射メタボールは凹み方向で原点スパイク＝破片の原因だった）
+	var canopy_root := Node3D.new()
+	# 少し上げて Y 枝を正面に見せる（参照どおり支持枝が見える）
+	canopy_root.position = Vector3(lean * 0.2, h * 0.88, 0)
+	canopy_root.scale = Vector3(1.1, 0.86, 1.06)
+	root.add_child(canopy_root)
+	var felt := VisualKit.foliage_material(leaf, leaf_dark)
+	for lobe in CraftMeshes.canopy_felt_lobes(rng, canopy_r):
+		var mi := MeshInstance3D.new()
+		mi.mesh = lobe["mesh"]
+		mi.position = lobe["pos"]
+		mi.scale = lobe["scale"]
+		mi.material_override = felt
+		mi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		canopy_root.add_child(mi)
 
 	root.set_meta("tree_height", h)
+	root.set_meta("hero", hero)
 	return root
 
 
