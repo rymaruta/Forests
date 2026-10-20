@@ -114,86 +114,109 @@ static func branch(length: float, start_r: float, end_r: float, segments: int = 
 
 
 static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
-	## 横に広がる雲状の葉層（丸い棒キャンディではなく、ふんわり重なる）
+	## 房状に重なる樹冠。球ひとつではなく、雲のような塊。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# 下層：広い・薄い
-	_append_displaced_sphere(st, Vector3(0, 0.08 * base_r, 0), base_r * 0.95, 0.38, 8, 12, 0.22, 1.0 + rng.randf())
-	# 中層：少しずれて重ねる
-	var mid_n := rng.randi_range(4, 6)
-	for b in mid_n:
-		var ang := float(b) / float(mid_n) * TAU + rng.randf() * 0.4
-		var off := rng.randf_range(0.15, 0.45) * base_r
-		var c := Vector3(cos(ang) * off, rng.randf_range(0.25, 0.55) * base_r, sin(ang) * off)
-		_append_displaced_sphere(st, c, base_r * rng.randf_range(0.42, 0.62), rng.randf_range(0.32, 0.48), 7, 11, 0.28, 10.0 + float(b) * 7.0)
-	# 上層：小さめの頂き
-	_append_displaced_sphere(st, Vector3(rng.randf_range(-0.1, 0.1) * base_r, 0.72 * base_r, rng.randf_range(-0.1, 0.1) * base_r), base_r * 0.55, 0.45, 7, 10, 0.24, 50.0)
-	# 縁の小さなこぶ（シルエットを崩す）
-	for e in rng.randi_range(3, 5):
-		var ang := rng.randf() * TAU
-		var c := Vector3(cos(ang) * base_r * 0.7, rng.randf_range(0.15, 0.5) * base_r, sin(ang) * base_r * 0.7)
-		_append_displaced_sphere(st, c, base_r * rng.randf_range(0.22, 0.34), 0.4, 6, 8, 0.3, 80.0 + float(e))
+	_append_displaced_sphere(st, Vector3(0, base_r * 0.42, 0), base_r * 0.88, 0.78, 11, 16, 0.28, 3.0 + rng.randf() * 4.0)
+	var n := rng.randi_range(5, 7)
+	for b in n:
+		var ang := float(b) / float(n) * TAU + rng.randf() * 0.4
+		var off := rng.randf_range(0.38, 0.72) * base_r
+		var c := Vector3(cos(ang) * off, rng.randf_range(0.15, 0.7) * base_r, sin(ang) * off)
+		_append_displaced_sphere(
+			st, c,
+			base_r * rng.randf_range(0.42, 0.62),
+			rng.randf_range(0.7, 0.92),
+			9, 13, 0.3,
+			11.0 + float(b) * 7.5
+		)
+	_append_displaced_sphere(st, Vector3(rng.randf_range(-0.12, 0.12) * base_r, base_r * 0.95, rng.randf_range(-0.12, 0.12) * base_r), base_r * 0.48, 0.88, 9, 12, 0.2, 55.0)
+	# 下側の小さな房（幹とのつなぎ）
+	for b in 3:
+		var ang := float(b) / 3.0 * TAU + 0.4
+		var c := Vector3(cos(ang) * base_r * 0.35, base_r * 0.08, sin(ang) * base_r * 0.35)
+		_append_displaced_sphere(st, c, base_r * 0.32, 0.7, 7, 10, 0.22, 80.0 + float(b))
 	st.generate_normals()
 	return st.commit()
 
 
 static func leaf_cards(rng: RandomNumberGenerator, count: int, span: float) -> ArrayMesh:
-	## 樹冠に散らす葉カード（シルエットと風揺れ用）
+	## 樹冠縁の葉カード（薄い黒線にならないよう厚め）
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in count:
 		var p := Vector3(
 			rng.randf_range(-span, span),
-			rng.randf_range(0.0, span * 1.1),
+			rng.randf_range(0.05, span * 1.05),
 			rng.randf_range(-span, span)
 		)
-		var s := rng.randf_range(0.18, 0.34)
+		var s := rng.randf_range(0.2, 0.36)
 		var yaw := rng.randf() * TAU
-		var pitch := rng.randf_range(-0.6, 0.6)
+		var pitch := rng.randf_range(-0.45, 0.45)
 		_leaf_quad(st, p, s, yaw, pitch, rng.randf())
 	st.generate_normals()
 	return st.commit()
 
 
 static func pine_canopy(layers: int, base_r: float, height: float) -> ArrayMesh:
+	## 硬いつみコーンではなく、垂れ気味の房を重ねる。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in layers:
 		var t := float(i) / float(max(layers - 1, 1))
-		var y := t * height * 0.92
-		var r := base_r * (1.0 - t * 0.82) * (0.92 + 0.08 * sin(i * 1.7))
-		var tip := Vector3(0, y + height / float(layers) * 1.25, 0)
-		var segs := 12
-		for j in segs:
-			var a0 := float(j) / float(segs) * TAU
-			var a1 := float(j + 1) / float(segs) * TAU
-			var jagged0 := 1.0 + 0.1 * sin(a0 * 4.0 + i * 1.3)
-			var jagged1 := 1.0 + 0.1 * sin(a1 * 4.0 + i * 1.3)
-			var droop := 0.08 * (1.0 - t)
-			var p0 := Vector3(cos(a0) * r * jagged0, y - droop, sin(a0) * r * jagged0)
-			var p1 := Vector3(cos(a1) * r * jagged1, y - droop, sin(a1) * r * jagged1)
-			_tri(st, tip, p0, p1)
+		var y := 0.15 + t * height * 0.88
+		var r := base_r * (1.0 - t * 0.78) * (0.9 + 0.1 * sin(i * 1.9))
+		# 各層を変位球の環で作る（黒い平面を出さない）
+		var lobes := 5 + int(t * 2.0)
+		for j in lobes:
+			var a := float(j) / float(lobes) * TAU + float(i) * 0.35
+			var c := Vector3(cos(a) * r * 0.55, y, sin(a) * r * 0.55)
+			_append_displaced_sphere(st, c, r * 0.42, 0.55, 7, 10, 0.22, 20.0 + float(i * 10 + j))
+		_append_displaced_sphere(st, Vector3(0, y + 0.05, 0), r * 0.5, 0.5, 7, 10, 0.18, 100.0 + float(i))
+	_append_displaced_sphere(st, Vector3(0, height * 0.95, 0), base_r * 0.22, 1.1, 7, 9, 0.15, 200.0)
 	st.generate_normals()
 	return st.commit()
 
 
 static func flower_petals(petal_count: int, size: float = 0.16) -> ArrayMesh:
+	## 薄い三角ではなく、厚みのある花びら房（黒線ノイズ防止）
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i in petal_count:
 		var ang := float(i) / float(petal_count) * TAU
-		var c := cos(ang)
-		var s := sin(ang)
-		# cupped petal: base near center, tip outward+up, sides curved
-		var base := Vector3(c * 0.02, 0.0, s * 0.02)
-		var tip := Vector3(c * size, size * 0.55, s * size)
-		var left := Vector3(c * size * 0.55 - s * size * 0.38, size * 0.22, s * size * 0.55 + c * size * 0.38)
-		var right := Vector3(c * size * 0.55 + s * size * 0.38, size * 0.22, s * size * 0.55 - c * size * 0.38)
-		var mid := (tip + left + right) * 0.28 + Vector3(0, size * 0.12, 0)
-		_tri(st, base, left, mid)
-		_tri(st, base, mid, right)
-		_tri(st, left, tip, mid)
-		_tri(st, mid, tip, right)
+		var c := Vector3(cos(ang) * size * 0.45, size * 0.12, sin(ang) * size * 0.45)
+		_append_displaced_sphere(st, c, size * 0.55, 0.42, 6, 8, 0.12, 5.0 + float(i) * 3.0)
+	st.generate_normals()
+	return st.commit()
+
+
+static func flower_leaf(size: float = 0.1, seed: float = 1.0) -> ArrayMesh:
+	## 茎につく厚めの葉
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	_append_displaced_sphere(st, Vector3(0, 0, 0), size, 0.35, 5, 7, 0.1, seed)
+	st.generate_normals()
+	return st.commit()
+
+
+static func roof_shingles(width: float, depth: float, rows: int = 5) -> ArrayMesh:
+	## 片流れ屋根用の重ね板（厚みのある瓦）
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var row_d := depth / float(rows)
+	for r in rows:
+		var z0 := -depth * 0.5 + r * row_d
+		var z1 := z0 + row_d * 1.08
+		var y0 := float(r) * 0.035
+		var y1 := y0 + 0.05
+		var x0 := -width * 0.5
+		var x1 := width * 0.5
+		# top
+		_tri(st, Vector3(x0, y1, z0), Vector3(x1, y1, z0), Vector3(x0, y1, z1))
+		_tri(st, Vector3(x1, y1, z0), Vector3(x1, y1, z1), Vector3(x0, y1, z1))
+		# front lip
+		_tri(st, Vector3(x0, y0, z1), Vector3(x1, y0, z1), Vector3(x0, y1, z1))
+		_tri(st, Vector3(x1, y0, z1), Vector3(x1, y1, z1), Vector3(x0, y1, z1))
 	st.generate_normals()
 	return st.commit()
 
@@ -225,27 +248,27 @@ static func rock(seed: float = 1.0, radius: float = 0.45) -> ArrayMesh:
 
 
 static func stepping_stone(radius: float = 0.55, seed: float = 1.0) -> ArrayMesh:
+	## 丸く削れた踏み石。下面は閉じず、地面に沈めて黒い円盤を出さない。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var segs := 10
-	var h := 0.07
-	var top := Vector3(0, h, 0)
+	var segs := 12
+	var h := 0.06
+	var top := Vector3(0, h * 1.1, 0)
 	for j in segs:
 		var a0 := float(j) / float(segs) * TAU
 		var a1 := float(j + 1) / float(segs) * TAU
-		var jagged0 := 1.0 + 0.14 * sin(a0 * 2.7 + seed)
-		var jagged1 := 1.0 + 0.14 * sin(a1 * 2.7 + seed)
+		var jagged0 := 1.0 + 0.1 * sin(a0 * 2.3 + seed) + 0.05 * sin(a0 * 5.1 + seed * 1.7)
+		var jagged1 := 1.0 + 0.1 * sin(a1 * 2.3 + seed) + 0.05 * sin(a1 * 5.1 + seed * 1.7)
 		var p0 := Vector3(cos(a0) * radius * jagged0, h, sin(a0) * radius * jagged0)
 		var p1 := Vector3(cos(a1) * radius * jagged1, h, sin(a1) * radius * jagged1)
-		# slight dome
-		p0.y += 0.012 * sin(a0 * 3.0)
-		p1.y += 0.012 * sin(a1 * 3.0)
-		var b0 := Vector3(p0.x * 0.96, 0, p0.z * 0.96)
-		var b1 := Vector3(p1.x * 0.96, 0, p1.z * 0.96)
+		p0.y += 0.01 * sin(a0 * 2.5 + seed)
+		p1.y += 0.01 * sin(a1 * 2.5 + seed)
+		var b0 := Vector3(p0.x * 0.94, -0.02, p0.z * 0.94)
+		var b1 := Vector3(p1.x * 0.94, -0.02, p1.z * 0.94)
 		_tri(st, top, p0, p1)
 		_tri(st, b0, b1, p1)
 		_tri(st, b0, p1, p0)
-		_tri(st, Vector3.ZERO, b1, b0)
+		# 下面は描かない（黒い影円盤の原因になる）
 	st.generate_normals()
 	return st.commit()
 

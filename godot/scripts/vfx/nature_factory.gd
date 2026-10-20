@@ -1,74 +1,66 @@
 extends RefCounted
 class_name NatureFactory
-## 自然物を一から組み立てる工場。完成度優先。
+## 自然物工場。房状樹冠・厚み花・読みやすい小屋。
 
 
 static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -> Node3D:
 	var root := Node3D.new()
-	var h := rng.randf_range(2.15, 3.15) * (1.6 if backdrop else 1.0)
-	var lean := rng.randf_range(-0.14, 0.14)
+	var h := rng.randf_range(2.35, 3.15) * (1.55 if backdrop else 1.0)
+	var lean := rng.randf_range(-0.1, 0.1)
 	var bark_tint := ForestsPalette.BARK_WARM.lerp(ForestsPalette.BARK_COOL, rng.randf())
-	var leaf := ForestsPalette.LEAF_SUN.lerp(Color(0.26, 0.48, 0.26), rng.randf())
-	var leaf_dark := ForestsPalette.LEAF_SHADE.lerp(leaf.darkened(0.42), 0.55)
+	var leaf := ForestsPalette.LEAF_SUN.lerp(Color(0.34, 0.5, 0.28), rng.randf())
+	var leaf_dark := ForestsPalette.LEAF_SHADE.lerp(leaf.darkened(0.2), 0.35)
 
 	var trunk := MeshInstance3D.new()
-	trunk.mesh = CraftMeshes.trunk(h, 0.28 if not backdrop else 0.4, 0.1 if not backdrop else 0.15, 16, lean, 0.055)
+	trunk.mesh = CraftMeshes.trunk(h, 0.3 if not backdrop else 0.4, 0.11 if not backdrop else 0.15, 16, lean, 0.06)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
 	root.add_child(trunk)
 
-	# roots flare pads
-	for i in 4:
+	# 根元は厚めの盛り上がり（平たい黒円盤にしない）
+	for i in 3:
 		var root_pad := MeshInstance3D.new()
-		root_pad.mesh = CraftMeshes.uv_sphere(0.16, 6, 8, 0.25, float(i) * 5.0, 0.35)
-		root_pad.material_override = VisualKit.bark_shader_material(bark_tint.darkened(0.08))
-		var a := float(i) / 4.0 * TAU + rng.randf() * 0.3
-		root_pad.position = Vector3(cos(a) * 0.22, 0.04, sin(a) * 0.22)
-		root_pad.scale = Vector3(1.4, 0.45, 1.1)
+		root_pad.mesh = CraftMeshes.uv_sphere(0.18, 6, 8, 0.18, float(i) * 4.0, 0.55)
+		root_pad.material_override = VisualKit.bark_shader_material(bark_tint.darkened(0.06))
+		var a := float(i) / 3.0 * TAU + 0.25
+		root_pad.position = Vector3(cos(a) * 0.18, 0.08, sin(a) * 0.18)
+		root_pad.scale = Vector3(1.2, 0.7, 1.0)
+		root_pad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(root_pad)
 
-	# branches
-	var bcount := 2 if backdrop else rng.randi_range(3, 4)
+	var bcount := 3 if backdrop else rng.randi_range(4, 5)
 	for b in bcount:
 		var br := MeshInstance3D.new()
-		var blen := rng.randf_range(0.5, 0.95) * (1.2 if backdrop else 1.0)
-		br.mesh = CraftMeshes.branch(blen, 0.07, 0.018, 7, rng.randf_range(0.12, 0.32))
+		var blen := rng.randf_range(0.5, 0.9) * (1.1 if backdrop else 1.0)
+		br.mesh = CraftMeshes.branch(blen, 0.065, 0.018, 7, rng.randf_range(0.12, 0.3))
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := float(b) / float(bcount) * TAU + rng.randf() * 0.5
-		var by := h * rng.randf_range(0.45, 0.78)
-		br.position = Vector3(cos(ang) * 0.1 + lean * (by / h), by, sin(ang) * 0.1)
-		br.rotation = Vector3(rng.randf_range(0.55, 1.15), ang, rng.randf_range(-0.25, 0.25))
+		var ang := float(b) / float(bcount) * TAU + rng.randf() * 0.3
+		var by := h * rng.randf_range(0.5, 0.78)
+		br.position = Vector3(cos(ang) * 0.12 + lean * 0.5, by, sin(ang) * 0.12)
+		br.rotation = Vector3(rng.randf_range(0.5, 1.0), ang, rng.randf_range(-0.2, 0.2))
 		root.add_child(br)
 
-		# leaf puff at branch tip
 		var puff := MeshInstance3D.new()
-		puff.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(0.35, 0.55))
-		puff.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-		puff.position = Vector3(cos(ang) * blen * 0.7, by + blen * 0.35, sin(ang) * blen * 0.7)
-		puff.scale = Vector3.ONE * rng.randf_range(0.7, 1.0)
+		puff.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(0.4, 0.58))
+		puff.material_override = VisualKit.foliage_material(leaf.lerp(leaf.lightened(0.06), rng.randf()), leaf_dark)
+		puff.position = Vector3(cos(ang) * blen * 0.62 + lean * 0.25, by + blen * 0.38, sin(ang) * blen * 0.62)
+		puff.scale = Vector3.ONE * rng.randf_range(0.8, 1.1)
+		puff.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(puff)
 
-	# main canopy
 	var canopy := MeshInstance3D.new()
-	canopy.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(1.2, 1.6) * (1.4 if backdrop else 1.0))
+	canopy.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(1.25, 1.55) * (1.35 if backdrop else 1.0))
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	canopy.position = Vector3(lean * 0.85, h * 0.9, 0)
+	canopy.position = Vector3(lean * 0.65, h * 0.84, 0)
+	# 球状樹冠の影は地面に黒い円盤になるので切る
+	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 
-	# secondary crown for silhouette richness
 	var crown2 := MeshInstance3D.new()
-	crown2.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(0.7, 1.0))
-	crown2.material_override = VisualKit.foliage_material(leaf.lightened(0.06), leaf_dark)
-	crown2.position = Vector3(lean * 0.5 + rng.randf_range(-0.2, 0.2), h * 1.05, rng.randf_range(-0.2, 0.2))
+	crown2.mesh = CraftMeshes.canopy_volume(rng, rng.randf_range(0.7, 0.95))
+	crown2.material_override = VisualKit.foliage_material(leaf.lightened(0.04), leaf_dark)
+	crown2.position = Vector3(lean * 0.35 + rng.randf_range(-0.12, 0.12), h * 1.05, rng.randf_range(-0.12, 0.12))
+	crown2.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(crown2)
-
-	# 葉カードはシルエットを荒らすので、ごく控えめに内側だけ
-	if not backdrop and rng.randf() > 0.45:
-		var cards := MeshInstance3D.new()
-		cards.mesh = CraftMeshes.leaf_cards(rng, 12, rng.randf_range(0.55, 0.75))
-		cards.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-		cards.position = canopy.position + Vector3(0, 0.15, 0)
-		cards.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(cards)
 
 	root.set_meta("tree_height", h)
 	return root
@@ -76,26 +68,19 @@ static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -
 
 static func pine_tree(rng: RandomNumberGenerator) -> Node3D:
 	var root := Node3D.new()
-	var h := rng.randf_range(2.6, 3.8)
+	var h := rng.randf_range(2.7, 3.6)
 	var bark_tint := ForestsPalette.BARK_COOL
 	var trunk := MeshInstance3D.new()
-	trunk.mesh = CraftMeshes.trunk(h, 0.2, 0.055, 14, rng.randf_range(-0.06, 0.06), 0.04)
+	trunk.mesh = CraftMeshes.trunk(h, 0.2, 0.055, 12, rng.randf_range(-0.05, 0.05), 0.04)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
 	root.add_child(trunk)
 
-	var layers := rng.randi_range(5, 7)
 	var canopy := MeshInstance3D.new()
-	canopy.mesh = CraftMeshes.pine_canopy(layers, rng.randf_range(1.05, 1.45), h * 0.9)
+	canopy.mesh = CraftMeshes.pine_canopy(rng.randi_range(5, 6), rng.randf_range(1.05, 1.35), h * 0.9)
 	canopy.material_override = VisualKit.foliage_material(ForestsPalette.PINE, ForestsPalette.PINE_DARK)
-	canopy.position.y = 0.25
+	canopy.position.y = 0.18
+	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
-
-	# tip needle puff
-	var tip := MeshInstance3D.new()
-	tip.mesh = CraftMeshes.uv_sphere(0.22, 7, 9, 0.2, rng.randf() * 10.0, 1.2)
-	tip.material_override = VisualKit.foliage_material(ForestsPalette.PINE.lightened(0.05), ForestsPalette.PINE_DARK)
-	tip.position.y = h * 0.95
-	root.add_child(tip)
 
 	root.set_meta("tree_height", h)
 	return root
@@ -103,155 +88,227 @@ static func pine_tree(rng: RandomNumberGenerator) -> Node3D:
 
 static func flower(rng: RandomNumberGenerator, petal: Color) -> Node3D:
 	var root := Node3D.new()
-	var stem_h := rng.randf_range(0.38, 0.52)
+	var stem_h := rng.randf_range(0.34, 0.46)
 	var stem := MeshInstance3D.new()
-	stem.mesh = CraftMeshes.trunk(stem_h, 0.018, 0.01, 8, rng.randf_range(-0.05, 0.05), 0.0)
-	stem.material_override = VisualKit.character_material(Color(0.26, 0.54, 0.3), Color(0.16, 0.36, 0.18))
+	stem.mesh = CraftMeshes.trunk(stem_h, 0.016, 0.01, 7, rng.randf_range(-0.04, 0.04), 0.0)
+	stem.material_override = VisualKit.character_material(Color(0.3, 0.5, 0.3), Color(0.18, 0.34, 0.18))
+	stem.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(stem)
 
-	# leaves on stem
 	for side in [-1.0, 1.0]:
 		var leaf := MeshInstance3D.new()
-		leaf.mesh = CraftMeshes.flower_petals(1, rng.randf_range(0.09, 0.12))
-		leaf.material_override = VisualKit.character_material(Color(0.32, 0.58, 0.32), Color(0.18, 0.4, 0.2))
-		leaf.position = Vector3(0.015 * side, stem_h * 0.4, 0)
-		leaf.rotation = Vector3(-0.5, 0.2 * side, 1.0 * side)
+		leaf.mesh = CraftMeshes.flower_leaf(rng.randf_range(0.07, 0.1), rng.randf() * 10.0)
+		leaf.material_override = VisualKit.character_material(Color(0.32, 0.52, 0.3), Color(0.18, 0.34, 0.18))
+		leaf.position = Vector3(0.04 * side, stem_h * 0.4, 0)
+		leaf.rotation = Vector3(-0.35, 0.1 * side, 0.85 * side)
+		leaf.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(leaf)
 
 	var glow := MeshInstance3D.new()
-	glow.mesh = CraftMeshes.uv_sphere(0.05, 6, 8, 0.1, rng.randf() * 8.0)
+	glow.mesh = CraftMeshes.uv_sphere(0.05, 6, 8, 0.06, rng.randf() * 8.0)
 	var gm := StandardMaterial3D.new()
-	gm.albedo_color = Color(0.98, 0.86, 0.35)
+	gm.albedo_color = Color(0.92, 0.8, 0.35)
 	gm.emission_enabled = true
-	gm.emission = Color(0.98, 0.82, 0.3)
-	gm.emission_energy_multiplier = 0.45
+	gm.emission = Color(0.9, 0.75, 0.28)
+	gm.emission_energy_multiplier = 0.22
 	glow.material_override = gm
-	glow.position.y = stem_h + 0.02
+	glow.position.y = stem_h + 0.03
+	glow.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(glow)
 
 	var petals := MeshInstance3D.new()
-	petals.mesh = CraftMeshes.flower_petals(rng.randi_range(5, 7), rng.randf_range(0.14, 0.19))
+	petals.mesh = CraftMeshes.flower_petals(rng.randi_range(5, 6), rng.randf_range(0.11, 0.15))
 	petals.position.y = stem_h + 0.02
-	var pm := StandardMaterial3D.new()
-	pm.albedo_color = petal
-	pm.roughness = 0.42
-	pm.emission_enabled = true
-	pm.emission = petal
-	pm.emission_energy_multiplier = 0.22
-	pm.cull_mode = BaseMaterial3D.CULL_DISABLED
-	petals.material_override = pm
+	petals.material_override = VisualKit.character_material(petal, petal.darkened(0.22))
+	petals.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(petals)
 	return root
 
 
 static func cottage() -> Node3D:
-	## 手組みの小さな小屋。Forests の拠点シルエット。
+	## 漆喰壁が主役。梁は枠だけ。屋根はシンプルな二面。
 	var root := Node3D.new()
 	root.name = "Cottage"
 
-	var wall_mat := VisualKit.character_material(Color(0.86, 0.78, 0.62), Color(0.62, 0.52, 0.4))
-	var wood := VisualKit.bark_shader_material(Color(0.5, 0.34, 0.2))
-	var roof_mat := VisualKit.character_material(Color(0.55, 0.38, 0.28), Color(0.35, 0.22, 0.16))
+	var wall := VisualKit.character_material(ForestsPalette.PLASTER, Color(0.62, 0.56, 0.46))
+	var wood := VisualKit.bark_shader_material(ForestsPalette.TIMBER)
+	var roof := VisualKit.character_material(ForestsPalette.ROOF_TILE, ForestsPalette.ROOF_SHADOW)
+	var stone := VisualKit.character_material(Color(0.5, 0.48, 0.44), Color(0.34, 0.34, 0.3))
 
-	# floor pad
-	var floor := MeshInstance3D.new()
-	var fm := BoxMesh.new()
-	fm.size = Vector3(3.2, 0.12, 2.6)
-	floor.mesh = fm
-	floor.material_override = VisualKit.character_material(Color(0.55, 0.42, 0.28), Color(0.35, 0.26, 0.16))
-	floor.position.y = 0.06
-	root.add_child(floor)
+	# 石基壇
+	var plinth := MeshInstance3D.new()
+	var pm := BoxMesh.new()
+	pm.size = Vector3(3.4, 0.32, 2.8)
+	plinth.mesh = pm
+	plinth.material_override = stone
+	plinth.position.y = 0.16
+	root.add_child(plinth)
 
-	# walls as soft boxes with slight bevel feel via scale
+	# 漆喰本体
 	var body := MeshInstance3D.new()
 	var bm := BoxMesh.new()
-	bm.size = Vector3(2.8, 1.7, 2.2)
+	bm.size = Vector3(2.9, 1.65, 2.25)
 	body.mesh = bm
-	body.material_override = wall_mat
-	body.position.y = 0.95
+	body.material_override = wall
+	body.position.y = 1.1
 	root.add_child(body)
 
-	# roof prism via two wedges approximated with scaled boxes + peak
+	# 前面の枠梁のみ（壁を埋め尽くさない）
+	_beam(root, wood, Vector3(-1.42, 1.1, 1.15), Vector3(0.09, 1.65, 0.07))
+	_beam(root, wood, Vector3(1.42, 1.1, 1.15), Vector3(0.09, 1.65, 0.07))
+	_beam(root, wood, Vector3(0, 0.35, 1.15), Vector3(2.9, 0.09, 0.07))
+	_beam(root, wood, Vector3(0, 1.85, 1.15), Vector3(2.9, 0.09, 0.07))
+	_beam(root, wood, Vector3(0, 1.1, 1.15), Vector3(0.09, 1.55, 0.07))
+	# 斜め梁は前面パネル内に収める
+	var diag := MeshInstance3D.new()
+	var dm := BoxMesh.new()
+	dm.size = Vector3(1.2, 0.08, 0.05)
+	diag.mesh = dm
+	diag.material_override = wood
+	diag.position = Vector3(-0.7, 1.1, 1.16)
+	diag.rotation_degrees.z = 32
+	root.add_child(diag)
+	var diag2 := diag.duplicate() as MeshInstance3D
+	diag2.position = Vector3(0.7, 1.1, 1.16)
+	diag2.rotation_degrees.z = -32
+	root.add_child(diag2)
+
+	# 側面は角柱だけ
+	for side in [-1.0, 1.0]:
+		_beam(root, wood, Vector3(side * 1.48, 1.1, -1.05), Vector3(0.08, 1.65, 0.08))
+		_beam(root, wood, Vector3(side * 1.48, 1.1, 1.05), Vector3(0.08, 1.65, 0.08))
+		_beam(root, wood, Vector3(side * 1.48, 0.35, 0), Vector3(0.08, 0.09, 2.2))
+		_beam(root, wood, Vector3(side * 1.48, 1.85, 0), Vector3(0.08, 0.09, 2.2))
+
+	# 屋根二面（厚い板）
 	var roof_l := MeshInstance3D.new()
 	var rm := BoxMesh.new()
-	rm.size = Vector3(3.2, 0.14, 1.5)
+	rm.size = Vector3(3.35, 0.14, 1.55)
 	roof_l.mesh = rm
-	roof_l.material_override = roof_mat
-	roof_l.position = Vector3(0, 2.05, -0.35)
-	roof_l.rotation_degrees.x = -32
+	roof_l.material_override = roof
+	roof_l.position = Vector3(0, 2.18, -0.42)
+	roof_l.rotation_degrees.x = -34
 	root.add_child(roof_l)
 	var roof_r := MeshInstance3D.new()
 	roof_r.mesh = rm.duplicate()
-	roof_r.material_override = roof_mat
-	roof_r.position = Vector3(0, 2.05, 0.35)
-	roof_r.rotation_degrees.x = 32
+	roof_r.material_override = roof
+	roof_r.position = Vector3(0, 2.18, 0.42)
+	roof_r.rotation_degrees.x = 34
 	root.add_child(roof_r)
+	# 瓦の段差（見た目の厚み）
+	for i in 4:
+		var tile := MeshInstance3D.new()
+		var tm := BoxMesh.new()
+		tm.size = Vector3(3.2, 0.04, 0.28)
+		tile.mesh = tm
+		tile.material_override = VisualKit.character_material(
+			ForestsPalette.ROOF_TILE.darkened(0.04 * float(i % 2)),
+			ForestsPalette.ROOF_SHADOW
+		)
+		var t := float(i) / 3.0
+		tile.position = Vector3(0, 2.05 + t * 0.35, 0.55 - t * 0.55)
+		tile.rotation_degrees.x = 34
+		root.add_child(tile)
+		var tile2 := tile.duplicate() as MeshInstance3D
+		tile2.position = Vector3(0, 2.05 + t * 0.35, -0.55 + t * 0.55)
+		tile2.rotation_degrees.x = -34
+		root.add_child(tile2)
 
-	# ridge
 	var ridge := MeshInstance3D.new()
 	var ridgem := BoxMesh.new()
-	ridgem.size = Vector3(3.25, 0.1, 0.18)
+	ridgem.size = Vector3(3.4, 0.12, 0.18)
 	ridge.mesh = ridgem
 	ridge.material_override = wood
-	ridge.position.y = 2.45
+	ridge.position.y = 2.52
 	root.add_child(ridge)
 
-	# door
+	# 破風
+	for side in [-1.0, 1.0]:
+		var gable := MeshInstance3D.new()
+		var gm := BoxMesh.new()
+		gm.size = Vector3(0.1, 0.9, 2.3)
+		gable.mesh = gm
+		gable.material_override = wall
+		gable.position = Vector3(side * 1.45, 1.95, 0)
+		root.add_child(gable)
+
+	# ポーチ柱
+	for side in [-1.0, 1.0]:
+		var post := MeshInstance3D.new()
+		post.mesh = CraftMeshes.trunk(1.1, 0.065, 0.05, 8)
+		post.material_override = wood
+		post.position = Vector3(side * 0.65, 0.3, 1.48)
+		root.add_child(post)
+	_beam(root, wood, Vector3(0, 1.38, 1.48), Vector3(1.45, 0.1, 0.1))
+
+	# ドア
 	var door := MeshInstance3D.new()
-	var dm := BoxMesh.new()
-	dm.size = Vector3(0.7, 1.15, 0.08)
-	door.mesh = dm
+	var doorm := BoxMesh.new()
+	doorm.size = Vector3(0.68, 1.12, 0.08)
+	door.mesh = doorm
 	door.material_override = wood
-	door.position = Vector3(0, 0.7, 1.12)
+	door.position = Vector3(0, 0.88, 1.16)
 	root.add_child(door)
+	_beam(root, VisualKit.bark_shader_material(ForestsPalette.TIMBER.darkened(0.12)), Vector3(-0.16, 0.88, 1.21), Vector3(0.035, 1.0, 0.02))
+	_beam(root, VisualKit.bark_shader_material(ForestsPalette.TIMBER.darkened(0.12)), Vector3(0.16, 0.88, 1.21), Vector3(0.035, 1.0, 0.02))
+	var knob := MeshInstance3D.new()
+	knob.mesh = CraftMeshes.uv_sphere(0.036, 5, 6)
+	knob.material_override = VisualKit.character_material(Color(0.78, 0.62, 0.32), Color(0.48, 0.36, 0.16))
+	knob.position = Vector3(0.22, 0.82, 1.22)
+	root.add_child(knob)
 
-	# windows
+	# 窓
 	for side in [-1.0, 1.0]:
-		var win := MeshInstance3D.new()
-		var wm := BoxMesh.new()
-		wm.size = Vector3(0.45, 0.45, 0.06)
-		win.mesh = wm
-		var wmat := StandardMaterial3D.new()
-		wmat.albedo_color = Color(0.7, 0.88, 0.95)
-		wmat.emission_enabled = true
-		wmat.emission = Color(0.85, 0.95, 1.0)
-		wmat.emission_energy_multiplier = 0.35
-		wmat.roughness = 0.2
-		win.material_override = wmat
-		win.position = Vector3(side * 0.85, 1.15, 1.12)
-		root.add_child(win)
+		_beam(root, wood, Vector3(side * 0.95, 1.28, 1.16), Vector3(0.56, 0.56, 0.08))
+		var glass := MeshInstance3D.new()
+		var glm := BoxMesh.new()
+		glm.size = Vector3(0.42, 0.42, 0.04)
+		glass.mesh = glm
+		var gmat := StandardMaterial3D.new()
+		gmat.albedo_color = Color(0.72, 0.88, 0.94)
+		gmat.emission_enabled = true
+		gmat.emission = Color(0.88, 0.94, 0.98)
+		gmat.emission_energy_multiplier = 0.32
+		gmat.roughness = 0.2
+		glass.material_override = gmat
+		glass.position = Vector3(side * 0.95, 1.28, 1.2)
+		root.add_child(glass)
+		_beam(root, wood, Vector3(side * 0.95, 1.28, 1.22), Vector3(0.42, 0.04, 0.02))
+		_beam(root, wood, Vector3(side * 0.95, 1.28, 1.22), Vector3(0.04, 0.42, 0.02))
 
-	# chimney
+	# 煙突
 	var chim := MeshInstance3D.new()
-	chim.mesh = CraftMeshes.trunk(0.55, 0.14, 0.12, 8)
-	chim.material_override = VisualKit.character_material(Color(0.55, 0.42, 0.36), Color(0.35, 0.26, 0.22))
-	chim.position = Vector3(0.85, 2.35, -0.2)
+	var chim_m := BoxMesh.new()
+	chim_m.size = Vector3(0.36, 0.8, 0.36)
+	chim.mesh = chim_m
+	chim.material_override = stone
+	chim.position = Vector3(0.9, 2.55, -0.35)
 	root.add_child(chim)
+	_beam(root, stone, Vector3(0.9, 2.98, -0.35), Vector3(0.44, 0.08, 0.44))
 
-	# porch step
-	var step := MeshInstance3D.new()
-	var sm := BoxMesh.new()
-	sm.size = Vector3(1.0, 0.12, 0.4)
-	step.mesh = sm
-	step.material_override = wood
-	step.position = Vector3(0, 0.12, 1.4)
-	root.add_child(step)
+	# 段
+	_beam(root, wood, Vector3(0, 0.22, 1.48), Vector3(1.15, 0.12, 0.48))
+	_beam(root, wood, Vector3(0, 0.12, 1.65), Vector3(0.95, 0.1, 0.36))
 
-	# flower boxes under windows
+	# 花箱
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 88
 	for side in [-1.0, 1.0]:
-		var box := MeshInstance3D.new()
-		var bx := BoxMesh.new()
-		bx.size = Vector3(0.55, 0.18, 0.22)
-		box.mesh = bx
-		box.material_override = wood
-		box.position = Vector3(side * 0.85, 0.85, 1.2)
-		root.add_child(box)
-		var rng := RandomNumberGenerator.new()
-		rng.seed = int(80 + side * 10)
-		for j in 3:
+		_beam(root, wood, Vector3(side * 0.95, 0.92, 1.24), Vector3(0.58, 0.15, 0.22))
+		for j in 2:
 			var f := flower(rng, ForestsPalette.petals()[j % 6])
-			f.scale = Vector3.ONE * 0.55
-			f.position = Vector3(side * 0.85 + (j - 1) * 0.12, 0.95, 1.2)
+			f.scale = Vector3.ONE * 0.48
+			f.position = Vector3(side * 0.95 + (j - 0.5) * 0.14, 1.0, 1.24)
 			root.add_child(f)
 
 	return root
+
+
+static func _beam(root: Node3D, mat: Material, pos: Vector3, size: Vector3) -> void:
+	var t := MeshInstance3D.new()
+	var m := BoxMesh.new()
+	m.size = size
+	t.mesh = m
+	t.material_override = mat
+	t.position = pos
+	root.add_child(t)

@@ -3,9 +3,9 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_s
 
 uniform sampler2D grass_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D dirt_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform vec3 tint : source_color = vec3(0.82, 0.95, 0.72);
-uniform float uv_scale = 0.055;
-uniform float roughness_val : hint_range(0.0, 1.0) = 0.92;
+uniform vec3 tint : source_color = vec3(0.72, 0.82, 0.58);
+uniform float uv_scale = 0.05;
+uniform float roughness_val : hint_range(0.0, 1.0) = 0.94;
 
 varying vec3 world_pos;
 
@@ -38,20 +38,22 @@ void vertex() {
 
 void fragment() {
 	vec2 wp = world_pos.xz;
-	// 二重UVで縞模様を抑える
 	vec3 g1 = texture(grass_tex, wp * uv_scale).rgb;
-	vec3 g2 = texture(grass_tex, wp * uv_scale * 1.7 + vec2(0.37, 0.19)).rgb;
-	vec3 g = mix(g1, g2, 0.45);
-	vec3 d = texture(dirt_tex, wp * uv_scale * 0.9 + 0.13).rgb;
-	float patch = smoothstep(0.35, 0.7, fbm(wp * 0.045));
-	vec3 col = mix(g, d, patch * 0.22);
-	// 微細なまだら（規則正しい波を避ける）
-	col *= 0.88 + 0.2 * fbm(wp * 0.22);
+	vec3 g2 = texture(grass_tex, wp * uv_scale * 1.65 + vec2(0.31, 0.17)).rgb;
+	vec3 g = mix(g1, g2, 0.42);
+	vec3 d = texture(dirt_tex, wp * uv_scale * 0.85 + 0.11).rgb;
+	float patch = smoothstep(0.38, 0.72, fbm(wp * 0.04));
+	vec3 col = mix(g, d, patch * 0.18);
+	col *= 0.9 + 0.16 * fbm(wp * 0.2);
 	col *= tint;
+	// 彩度を落として朝の森っぽく
+	float luma = dot(col, vec3(0.3, 0.55, 0.15));
+	col = mix(vec3(luma), col, 0.72);
+	col *= vec3(0.92, 0.95, 0.82);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = (ndl + 0.45) / 1.45;
-	col *= 0.78 + ndl * 0.32;
+	ndl = (ndl + 0.5) / 1.5;
+	col *= 0.78 + ndl * 0.28;
 	ALBEDO = col;
 	ROUGHNESS = roughness_val;
-	SPECULAR = 0.06;
+	SPECULAR = 0.04;
 }

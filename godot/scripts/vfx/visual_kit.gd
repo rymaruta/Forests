@@ -12,7 +12,8 @@ static func terrain_material() -> Material:
 	m.shader = load_shader("res://assets/shaders/stylized_terrain.gdshader")
 	m.set_shader_parameter("grass_tex", load("res://assets/textures/grass.png"))
 	m.set_shader_parameter("dirt_tex", load("res://assets/textures/dirt.png"))
-	m.set_shader_parameter("tint", Vector3(ForestsPalette.GRASS_B.r, ForestsPalette.GRASS_B.g, ForestsPalette.GRASS_B.b))
+	# さらに落ち着いた緑（ネオンを殺す）
+	m.set_shader_parameter("tint", Vector3(0.55, 0.62, 0.4))
 	return m
 
 
@@ -29,23 +30,27 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 
 
 static func water_material() -> Material:
-	# 半透明は環境によって白飛びするので、まずは不透明の澄んだ水色
+	# 半透明は環境によって白飛びするので、不透明の澄んだ青緑
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.22, 0.58, 0.62, 1.0)
-	m.roughness = 0.25
-	m.metallic = 0.08
+	m.albedo_color = Color(0.2, 0.52, 0.56, 1.0)
+	m.roughness = 0.22
+	m.metallic = 0.1
 	m.emission_enabled = true
-	m.emission = Color(0.1, 0.35, 0.4)
-	m.emission_energy_multiplier = 0.12
+	m.emission = Color(0.08, 0.32, 0.38)
+	m.emission_energy_multiplier = 0.14
 	return m
 
 
 static func grass_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_grass.gdshader")
-	m.set_shader_parameter("tip_color", Vector3(0.58, 0.76, 0.36))
-	m.set_shader_parameter("root_color", Vector3(0.22, 0.42, 0.22))
+	m.set_shader_parameter("tip_color", Vector3(0.5, 0.64, 0.34))
+	m.set_shader_parameter("root_color", Vector3(0.28, 0.4, 0.24))
 	return m
+
+
+static func stone_material(tint: Color = ForestsPalette.STONE) -> Material:
+	return character_material(tint, tint.darkened(0.28).lerp(ForestsPalette.STONE_MOSS, 0.35))
 
 
 static func bark_material(tint: Color = ForestsPalette.BARK_WARM) -> StandardMaterial3D:

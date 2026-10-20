@@ -86,18 +86,19 @@ func _build_visual() -> void:
 	cloak.position = Vector3(0, 0.8, -0.02)
 	mesh_root.add_child(cloak)
 
-	# 腕＋手
+	# 腕＋手（体側に下ろす・Tポーズにしない）
 	for side in [-1.0, 1.0]:
 		var arm := MeshInstance3D.new()
-		arm.mesh = CraftMeshes.trunk(0.3, 0.058, 0.046, 9, 0.015 * side)
+		arm.mesh = CraftMeshes.trunk(0.32, 0.055, 0.042, 9, 0.01 * side)
 		arm.material_override = _cm(ForestsPalette.CLOTH, ForestsPalette.CLOTH_DARK)
-		arm.position = Vector3(0.24 * side, 0.7, 0)
-		arm.rotation_degrees.z = -24.0 * side
+		arm.position = Vector3(0.2 * side, 0.72, 0.02)
+		arm.rotation_degrees.z = -12.0 * side
+		arm.rotation_degrees.x = 8.0
 		mesh_root.add_child(arm)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.058, 6, 7)
+		hand.mesh = CraftMeshes.uv_sphere(0.055, 6, 7)
 		hand.material_override = _cm(ForestsPalette.SKIN, ForestsPalette.SKIN.darkened(0.25))
-		hand.position = Vector3(0.36 * side, 0.42, 0.02)
+		hand.position = Vector3(0.26 * side, 0.4, 0.06)
 		mesh_root.add_child(hand)
 
 	# 頭（大きめ）
