@@ -124,15 +124,20 @@ func _spawn_subject() -> void:
 			var p: Node3D = packed.instantiate()
 			hold.add_child(p)
 			p.position = Vector3(0, 0, 0)
+			# 顔はローカル +Z。カメラを +Z 側に置いて正面を撮る
 			if p.has_method("set_facing_yaw"):
 				p.set_facing_yaw(0.0)
-			# 物理オフで立ち姿固定
 			if p is CharacterBody3D:
 				(p as CharacterBody3D).set_physics_process(false)
+				(p as CharacterBody3D).set_process(false)
 				(p as CharacterBody3D).velocity = Vector3.ZERO
-			cam.position = Vector3(0.0, 1.15, 3.4)
-			cam.look_at(Vector3(0.0, 0.95, 0.0), Vector3.UP)
-			cam.fov = 28.0
+			# MeshRoot が回転する実装なら正面固定
+			var mr := p.get_node_or_null("MeshRoot")
+			if mr:
+				mr.rotation.y = 0.0
+			cam.position = Vector3(0.0, 1.05, 3.0)
+			cam.look_at(Vector3(0.0, 0.9, 0.0), Vector3.UP)
+			cam.fov = 26.0
 		_:
 			push_warning("AssetBench: unknown subject '%s'" % subject)
 

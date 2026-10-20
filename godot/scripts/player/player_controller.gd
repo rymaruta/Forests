@@ -26,14 +26,14 @@ func _build_visual() -> void:
 	for c in mesh_root.get_children():
 		c.queue_free()
 
-	# 参照色
-	var cloth := Color(0.32, 0.52, 0.48) # muted teal
-	var cloth_d := Color(0.2, 0.36, 0.34)
+	# 参照色（くすみティール・珊瑚・麦わら）
+	var cloth := Color(0.28, 0.48, 0.46)
+	var cloth_d := Color(0.18, 0.34, 0.33)
 	var skin := ForestsPalette.SKIN
-	var hat := Color(0.72, 0.58, 0.36)
-	var scarf_col := Color(0.86, 0.48, 0.36)
-	var hair_c := Color(0.28, 0.18, 0.12)
-	var boot_c := Color(0.34, 0.22, 0.16)
+	var hat := Color(0.78, 0.62, 0.38)
+	var scarf_col := Color(0.82, 0.42, 0.32)
+	var hair_c := Color(0.26, 0.16, 0.1)
+	var boot_c := Color(0.36, 0.24, 0.16)
 
 	# ブーツ（チャンキー）
 	for side in [-1.0, 1.0]:
@@ -80,67 +80,63 @@ func _build_visual() -> void:
 		hand.position = Vector3(0.24 * side, 0.46, 0.08)
 		mesh_root.add_child(hand)
 
-	# 頭（参照どおり大きめ）
+	# 頭（参照：大きいちび頭）
 	var head := MeshInstance3D.new()
-	head.mesh = CraftMeshes.uv_sphere(0.27, 12, 16, 0.025, 3.0, 1.04)
-	head.material_override = _cm(skin, skin.darkened(0.18))
-	head.position.y = 1.1
+	head.mesh = CraftMeshes.uv_sphere(0.3, 14, 18, 0.02, 3.0, 1.02)
+	head.material_override = _cm(skin, skin.darkened(0.16))
+	head.position.y = 1.12
 	mesh_root.add_child(head)
 
-	# ボリュームのあるボブ
+	# ボリュームのあるボブ（塊）
 	var hair := MeshInstance3D.new()
-	hair.mesh = CraftMeshes.uv_sphere(0.29, 10, 14, 0.2, 8.0, 0.78)
+	hair.mesh = CraftMeshes.uv_sphere(0.32, 12, 16, 0.12, 8.0, 0.82)
 	hair.material_override = _cm(hair_c, hair_c.darkened(0.22))
-	hair.position = Vector3(0, 1.18, -0.03)
+	hair.position = Vector3(0, 1.2, -0.04)
 	mesh_root.add_child(hair)
 	var bang := MeshInstance3D.new()
-	bang.mesh = CraftMeshes.uv_sphere(0.14, 7, 9, 0.2, 4.0, 0.5)
+	bang.mesh = CraftMeshes.uv_sphere(0.15, 8, 10, 0.12, 4.0, 0.55)
 	bang.material_override = _cm(hair_c, hair_c.darkened(0.18))
-	bang.position = Vector3(0, 1.16, 0.17)
-	bang.scale = Vector3(1.55, 0.7, 0.55)
+	bang.position = Vector3(0, 1.18, 0.18)
+	bang.scale = Vector3(1.6, 0.65, 0.5)
 	mesh_root.add_child(bang)
 
-	# 大きな茶色の目（頭に埋め込み・飛び出しすぎない）
+	# 大きな茶色の目（埋め込み）
 	for side in [-1.0, 1.0]:
-		var white := MeshInstance3D.new()
-		white.mesh = CraftMeshes.uv_sphere(0.048, 6, 8, 0.0, 1.0, 0.88)
-		white.material_override = _cm(Color(0.98, 0.97, 0.95), Color(0.88, 0.86, 0.84))
-		white.position = Vector3(0.08 * side, 1.1, 0.2)
-		mesh_root.add_child(white)
 		var iris := MeshInstance3D.new()
-		iris.mesh = CraftMeshes.uv_sphere(0.03, 5, 6)
-		iris.material_override = _cm(Color(0.28, 0.18, 0.12), Color(0.12, 0.08, 0.05))
-		iris.position = Vector3(0.08 * side, 1.095, 0.23)
+		iris.mesh = CraftMeshes.uv_sphere(0.042, 7, 9, 0.0, 1.0, 0.92)
+		iris.material_override = _cm(Color(0.22, 0.14, 0.1), Color(0.08, 0.05, 0.04))
+		iris.position = Vector3(0.09 * side, 1.12, 0.255)
 		mesh_root.add_child(iris)
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.01, 4, 5)
+		shine.mesh = CraftMeshes.uv_sphere(0.012, 4, 5)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
 		sm.emission_enabled = true
 		sm.emission = Color(1, 1, 1)
-		sm.emission_energy_multiplier = 0.45
+		sm.emission_energy_multiplier = 0.5
 		shine.material_override = sm
-		shine.position = Vector3(0.09 * side, 1.11, 0.245)
+		shine.position = Vector3(0.1 * side, 1.135, 0.285)
 		mesh_root.add_child(shine)
 
 	for side in [-1.0, 1.0]:
 		var cheek := MeshInstance3D.new()
-		cheek.mesh = CraftMeshes.uv_sphere(0.038, 5, 6, 0.0, 1.0, 0.65)
+		cheek.mesh = CraftMeshes.uv_sphere(0.04, 6, 7, 0.0, 1.0, 0.7)
 		var chm := StandardMaterial3D.new()
-		chm.albedo_color = Color(0.98, 0.68, 0.66)
+		chm.albedo_color = Color(0.95, 0.62, 0.6)
 		chm.emission_enabled = true
-		chm.emission = Color(0.95, 0.5, 0.48)
-		chm.emission_energy_multiplier = 0.22
-		chm.roughness = 0.6
+		chm.emission = Color(0.9, 0.45, 0.42)
+		chm.emission_energy_multiplier = 0.18
+		chm.roughness = 0.7
 		cheek.material_override = chm
-		cheek.position = Vector3(0.18 * side, 1.0, 0.18)
+		cheek.position = Vector3(0.2 * side, 1.02, 0.2)
 		mesh_root.add_child(cheek)
 
+	# 口は細い線（穴に見えないよう薄く暗い帯）
 	var mouth := MeshInstance3D.new()
-	mouth.mesh = CraftMeshes.uv_sphere(0.018, 4, 5, 0.0, 1.0, 0.32)
-	mouth.material_override = _cm(Color(0.75, 0.4, 0.42), Color(0.5, 0.25, 0.28))
-	mouth.position = Vector3(0, 0.96, 0.25)
-	mouth.scale = Vector3(1.5, 0.35, 0.5)
+	mouth.mesh = CraftMeshes.uv_sphere(0.028, 5, 6, 0.0, 1.0, 0.22)
+	mouth.material_override = _cm(Color(0.55, 0.32, 0.34), Color(0.35, 0.18, 0.2))
+	mouth.position = Vector3(0, 0.98, 0.275)
+	mouth.scale = Vector3(1.1, 0.28, 0.35)
 	mesh_root.add_child(mouth)
 
 	# 麦わら帽子（顔を隠さない位置・サイズ）
