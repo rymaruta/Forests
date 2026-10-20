@@ -65,19 +65,19 @@ func _build_visual() -> void:
 	torso.position.y = 0.62
 	mesh_root.add_child(torso)
 
-	# 長袖（体から少し離して下ろす）
+	# 長袖（参照どおり体に沿って下ろす）
 	for side in [-1.0, 1.0]:
 		var arm := MeshInstance3D.new()
 		arm.mesh = CraftMeshes.trunk(0.34, 0.055, 0.042, 9, 0.01 * side)
 		arm.material_override = _cm(cloth, cloth_d)
-		arm.position = Vector3(0.22 * side, 0.78, 0.02)
-		arm.rotation_degrees.z = -14.0 * side
-		arm.rotation_degrees.x = 8.0
+		arm.position = Vector3(0.2 * side, 0.78, 0.02)
+		arm.rotation_degrees.z = -10.0 * side
+		arm.rotation_degrees.x = 10.0
 		mesh_root.add_child(arm)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.05, 6, 7)
+		hand.mesh = CraftMeshes.uv_sphere(0.048, 6, 7)
 		hand.material_override = _cm(skin, skin.darkened(0.22))
-		hand.position = Vector3(0.28 * side, 0.46, 0.08)
+		hand.position = Vector3(0.24 * side, 0.46, 0.08)
 		mesh_root.add_child(hand)
 
 	# 頭（参照どおり大きめ）
@@ -100,27 +100,27 @@ func _build_visual() -> void:
 	bang.scale = Vector3(1.55, 0.7, 0.55)
 	mesh_root.add_child(bang)
 
-	# 大きな茶色の目（参照）
+	# 大きな茶色の目（頭に埋め込み・飛び出しすぎない）
 	for side in [-1.0, 1.0]:
 		var white := MeshInstance3D.new()
-		white.mesh = CraftMeshes.uv_sphere(0.058, 6, 8, 0.0, 1.0, 0.88)
+		white.mesh = CraftMeshes.uv_sphere(0.048, 6, 8, 0.0, 1.0, 0.88)
 		white.material_override = _cm(Color(0.98, 0.97, 0.95), Color(0.88, 0.86, 0.84))
-		white.position = Vector3(0.09 * side, 1.08, 0.23)
+		white.position = Vector3(0.08 * side, 1.1, 0.2)
 		mesh_root.add_child(white)
 		var iris := MeshInstance3D.new()
-		iris.mesh = CraftMeshes.uv_sphere(0.038, 5, 6)
+		iris.mesh = CraftMeshes.uv_sphere(0.03, 5, 6)
 		iris.material_override = _cm(Color(0.28, 0.18, 0.12), Color(0.12, 0.08, 0.05))
-		iris.position = Vector3(0.09 * side, 1.075, 0.265)
+		iris.position = Vector3(0.08 * side, 1.095, 0.23)
 		mesh_root.add_child(iris)
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.012, 4, 5)
+		shine.mesh = CraftMeshes.uv_sphere(0.01, 4, 5)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
 		sm.emission_enabled = true
 		sm.emission = Color(1, 1, 1)
-		sm.emission_energy_multiplier = 0.6
+		sm.emission_energy_multiplier = 0.45
 		shine.material_override = sm
-		shine.position = Vector3(0.1 * side, 1.09, 0.28)
+		shine.position = Vector3(0.09 * side, 1.11, 0.245)
 		mesh_root.add_child(shine)
 
 	for side in [-1.0, 1.0]:
@@ -143,29 +143,29 @@ func _build_visual() -> void:
 	mouth.scale = Vector3(1.5, 0.35, 0.5)
 	mesh_root.add_child(mouth)
 
-	# 麦わら帽子（柔らかいつば）
+	# 麦わら帽子（顔を隠さない位置・サイズ）
 	var brim := MeshInstance3D.new()
-	brim.mesh = CraftMeshes.uv_sphere(0.42, 6, 24, 0.05, 2.0, 0.11)
+	brim.mesh = CraftMeshes.uv_sphere(0.36, 6, 24, 0.04, 2.0, 0.1)
 	brim.material_override = _cm(hat, hat.darkened(0.25))
-	brim.position = Vector3(0.01, 1.26, 0)
-	brim.rotation_degrees.z = -4
+	brim.position = Vector3(0.01, 1.34, 0)
+	brim.rotation_degrees.z = -3
 	mesh_root.add_child(brim)
 
 	var crown := MeshInstance3D.new()
-	crown.mesh = CraftMeshes.trunk(0.22, 0.21, 0.11, 14)
+	crown.mesh = CraftMeshes.trunk(0.2, 0.19, 0.1, 14)
 	crown.material_override = _cm(hat.lightened(0.04), hat.darkened(0.22))
-	crown.position = Vector3(0.01, 1.28, 0)
-	crown.rotation_degrees.z = -4
+	crown.position = Vector3(0.01, 1.36, 0)
+	crown.rotation_degrees.z = -3
 	mesh_root.add_child(crown)
 
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.215
-	band_m.bottom_radius = 0.215
-	band_m.height = 0.042
+	band_m.top_radius = 0.195
+	band_m.bottom_radius = 0.195
+	band_m.height = 0.04
 	band.mesh = band_m
 	band.material_override = _cm(Color(0.72, 0.22, 0.2), Color(0.45, 0.12, 0.1))
-	band.position = Vector3(0.01, 1.32, 0)
+	band.position = Vector3(0.01, 1.4, 0)
 	mesh_root.add_child(band)
 
 	# 厚めの珊瑚マフラー

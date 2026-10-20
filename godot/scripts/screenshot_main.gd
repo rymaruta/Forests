@@ -64,15 +64,16 @@ func _run() -> void:
 	print("SHOT_SAVED cottage")
 
 	# 3) 旅人正面（参照キャラと比較）
+	# カメラは yaw=0 で +Z 側。顔はローカル +Z なので facing=0 で正面。
 	if player:
 		player.global_position = Vector3(0.0, 0.5, 3.0)
 		if player.has_method("set_facing_yaw"):
-			player.set_facing_yaw(PI) # face camera-ish depending on orbit
+			player.set_facing_yaw(0.0)
 	if pivot:
 		pivot.yaw = 0.0
-		pivot.pitch = -0.12
-		pivot.distance = 3.8
-		pivot.height = 1.8
+		pivot.pitch = -0.08
+		pivot.distance = 3.4
+		pivot.height = 1.65
 		pivot.snap_to_target()
 	await process_frame
 	await process_frame

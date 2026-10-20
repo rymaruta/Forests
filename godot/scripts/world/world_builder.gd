@@ -365,55 +365,31 @@ func _add_lights() -> void:
 
 
 func _add_ambience() -> void:
+	# 花粉はごく小さく（白いノイズに見えないように）
 	var pollen := GPUParticles3D.new()
-	pollen.amount = 48
-	pollen.lifetime = 10.0
-	pollen.preprocess = 2.0
+	pollen.amount = 36
+	pollen.lifetime = 9.0
+	pollen.preprocess = 1.0
 	pollen.visibility_aabb = AABB(Vector3(-22, 0, -22), Vector3(44, 14, 44))
 	var mat := ParticleProcessMaterial.new()
 	mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
 	mat.emission_box_extents = Vector3(14, 2.2, 14)
 	mat.direction = Vector3(0.12, 0.55, 0.08)
 	mat.spread = 50.0
-	mat.initial_velocity_min = 0.06
-	mat.initial_velocity_max = 0.22
+	mat.initial_velocity_min = 0.05
+	mat.initial_velocity_max = 0.18
 	mat.gravity = Vector3(0, 0.01, 0)
 	mat.scale_min = 1.0
 	mat.scale_max = 1.0
-	mat.color = Color(1.0, 0.95, 0.75, 0.85)
+	mat.color = Color(1.0, 0.95, 0.8, 0.7)
 	pollen.process_material = mat
 	var draw := SphereMesh.new()
-	draw.radius = 0.028
-	draw.height = 0.056
+	draw.radius = 0.014
+	draw.height = 0.028
 	pollen.draw_pass_1 = draw
 	pollen.position = Vector3(0, 2.8, 0)
 	pollen.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	_gen().add_child(pollen)
-
-	var motes := GPUParticles3D.new()
-	motes.amount = 28
-	motes.lifetime = 7.0
-	motes.preprocess = 1.5
-	motes.visibility_aabb = AABB(Vector3(-18, 0, -18), Vector3(36, 12, 36))
-	var mat2 := ParticleProcessMaterial.new()
-	mat2.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
-	mat2.emission_box_extents = Vector3(10, 1.8, 10)
-	mat2.direction = Vector3(-0.1, 0.4, 0.15)
-	mat2.spread = 40.0
-	mat2.initial_velocity_min = 0.04
-	mat2.initial_velocity_max = 0.14
-	mat2.gravity = Vector3(0, 0.008, 0)
-	mat2.scale_min = 1.0
-	mat2.scale_max = 1.0
-	mat2.color = Color(0.85, 0.95, 1.0, 0.65)
-	motes.process_material = mat2
-	var draw2 := SphereMesh.new()
-	draw2.radius = 0.018
-	draw2.height = 0.036
-	motes.draw_pass_1 = draw2
-	motes.position = Vector3(2, 3.2, -1)
-	motes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_gen().add_child(motes)
 
 
 func _make_boundary() -> void:

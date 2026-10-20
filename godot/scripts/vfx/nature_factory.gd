@@ -164,24 +164,23 @@ static func cottage() -> Node3D:
 	body.position.y = 1.25
 	root.add_child(body)
 
-	# 前面の太いハーフティンバー（参照どおり格子）
-	_beam(root, wood, Vector3(-1.42, 1.25, 1.15), Vector3(0.14, 1.9, 0.1))
-	_beam(root, wood, Vector3(1.42, 1.25, 1.15), Vector3(0.14, 1.9, 0.1))
-	_beam(root, wood, Vector3(0, 1.25, 1.15), Vector3(0.14, 1.9, 0.1))
-	_beam(root, wood, Vector3(0, 0.4, 1.15), Vector3(2.9, 0.14, 0.1))
-	_beam(root, wood, Vector3(0, 1.25, 1.15), Vector3(2.9, 0.12, 0.1))
-	_beam(root, wood, Vector3(0, 2.1, 1.15), Vector3(2.9, 0.14, 0.1))
-	# 斜め梁（左右パネル）
+	# 前面の太いハーフティンバー（壁より少し前に出して食い込みを防ぐ）
+	_beam(root, wood, Vector3(-1.42, 1.25, 1.18), Vector3(0.16, 1.9, 0.12))
+	_beam(root, wood, Vector3(1.42, 1.25, 1.18), Vector3(0.16, 1.9, 0.12))
+	_beam(root, wood, Vector3(0, 1.25, 1.18), Vector3(0.16, 1.9, 0.12))
+	_beam(root, wood, Vector3(0, 0.4, 1.18), Vector3(2.9, 0.16, 0.12))
+	_beam(root, wood, Vector3(0, 1.25, 1.18), Vector3(2.9, 0.14, 0.12))
+	_beam(root, wood, Vector3(0, 2.1, 1.18), Vector3(2.9, 0.16, 0.12))
 	var d1 := MeshInstance3D.new()
 	var dm := BoxMesh.new()
-	dm.size = Vector3(1.2, 0.1, 0.06)
+	dm.size = Vector3(1.15, 0.12, 0.08)
 	d1.mesh = dm
 	d1.material_override = wood
-	d1.position = Vector3(-0.7, 1.25, 1.16)
+	d1.position = Vector3(-0.7, 1.25, 1.2)
 	d1.rotation_degrees.z = 28
 	root.add_child(d1)
 	var d2 := d1.duplicate() as MeshInstance3D
-	d2.position = Vector3(0.7, 1.25, 1.16)
+	d2.position = Vector3(0.7, 1.25, 1.2)
 	d2.rotation_degrees.z = -28
 	root.add_child(d2)
 
@@ -191,38 +190,22 @@ static func cottage() -> Node3D:
 		_beam(root, wood, Vector3(side * 1.48, 0.4, 0), Vector3(0.1, 0.12, 2.2))
 		_beam(root, wood, Vector3(side * 1.48, 2.1, 0), Vector3(0.1, 0.12, 2.2))
 
-	# 瓦屋根（大きく張り出し）
-	var roof_l := MeshInstance3D.new()
-	var rm := BoxMesh.new()
-	rm.size = Vector3(3.7, 0.18, 1.8)
-	roof_l.mesh = rm
-	roof_l.material_override = roof
-	roof_l.position = Vector3(0, 2.45, -0.5)
-	roof_l.rotation_degrees.x = -30
-	root.add_child(roof_l)
-	var roof_r := MeshInstance3D.new()
-	roof_r.mesh = rm.duplicate()
-	roof_r.material_override = roof
-	roof_r.position = Vector3(0, 2.45, 0.5)
-	roof_r.rotation_degrees.x = 30
-	root.add_child(roof_r)
-	# 瓦の段
-	for i in 4:
-		var t := float(i) / 3.0
-		var band := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = Vector3(3.55, 0.06, 0.35)
-		band.mesh = bm
-		band.material_override = roof
-		band.position = Vector3(0, 2.22 + t * 0.32, 0.78 - t * 0.58)
-		band.rotation_degrees.x = 30
-		root.add_child(band)
-		var band2 := band.duplicate() as MeshInstance3D
-		band2.position = Vector3(0, 2.22 + t * 0.32, -0.78 + t * 0.58)
-		band2.rotation_degrees.x = -30
-		root.add_child(band2)
-
-	_beam(root, wood, Vector3(0, 2.82, 0), Vector3(3.75, 0.14, 0.22))
+	# 屋根下地＋瓦（下地がないと隙間が目立つ）
+	var roof_base_l := MeshInstance3D.new()
+	var rbm := BoxMesh.new()
+	rbm.size = Vector3(3.7, 0.12, 1.75)
+	roof_base_l.mesh = rbm
+	roof_base_l.material_override = roof
+	roof_base_l.position = Vector3(0, 2.42, -0.48)
+	roof_base_l.rotation_degrees.x = -30
+	root.add_child(roof_base_l)
+	var roof_base_r := roof_base_l.duplicate() as MeshInstance3D
+	roof_base_r.position = Vector3(0, 2.42, 0.48)
+	roof_base_r.rotation_degrees.x = 30
+	root.add_child(roof_base_r)
+	_add_tiled_roof_side(root, roof, -1.0)
+	_add_tiled_roof_side(root, roof, 1.0)
+	_beam(root, wood, Vector3(0, 2.88, 0), Vector3(3.8, 0.14, 0.22))
 
 	for side in [-1.0, 1.0]:
 		var gable := MeshInstance3D.new()
@@ -310,6 +293,26 @@ static func cottage() -> Node3D:
 			root.add_child(f)
 
 	return root
+
+
+static func _add_tiled_roof_side(root: Node3D, roof_mat: Material, side_sign: float) -> void:
+	## side_sign: -1 = 奥側, +1 = 手前側
+	var rows := 6
+	var cols := 10
+	for row in rows:
+		var t := float(row) / float(rows - 1)
+		var y := 2.15 + t * 0.55
+		var z := side_sign * (0.95 - t * 0.75)
+		for col in cols:
+			var tile := MeshInstance3D.new()
+			var tm := BoxMesh.new()
+			tm.size = Vector3(0.38, 0.07, 0.32)
+			tile.mesh = tm
+			tile.material_override = roof_mat
+			var x := -1.7 + float(col) * 0.38 + (0.1 if row % 2 == 1 else 0.0)
+			tile.position = Vector3(x, y + (col % 2) * 0.01, z)
+			tile.rotation_degrees.x = 30.0 * side_sign
+			root.add_child(tile)
 
 
 static func _beam(root: Node3D, mat: Material, pos: Vector3, size: Vector3) -> void:

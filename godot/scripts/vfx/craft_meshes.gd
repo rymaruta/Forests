@@ -119,52 +119,48 @@ static func canopy_volume(rng: RandomNumberGenerator, base_r: float = 1.15) -> A
 
 
 static func canopy_cloud(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
-	## 参照ツリー: ふわっと重なるコブが一つの雲に見える。
-	## シェル＋近接した副コブを同じメッシュにまとめ、境目を埋める。
+	## 参照のふわっと雲冠。複数球を重ねず、1枚の高分割シェルでコブを出す。
+	## （球の継ぎ目＝プラスチック感の主因だった）
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var lobes := rng.randi_range(5, 7)
+	var lobe_amp := rng.randf_range(0.18, 0.26)
 	var phase := rng.randf() * TAU
-	_append_cloud_shell(st, Vector3.ZERO, base_r, rng.randf_range(0.92, 1.02), rng.randi_range(6, 8), rng.randf_range(0.22, 0.3), phase)
-	# 副コブは数を絞り、中心に寄せて「ぶどう」に見せない
-	var n := 4
-	for b in n:
-		var ang := float(b) / float(n) * TAU + phase * 0.2
-		var off := base_r * rng.randf_range(0.32, 0.48)
-		var c := Vector3(cos(ang) * off, base_r * rng.randf_range(0.25, 0.55), sin(ang) * off)
-		_append_cloud_shell(st, c, base_r * rng.randf_range(0.42, 0.55), 0.95, 5, 0.18, phase + float(b))
-	st.generate_normals()
-	return st.commit()
-
-
-static func _append_cloud_shell(st: SurfaceTool, center: Vector3, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> void:
-	var rings := 12
-	var segs := 24
+	var squash := rng.randf_range(0.9, 1.0)
+	var rings := 18
+	var segs := 36
 	for i in rings:
 		var v0 := float(i) / float(rings)
 		var v1 := float(i + 1) / float(rings)
 		for j in segs:
 			var u0 := float(j) / float(segs)
 			var u1 := float(j + 1) / float(segs)
-			var p0 := center + _cloud_shell_p(v0, u0, base_r, squash, lobes, lobe_amp, phase)
-			var p1 := center + _cloud_shell_p(v0, u1, base_r, squash, lobes, lobe_amp, phase)
-			var p2 := center + _cloud_shell_p(v1, u0, base_r, squash, lobes, lobe_amp, phase)
-			var p3 := center + _cloud_shell_p(v1, u1, base_r, squash, lobes, lobe_amp, phase)
+			var p0 := _cloud_p(v0, u0, base_r, squash, lobes, lobe_amp, phase)
+			var p1 := _cloud_p(v0, u1, base_r, squash, lobes, lobe_amp, phase)
+			var p2 := _cloud_p(v1, u0, base_r, squash, lobes, lobe_amp, phase)
+			var p3 := _cloud_p(v1, u1, base_r, squash, lobes, lobe_amp, phase)
 			_tri_uv(st, p0, p1, p2, Vector2(u0, v0), Vector2(u1, v0), Vector2(u0, v1))
 			_tri_uv(st, p1, p3, p2, Vector2(u1, v0), Vector2(u1, v1), Vector2(u0, v1))
+	st.generate_normals()
+	return st.commit()
 
 
-static func _cloud_shell_p(v: float, u: float, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> Vector3:
+static func _cloud_p(v: float, u: float, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> Vector3:
 	var yaw := u * TAU
 	var elev := (v - 0.5) * 2.0
-	var lat_r: float = pow(max(1.0 - elev * elev, 0.0), 0.45)
-	var edge: float = smoothstep(0.1, 0.9, lat_r)
-	var scallop: float = 1.0 + lobe_amp * abs(sin(0.5 * float(lobes) * yaw + phase)) * edge
-	scallop += lobe_amp * 0.3 * abs(sin(float(lobes - 2) * yaw + phase * 1.4)) * lat_r
+	var lat_r: float = pow(max(1.0 - elev * elev, 0.0), 0.4)
+	# 柔らかいコブ（abs(sin)で丸い隆起）
+	var bump: float = abs(sin(0.5 * float(lobes) * yaw + phase))
+	bump = bump * bump # なだらかに
+	var scallop: float = 1.0 + lobe_amp * bump * smoothstep(0.12, 0.88, lat_r)
+	scallop += lobe_amp * 0.25 * abs(sin(float(lobes + 2) * yaw * 0.5 + phase * 1.3)) * lat_r
+	# 高さ方向にもわずかなコブ（頂を雲らしく）
+	var y_bump: float = 0.1 * bump * lat_r
 	var tuck: float = 1.0
-	if elev < -0.1:
-		tuck = lerpf(0.32, 1.0, clamp((elev + 1.0) / 0.9, 0.0, 1.0))
+	if elev < -0.08:
+		tuck = lerpf(0.3, 1.0, clamp((elev + 1.0) / 0.92, 0.0, 1.0))
 	var r: float = base_r * lat_r * scallop * tuck
-	var y: float = elev * base_r * squash * 0.7 + base_r * 0.4
+	var y: float = elev * base_r * squash * 0.72 + base_r * 0.42 + y_bump * base_r
 	return Vector3(cos(yaw) * r, y, sin(yaw) * r)
 
 
