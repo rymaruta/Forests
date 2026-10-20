@@ -76,8 +76,7 @@ def main():
         field = d if field is None else soft_min(field, d, K)
 
     # 床カットは弱く（白縁・穴禁止）。趾の底は丸く残す
-    field = soft_max(field, -Y - 0.02, 0.08)
-
+    # 床の平面カットは白円盤を作るので使わない。生成後に接地シフトする。
     verts, faces, _, _ = marching_cubes(
         field,
         level=0.0,
@@ -88,6 +87,8 @@ def main():
         ),
     )
     verts = verts + mn
+    # 最下点をわずかに床上へ
+    verts[:, 1] -= verts[:, 1].min() - 0.01
     cent = verts.mean(0)
     new_faces = []
     for f in faces:
