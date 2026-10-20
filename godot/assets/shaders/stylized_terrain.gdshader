@@ -4,7 +4,7 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_s
 uniform sampler2D grass_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform sampler2D dirt_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform vec3 tint : source_color = vec3(0.88, 0.98, 0.82);
-uniform float uv_scale = 0.14;
+uniform float uv_scale = 0.08;
 uniform float roughness_val : hint_range(0.0, 1.0) = 0.9;
 
 varying vec3 world_pos;

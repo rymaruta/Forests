@@ -37,37 +37,8 @@ func _ready() -> void:
 	camera_pivot.yaw = 0.55
 	camera_pivot.pitch = -0.22
 	camera_pivot.snap_to_target()
+	GameState.toast_requested.emit("森が息づいた")
 
-	# 固定カメラ＋カメラの真正面に赤い箱（必ず映る位置）
-	var debug_cam := Camera3D.new()
-	debug_cam.name = "DebugCam"
-	debug_cam.fov = 55.0
-	add_child(debug_cam)
-	debug_cam.global_position = Vector3(0, 5, 12)
-	debug_cam.look_at(Vector3(0, 1, 3), Vector3.UP)
-	debug_cam.current = true
-	if camera_pivot and camera_pivot.camera:
-		camera_pivot.camera.current = false
-
-	var marker := MeshInstance3D.new()
-	var box := BoxMesh.new()
-	box.size = Vector3(1.2, 1.2, 1.2)
-	marker.mesh = box
-	var mm := StandardMaterial3D.new()
-	mm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	mm.albedo_color = Color(1.0, 0.05, 0.05)
-	marker.material_override = mm
-	debug_cam.add_child(marker)
-	marker.position = Vector3(0, 0, -4.0) # カメラ正面
-
-	if sun:
-		sun.shadow_enabled = false
-
-	var gen := world_builder.get_node_or_null("Generated")
-	var count := gen.get_child_count() if gen else 0
-	GameState.toast_requested.emit("森(%d) front-box" % count)
-
-	# チュートリアルは少し遅らせて世界を先に見せる（await は使わない）
 	if GameState.show_tutorial:
 		get_tree().create_timer(1.5).timeout.connect(_show_tutorial_later)
 
