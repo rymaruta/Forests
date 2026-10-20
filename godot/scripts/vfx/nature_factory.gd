@@ -68,28 +68,28 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var a := float(i) / float(toe_n) * TAU + 0.55
 		var ca := cos(a)
 		var sa := sin(a)
-		var toe_r := 0.27 if hero else 0.17
+		var toe_r := 0.24 if hero else 0.17
 		var toe := MeshInstance3D.new()
-		toe.mesh = CraftMeshes.uv_sphere(toe_r, 18 if hero else 10, 20 if hero else 12, 0.02, float(i) * 2.7, 0.97)
+		toe.mesh = CraftMeshes.uv_sphere(toe_r, 18 if hero else 10, 20 if hero else 12, 0.022, float(i) * 2.7, 0.98)
 		toe.material_override = VisualKit.bark_shader_material(bark_tint)
-		var reach := (base_r * 0.95) if hero else (base_r * 0.85)
-		# 底を丸く見せる（床で切った平底禁止）
-		toe.position = Vector3(ca * reach, toe_r * 0.78, sa * reach)
-		toe.scale = Vector3(1.12, 1.05, 1.12)
+		var reach := (base_r * 1.05) if hero else (base_r * 0.85)
+		# 外へ長い粘土マウンド（球貼り付け・平底カット禁止）
+		toe.position = Vector3(ca * reach, toe_r * 0.72, sa * reach)
+		toe.rotation = Vector3(0.0, a, 0.15)
+		toe.scale = Vector3(1.55, 0.95, 1.15) if hero else Vector3(1.12, 1.05, 1.12)
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
 		if hero:
-			# 幹→趾の連続を球チェーンで埋める（継ぎ目・白欠けなし）
-			for j in 3:
-				var t := float(j + 1) / 4.0
-				var jr := lerpf(0.18, 0.24, t)
+			for j in 4:
+				var t := float(j + 1) / 5.0
+				var jr := lerpf(0.16, 0.22, t)
 				var join := MeshInstance3D.new()
-				join.mesh = CraftMeshes.uv_sphere(jr, 12, 14, 0.008, float(i) * 1.7 + float(j), 0.98)
+				join.mesh = CraftMeshes.uv_sphere(jr, 12, 14, 0.01, float(i) * 1.7 + float(j), 0.98)
 				join.material_override = VisualKit.bark_shader_material(bark_tint)
-				var jrch := lerpf(base_r * 0.25, reach * 0.85, t)
-				var jy := lerpf(0.40, toe_r * 0.75, t)
+				var jrch := lerpf(base_r * 0.20, reach * 0.82, t)
+				var jy := lerpf(0.42, toe_r * 0.70, t)
 				join.position = Vector3(ca * jrch, jy, sa * jrch)
-				join.scale = Vector3(1.15, 1.1, 1.15)
+				join.scale = Vector3(1.35, 1.05, 1.2)
 				join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 				root.add_child(join)
 
