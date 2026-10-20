@@ -4,12 +4,13 @@ render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_d
 uniform sampler2D leaf_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform vec3 leaf_color : source_color = vec3(0.36, 0.44, 0.30);
 uniform vec3 leaf_dark : source_color = vec3(0.22, 0.30, 0.20);
-uniform float wind_strength = 0.015;
-uniform float wind_speed = 0.25;
+uniform float wind_strength = 0.012;
+uniform float wind_speed = 0.22;
 uniform float roughness_val : hint_range(0.0, 1.0) = 1.0;
-uniform float flock_mix : hint_range(0.0, 1.0) = 0.28;
+uniform float flock_mix : hint_range(0.0, 1.0) = 0.35;
 
 varying vec3 v_world;
+varying float v_curv;
 
 float _hash31(vec3 p) {
 	p = fract(p * 0.1031);
@@ -37,23 +38,28 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+	// 近似曲率：法線と位置のずれで窪みを落とす
+	vec3 n = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	vec3 from_c = normalize(v_world - vec3(0.0, v_world.y * 0.2, 0.0));
+	v_curv = clamp(dot(n, from_c), 0.0, 1.0);
 	float h = max(VERTEX.y, 0.0);
 	float t = TIME * wind_speed;
-	float mask = clamp(h * 0.04, 0.0, 0.25);
-	VERTEX.x += sin(t + VERTEX.x * 0.15) * wind_strength * mask;
-	VERTEX.z += cos(t * 0.45 + VERTEX.z * 0.12) * wind_strength * 0.2 * mask;
+	float mask = clamp(h * 0.04, 0.0, 0.22);
+	VERTEX.x += sin(t + VERTEX.x * 0.14) * wind_strength * mask;
+	VERTEX.z += cos(t * 0.45 + VERTEX.z * 0.11) * wind_strength * 0.18 * mask;
 }
 
 void fragment() {
-	// フェルト：細かい等方ノイズ。ブロック感を出さない
-	vec3 tex = texture(leaf_tex, v_world.xz * 0.4 + v_world.y * 0.15).rgb;
-	float flock = _vnoise(v_world * 56.0) * 0.5 + _vnoise(v_world * 112.0 + 1.9) * 0.5;
-	float ndl = clamp(dot(NORMAL, normalize(vec3(0.1, 1.0, 0.15))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.4 + 0.6, 0.0, 1.0);
-	float up = clamp(NORMAL.y * 0.16 + 0.84, 0.78, 1.0);
-	vec3 base = mix(leaf_dark, leaf_color, 0.5 + ndl * 0.22 + up * 0.08);
+	vec3 tex = texture(leaf_tex, v_world.xz * 0.45 + v_world.y * 0.18).rgb;
+	float flock = _vnoise(v_world * 64.0) * 0.45 + _vnoise(v_world * 128.0 + 2.3) * 0.35 + _vnoise(v_world * 256.0) * 0.2;
+	float ndl = clamp(dot(NORMAL, normalize(vec3(0.12, 1.0, 0.18))), 0.0, 1.0);
+	ndl = clamp(ndl * 0.38 + 0.62, 0.0, 1.0);
+	float up = clamp(NORMAL.y * 0.18 + 0.82, 0.75, 1.0);
+	// 房のあいだ（曲率低め）を少し落とす＝ソフトAO代用
+	float valley = mix(0.82, 1.0, v_curv);
+	vec3 base = mix(leaf_dark, leaf_color, 0.48 + ndl * 0.22 + up * 0.1);
 	base = mix(base, tex * leaf_color, flock_mix);
-	base *= mix(0.97, 1.03, flock);
+	base *= valley * mix(0.95, 1.05, flock);
 	ALBEDO = base;
 	ROUGHNESS = roughness_val;
 	SPECULAR = 0.0;

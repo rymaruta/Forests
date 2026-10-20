@@ -214,44 +214,99 @@ static func _dir_uv(p: Vector3) -> Vector2:
 	return Vector2(u, v)
 
 
-static func canopy_csg(rng: RandomNumberGenerator, base_r: float, material: Material) -> CSGCombiner3D:
-	## 参照の雲冠：球房をCSGユニオンで一体に。コブは残る・交差影なし。
-	var comb := CSGCombiner3D.new()
-	comb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+static func canopy_soft_union(rng: RandomNumberGenerator, base_r: float = 1.15) -> ArrayMesh:
+	## 参照雲冠：球房ソフトユニオンを一体メッシュ化（重心原点・スムーズ）。
+	var centers: Array[Vector3] = []
+	var radii: Array[float] = []
 	var specs := [
-		{"c": Vector3(0.0, 0.6, 0.0), "r": 0.58},
-		{"c": Vector3(-0.55, 0.52, 0.12), "r": 0.48},
-		{"c": Vector3(0.58, 0.55, -0.08), "r": 0.5},
-		{"c": Vector3(0.1, 0.48, -0.52), "r": 0.46},
-		{"c": Vector3(-0.12, 0.46, 0.55), "r": 0.47},
-		{"c": Vector3(0.28, 0.95, 0.22), "r": 0.42},
-		{"c": Vector3(-0.32, 0.9, -0.18), "r": 0.4},
-		{"c": Vector3(0.45, 0.72, -0.4), "r": 0.38},
-		{"c": Vector3(-0.48, 0.7, 0.38), "r": 0.38},
-		{"c": Vector3(0.0, 0.28, 0.0), "r": 0.48},
-		{"c": Vector3(0.15, 1.05, -0.05), "r": 0.34},
-		{"c": Vector3(-0.18, 1.0, 0.12), "r": 0.32},
+		{"c": Vector3(0.0, 0.58, 0.0), "r": 0.68},
+		{"c": Vector3(-0.65, 0.5, 0.14), "r": 0.55},
+		{"c": Vector3(0.68, 0.52, -0.1), "r": 0.57},
+		{"c": Vector3(0.12, 0.46, -0.62), "r": 0.52},
+		{"c": Vector3(-0.14, 0.44, 0.65), "r": 0.53},
+		{"c": Vector3(0.3, 0.98, 0.24), "r": 0.45},
+		{"c": Vector3(-0.35, 0.92, -0.2), "r": 0.43},
+		{"c": Vector3(0.0, 0.22, 0.0), "r": 0.52},
 	]
-	for i in specs.size():
-		var s: Dictionary = specs[i]
-		var sph := CSGSphere3D.new()
-		sph.radius = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
-		sph.radial_segments = 48
-		sph.rings = 32
-		sph.operation = CSGShape3D.OPERATION_UNION
-		# ベイク前の仮マテリアル（ベイク後にフェルトシェーダへ差し替え）
-		sph.material = material
+	var centroid := Vector3.ZERO
+	for s in specs:
 		var c: Vector3 = (s["c"] as Vector3) * base_r
 		c += Vector3(rng.randf_range(-0.02, 0.02), rng.randf_range(-0.015, 0.015), rng.randf_range(-0.02, 0.02)) * base_r
-		sph.position = c
-		sph.scale = Vector3(
-			rng.randf_range(1.0, 1.08),
-			rng.randf_range(0.92, 1.0),
-			rng.randf_range(1.0, 1.06)
-		)
-		comb.add_child(sph)
-	comb.set_meta("felt_material", material)
-	return comb
+		var rr: float = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
+		centers.append(c)
+		radii.append(rr)
+		centroid += c
+	centroid /= float(centers.size())
+	for i in centers.size():
+		centers[i] = centers[i] - centroid
+
+	var bound := 0.0
+	for i in centers.size():
+		bound = maxf(bound, centers[i].length() + radii[i])
+	bound *= 1.06
+
+	var rings := 48
+	var segs := 72
+	# 格子で位置を先に計算
+	var grid: Array = []
+	grid.resize((rings + 1) * (segs + 1))
+	for i in rings + 1:
+		for j in segs + 1:
+			var v := float(i) / float(rings)
+			var u := float(j) / float(segs)
+			grid[i * (segs + 1) + j] = _soft_union_p(v, u, centers, radii, bound) + centroid
+
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in rings:
+		for j in segs:
+			var i00 := i * (segs + 1) + j
+			var i10 := i * (segs + 1) + j + 1
+			var i01 := (i + 1) * (segs + 1) + j
+			var i11 := (i + 1) * (segs + 1) + j + 1
+			var p00: Vector3 = grid[i00]
+			var p10: Vector3 = grid[i10]
+			var p01: Vector3 = grid[i01]
+			var p11: Vector3 = grid[i11]
+			var u0 := float(j) / float(segs)
+			var u1 := float(j + 1) / float(segs)
+			var v0 := float(i) / float(rings)
+			var v1 := float(i + 1) / float(rings)
+			# 外向き巻き（CCW from outside）
+			_tri_uv(st, p00, p01, p10, Vector2(u0, v0), Vector2(u0, v1), Vector2(u1, v0))
+			_tri_uv(st, p10, p01, p11, Vector2(u1, v0), Vector2(u0, v1), Vector2(u1, v1))
+	st.generate_normals()
+	return st.commit()
+
+
+static func _soft_union_p(v: float, u: float, centers: Array[Vector3], radii: Array[float], bound: float) -> Vector3:
+	var yaw := u * TAU
+	var elev := (0.5 - v) * PI
+	var dir := Vector3(cos(elev) * cos(yaw), sin(elev), cos(elev) * sin(yaw)).normalized()
+	const K := 18.0
+	var acc := 0.0
+	var wsum := 0.0
+	for i in centers.size():
+		var ri := _ray_sphere_far(dir, centers[i], radii[i])
+		if ri <= 0.0:
+			continue
+		var w: float = exp(K * ri / bound)
+		acc += w * ri
+		wsum += w
+	var r_out: float = (acc / wsum) if wsum > 0.0 else bound * 0.2
+	r_out = clampf(r_out, 0.05, bound)
+	var p := dir * r_out
+	p += dir * (_noise3(p * 2.2, 5.1) - 0.5) * 0.028 * bound
+	return p
+
+
+static func _ray_sphere_far(dir: Vector3, center: Vector3, radius: float) -> float:
+	var b: float = dir.dot(center)
+	var c: float = center.dot(center) - radius * radius
+	var disc: float = b * b - c
+	if disc < 0.0:
+		return 0.0
+	return b + sqrt(disc)
 
 
 static func _cloud_p(v: float, u: float, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> Vector3:

@@ -83,10 +83,15 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		br.rotation = Vector3(0.75, ang, 0.0)
 		root.add_child(br)
 
-	# 雲冠：CSGブール結合で一体の雲（交差三日月なし・コブは残る）
-	var felt := VisualKit.foliage_material(leaf, leaf_dark)
-	var canopy := CraftMeshes.canopy_csg(rng, canopy_r, felt)
-	canopy.position = Vector3(lean * 0.08, h * 0.72, 0.0)
+	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
+	var canopy := MeshInstance3D.new()
+	if hero and ResourceLoader.exists("res://assets/meshes/canopy_hero.obj"):
+		canopy.mesh = load("res://assets/meshes/canopy_hero.obj") as Mesh
+	if canopy.mesh == null:
+		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
+	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
+	canopy.position = Vector3(lean * 0.08, h * 0.68, 0.0)
+	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", h)
