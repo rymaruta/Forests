@@ -45,7 +45,7 @@ static func uv_sphere(radius: float, rings: int, segments: int, displace: float 
 static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var rings := 10
+	var rings := 12
 	for i in rings:
 		var t0 := float(i) / float(rings)
 		var t1 := float(i + 1) / float(rings)
@@ -77,6 +77,15 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var u1 := float(j + 1) / float(segments)
 			_tri_uv(st, p00, p10, p01, Vector2(u0, t0), Vector2(u1, t0), Vector2(u0, t1))
 			_tri_uv(st, p10, p11, p01, Vector2(u1, t0), Vector2(u1, t1), Vector2(u0, t1))
+	# 底を閉じて中空見えを防ぐ
+	var bot_r := bottom_r * 1.45
+	var bot_c := Vector3(0, 0.001, 0)
+	for j in segments:
+		var a0 := float(j) / float(segments) * TAU
+		var a1 := float(j + 1) / float(segments) * TAU
+		var p0 := Vector3(cos(a0) * bot_r, 0.001, sin(a0) * bot_r)
+		var p1 := Vector3(cos(a1) * bot_r, 0.001, sin(a1) * bot_r)
+		_tri(st, bot_c, p1, p0)
 	if cap_top:
 		var top_lean := lean
 		var top_c := Vector3(top_lean, height, 0)
@@ -147,44 +156,102 @@ static func canopy_cloud(rng: RandomNumberGenerator, base_r: float = 1.15) -> Ar
 	return st.commit()
 
 
-static func canopy_felt_lobes(rng: RandomNumberGenerator, base_r: float = 1.15) -> Array:
-	## 参照の主シルエット＝横に広がる重なりフェルト房。
-	## 戻り値: [{mesh, pos, scale}, ...]
-	var out: Array = []
-	# 参照：丸い房を重ねる。縦に潰すと円盤に見えるので sy≈1
+static func weld_smooth(mesh: Mesh, epsilon: float = 0.0008) -> ArrayMesh:
+	## CSG等の面割れ頂点を溶接してスムーズノーマルを張る
+	if mesh.get_surface_count() < 1:
+		return mesh as ArrayMesh if mesh is ArrayMesh else ArrayMesh.new()
+	var arrays := mesh.surface_get_arrays(0)
+	var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+	var old_idx: PackedInt32Array = arrays[Mesh.ARRAY_INDEX] if arrays[Mesh.ARRAY_INDEX] != null else PackedInt32Array()
+	if old_idx.is_empty():
+		old_idx.resize(verts.size())
+		for i in verts.size():
+			old_idx[i] = i
+	# 空間量子化で溶接
+	var key_to_new: Dictionary = {}
+	var new_verts: PackedVector3Array = PackedVector3Array()
+	var remap: PackedInt32Array = PackedInt32Array()
+	remap.resize(verts.size())
+	var inv := 1.0 / epsilon
+	for i in verts.size():
+		var p: Vector3 = verts[i]
+		var key := Vector3i(int(round(p.x * inv)), int(round(p.y * inv)), int(round(p.z * inv)))
+		if key_to_new.has(key):
+			remap[i] = int(key_to_new[key])
+		else:
+			var ni := new_verts.size()
+			key_to_new[key] = ni
+			new_verts.append(p)
+			remap[i] = ni
+	var new_idx := PackedInt32Array()
+	new_idx.resize(old_idx.size())
+	for i in old_idx.size():
+		new_idx[i] = remap[old_idx[i]]
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in range(0, new_idx.size(), 3):
+		if i + 2 >= new_idx.size():
+			break
+		var a: Vector3 = new_verts[new_idx[i]]
+		var b: Vector3 = new_verts[new_idx[i + 1]]
+		var c: Vector3 = new_verts[new_idx[i + 2]]
+		# 簡易球面UV
+		st.set_uv(_dir_uv(a))
+		st.add_vertex(a)
+		st.set_uv(_dir_uv(b))
+		st.add_vertex(b)
+		st.set_uv(_dir_uv(c))
+		st.add_vertex(c)
+	st.index()
+	st.generate_normals()
+	return st.commit()
+
+
+static func _dir_uv(p: Vector3) -> Vector2:
+	var n := p.normalized() if p.length_squared() > 0.0001 else Vector3.UP
+	var u := atan2(n.z, n.x) / TAU + 0.5
+	var v := 0.5 - asin(clampf(n.y, -1.0, 1.0)) / PI
+	return Vector2(u, v)
+
+
+static func canopy_csg(rng: RandomNumberGenerator, base_r: float, material: Material) -> CSGCombiner3D:
+	## 参照の雲冠：球房をCSGユニオンで一体に。コブは残る・交差影なし。
+	var comb := CSGCombiner3D.new()
+	comb.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var specs := [
-		{"pos": Vector3(0.0, 0.55, 0.0), "r": 0.72, "sx": 1.12, "sy": 1.0, "sz": 1.1},
-		{"pos": Vector3(-0.55, 0.52, 0.12), "r": 0.58, "sx": 1.05, "sy": 0.98, "sz": 1.0},
-		{"pos": Vector3(0.58, 0.54, -0.08), "r": 0.6, "sx": 1.06, "sy": 0.98, "sz": 1.02},
-		{"pos": Vector3(0.1, 0.5, -0.55), "r": 0.55, "sx": 1.0, "sy": 0.98, "sz": 1.05},
-		{"pos": Vector3(-0.12, 0.48, 0.58), "r": 0.56, "sx": 1.02, "sy": 0.98, "sz": 1.05},
-		{"pos": Vector3(-0.82, 0.6, -0.12), "r": 0.5, "sx": 1.0, "sy": 0.98, "sz": 0.98},
-		{"pos": Vector3(0.85, 0.62, 0.1), "r": 0.52, "sx": 1.02, "sy": 0.98, "sz": 1.0},
-		{"pos": Vector3(0.32, 0.92, 0.32), "r": 0.48, "sx": 1.04, "sy": 0.96, "sz": 1.0},
-		{"pos": Vector3(-0.38, 0.9, -0.28), "r": 0.46, "sx": 1.0, "sy": 0.96, "sz": 0.98},
-		{"pos": Vector3(0.12, 1.02, -0.08), "r": 0.44, "sx": 1.02, "sy": 0.95, "sz": 1.0},
-		{"pos": Vector3(-0.18, 0.98, 0.18), "r": 0.42, "sx": 1.0, "sy": 0.95, "sz": 0.98},
-		{"pos": Vector3(0.5, 0.72, -0.5), "r": 0.45, "sx": 1.0, "sy": 0.97, "sz": 1.0},
-		{"pos": Vector3(-0.55, 0.7, 0.48), "r": 0.45, "sx": 1.0, "sy": 0.97, "sz": 1.0},
-		{"pos": Vector3(0.0, 0.28, 0.0), "r": 0.55, "sx": 1.12, "sy": 0.9, "sz": 1.08},
+		{"c": Vector3(0.0, 0.6, 0.0), "r": 0.58},
+		{"c": Vector3(-0.55, 0.52, 0.12), "r": 0.48},
+		{"c": Vector3(0.58, 0.55, -0.08), "r": 0.5},
+		{"c": Vector3(0.1, 0.48, -0.52), "r": 0.46},
+		{"c": Vector3(-0.12, 0.46, 0.55), "r": 0.47},
+		{"c": Vector3(0.28, 0.95, 0.22), "r": 0.42},
+		{"c": Vector3(-0.32, 0.9, -0.18), "r": 0.4},
+		{"c": Vector3(0.45, 0.72, -0.4), "r": 0.38},
+		{"c": Vector3(-0.48, 0.7, 0.38), "r": 0.38},
+		{"c": Vector3(0.0, 0.28, 0.0), "r": 0.48},
+		{"c": Vector3(0.15, 1.05, -0.05), "r": 0.34},
+		{"c": Vector3(-0.18, 1.0, 0.12), "r": 0.32},
 	]
 	for i in specs.size():
 		var s: Dictionary = specs[i]
-		var jitter := Vector3(
-			rng.randf_range(-0.03, 0.03),
-			rng.randf_range(-0.02, 0.02),
-			rng.randf_range(-0.03, 0.03)
+		var sph := CSGSphere3D.new()
+		sph.radius = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
+		sph.radial_segments = 48
+		sph.rings = 32
+		sph.operation = CSGShape3D.OPERATION_UNION
+		# ベイク前の仮マテリアル（ベイク後にフェルトシェーダへ差し替え）
+		sph.material = material
+		var c: Vector3 = (s["c"] as Vector3) * base_r
+		c += Vector3(rng.randf_range(-0.02, 0.02), rng.randf_range(-0.015, 0.015), rng.randf_range(-0.02, 0.02)) * base_r
+		sph.position = c
+		sph.scale = Vector3(
+			rng.randf_range(1.0, 1.08),
+			rng.randf_range(0.92, 1.0),
+			rng.randf_range(1.0, 1.06)
 		)
-		var pos: Vector3 = (s["pos"] as Vector3) * base_r + jitter * base_r
-		var rr: float = float(s["r"]) * base_r * rng.randf_range(0.98, 1.02)
-		# 高分割＋弱い変位でシルエットを粘土っぽく（正球の継ぎ目感を弱める）
-		var mesh := uv_sphere(rr, 18, 24, 0.055, float(i) * 11.7 + 3.0, 1.0)
-		out.append({
-			"mesh": mesh,
-			"pos": pos,
-			"scale": Vector3(float(s["sx"]), float(s["sy"]), float(s["sz"])),
-		})
-	return out
+		comb.add_child(sph)
+	comb.set_meta("felt_material", material)
+	return comb
 
 
 static func _cloud_p(v: float, u: float, base_r: float, squash: float, lobes: int, lobe_amp: float, phase: float) -> Vector3:

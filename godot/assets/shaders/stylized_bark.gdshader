@@ -12,10 +12,11 @@ void fragment() {
 	vec3 tex = texture(bark_tex, uv).rgb;
 	float groove = tex.r;
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.65, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.3 + groove * 0.5);
-	base *= 0.78 + ndl * 0.28;
+	ndl = mix(0.72, 1.0, ndl);
+	// 縦溝をもう少しはっきり（参照の樹皮）
+	vec3 base = mix(bark_dark, bark_color, 0.22 + groove * 0.62);
+	base *= 0.82 + ndl * 0.24;
 	ALBEDO = base;
-	ROUGHNESS = 0.92;
+	ROUGHNESS = 0.95;
 	SPECULAR = 0.0;
 }

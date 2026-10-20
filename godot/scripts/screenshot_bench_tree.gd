@@ -15,8 +15,9 @@ func _run() -> void:
 	bench.name = "AssetBench"
 	bench.set("subject", "tree")
 	root.add_child(bench)
-	await create_timer(0.8).timeout
-	for i in 16:
+	# CSGユニオン＋ベイク待ち
+	await create_timer(1.6).timeout
+	for i in 30:
 		await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()
 	img.save_png("/opt/cursor/artifacts/screenshots/bench-tree.png")
