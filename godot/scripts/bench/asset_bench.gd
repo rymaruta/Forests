@@ -115,11 +115,10 @@ func _spawn_subject() -> void:
 		"cottage":
 			var home := NatureFactory.cottage()
 			hold.add_child(home)
-			# 正面
 			home.rotation.y = 0.0
-			cam.position = Vector3(0.0, 2.4, 8.5)
-			cam.look_at(Vector3(0.0, 1.6, 0.0), Vector3.UP)
-			cam.fov = 35.0
+			cam.position = Vector3(0.0, 2.2, 9.5)
+			cam.look_at(Vector3(0.0, 1.5, 0.0), Vector3.UP)
+			cam.fov = 32.0
 		"traveler":
 			var packed: PackedScene = load("res://scenes/player/Player.tscn")
 			var p: Node3D = packed.instantiate()
