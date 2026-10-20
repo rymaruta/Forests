@@ -1,6 +1,6 @@
 extends Node3D
 class_name WorldBuilder
-## スタイライズド森のビジュアル構築
+## Kenney Nature Kit (CC0) + スタイライズド地形/水
 
 
 func build() -> void:
@@ -8,8 +8,8 @@ func build() -> void:
 	_make_ground()
 	_make_path()
 	_make_water()
-	_scatter_trees_and_props()
-	_scatter_grass()
+	_scatter_nature()
+	_scatter_grass_models()
 	_make_boundary()
 	_add_lights()
 	_add_ambience()
@@ -36,7 +36,6 @@ func _make_ground() -> void:
 	mesh.material_override = VisualKit.terrain_material()
 	mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	ground.add_child(mesh)
-
 	var col := CollisionShape3D.new()
 	var shape := BoxShape3D.new()
 	shape.size = Vector3(52, 2.0, 52)
@@ -47,141 +46,147 @@ func _make_ground() -> void:
 
 
 func _make_path() -> void:
-	for a in 20:
-		var ang := a / 20.0 * TAU
-		var p := Vector3(cos(ang) * 3.4, 0.04, sin(ang) * 3.4 + 2.6)
-		var dirt := MeshInstance3D.new()
-		var box := BoxMesh.new()
-		box.size = Vector3(1.15, 0.04, 0.65)
-		dirt.mesh = box
-		var mat := StandardMaterial3D.new()
-		mat.albedo_color = Color(0.58, 0.44, 0.30)
-		mat.roughness = 0.95
-		dirt.material_override = mat
-		_gen().add_child(dirt)
-		dirt.global_position = p
-		dirt.look_at(Vector3(0, 0.04, 2.6), Vector3.UP)
+	for a in 18:
+		var ang := a / 18.0 * TAU
+		var p := Vector3(cos(ang) * 3.5, VisualKit._h(cos(ang) * 3.5, sin(ang) * 3.5 + 2.5) + 0.01, sin(ang) * 3.5 + 2.5)
+		var tile := AssetLibrary.instance("path_stone", 1.05, rad_to_deg(ang) + 90.0)
+		_gen().add_child(tile)
+		tile.global_position = p
 
 
 func _make_water() -> void:
 	var pond := Node3D.new()
 	pond.name = "Pond"
-	pond.position = Vector3(8, -0.05, -6)
+	pond.position = Vector3(8, -0.08, -6)
 	_gen().add_child(pond)
-
-	var shore := MeshInstance3D.new()
-	var shore_m := TorusMesh.new()
-	shore_m.inner_radius = 4.1
-	shore_m.outer_radius = 5.0
-	shore_m.rings = 24
-	shore_m.ring_segments = 12
-	shore.mesh = shore_m
-	var smat := StandardMaterial3D.new()
-	smat.albedo_color = Color(0.72, 0.64, 0.46)
-	smat.roughness = 0.9
-	shore.material_override = smat
-	shore.position.y = 0.08
-	shore.scale = Vector3(1, 0.25, 1)
-	pond.add_child(shore)
 
 	var water := MeshInstance3D.new()
 	var wm := CylinderMesh.new()
-	wm.top_radius = 4.35
-	wm.bottom_radius = 4.35
-	wm.height = 0.2
-	wm.radial_segments = 32
+	wm.top_radius = 4.4
+	wm.bottom_radius = 4.4
+	wm.height = 0.22
+	wm.radial_segments = 36
 	water.mesh = wm
 	water.material_override = VisualKit.water_material()
-	water.position.y = 0.12
+	water.position.y = 0.14
 	pond.add_child(water)
 
-	# lily pads
-	for i in 7:
-		var pad := MeshInstance3D.new()
-		var cyl := CylinderMesh.new()
-		cyl.top_radius = randf_range(0.25, 0.45)
-		cyl.bottom_radius = cyl.top_radius
-		cyl.height = 0.03
-		pad.mesh = cyl
-		var pm := StandardMaterial3D.new()
-		pm.albedo_color = Color(0.28, 0.52, 0.32)
-		pm.roughness = 0.7
-		pad.material_override = pm
-		var ang := i / 7.0 * TAU + 0.4
-		var r := randf_range(1.0, 3.2)
-		pad.position = Vector3(cos(ang) * r, 0.24, sin(ang) * r)
-		pond.add_child(pad)
+	# shore rocks from Kenney
+	for i in 14:
+		var ang := i / 14.0 * TAU
+		var r := 4.6 + randf_range(-0.15, 0.45)
+		var names: Array = AssetLibrary.rocks_small()
+		var n: String = names[i % names.size()]
+		var rock := AssetLibrary.instance(n, randf_range(0.9, 1.4), randf() * 360.0)
+		pond.add_child(rock)
+		rock.position = Vector3(cos(ang) * r, 0.05, sin(ang) * r)
 
-	for i in 12:
-		var ang := i / 12.0 * TAU
-		var r := 4.7 + randf_range(-0.2, 0.4)
-		_add_rock(Vector3(8 + cos(ang) * r, 0, -6 + sin(ang) * r), "river_pebble", "川辺の石", true)
+	# a few larger rocks
+	for i in 4:
+		var ang := i / 4.0 * TAU + 0.4
+		var rock := AssetLibrary.instance(AssetLibrary.rocks_large()[i % 2], randf_range(0.7, 1.0), randf() * 360.0)
+		pond.add_child(rock)
+		rock.position = Vector3(cos(ang) * 5.2, 0.02, sin(ang) * 5.2)
 
 
-func _scatter_trees_and_props() -> void:
+func _scatter_nature() -> void:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 20261020
 
-	for i in 38:
+	# Trees
+	for i in 42:
 		var p := Vector3(rng.randf_range(-17, 17), 0, rng.randf_range(-17, 17))
 		if p.distance_to(Vector3(8, 0, -6)) < 6.8:
 			continue
-		if p.length() < 3.2:
+		if p.length() < 3.4:
 			continue
-		# lift with terrain height
 		p.y = VisualKit._h(p.x, p.z)
-		if rng.randf() > 0.72:
-			_add_pine(p, rng)
-		else:
-			_add_deciduous(p, rng)
+		var pine := rng.randf() > 0.62
+		var list: Array = AssetLibrary.trees_pine() if pine else AssetLibrary.trees_deciduous()
+		var name: String = list[rng.randi_range(0, list.size() - 1)]
+		var scale := rng.randf_range(1.6, 2.6) if pine else rng.randf_range(1.8, 2.9)
+		_add_interactable_model(
+			p,
+			name,
+			scale,
+			rng.randf() * 360.0,
+			"pine_%d_%d" % [int(p.x * 10), int(p.z * 10)] if pine else "tree_%d_%d" % [int(p.x * 10), int(p.z * 10)],
+			"青葉の針葉樹" if pine else "葉ずれの木",
+			"香りが高い。青葉が採れそうだ。" if pine else "樹皮が温かい。折れた枝が採れそうだ。",
+			"pine_needle" if pine else "softwood",
+			rng.randi_range(1, 2),
+			1.1
+		)
 
-	for i in 28:
+	# Flowers
+	for i in 36:
 		var p := Vector3(rng.randf_range(-15, 15), 0, rng.randf_range(-15, 15))
-		if p.length() < 2.4:
+		if p.length() < 2.2:
 			continue
 		if p.distance_to(Vector3(8, 0, -6)) < 5.0:
 			continue
 		p.y = VisualKit._h(p.x, p.z)
-		_add_flower(p, rng)
+		var fname: String = AssetLibrary.flowers()[rng.randi_range(0, AssetLibrary.flowers().size() - 1)]
+		_add_interactable_model(
+			p, fname, rng.randf_range(1.2, 1.8), rng.randf() * 360.0,
+			"flower_%d_%d" % [int(p.x * 10), int(p.z * 10)],
+			"ひだまり草", "小さな花が揺れている。花弁をそっと摘めそうだ。",
+			"sunpetal", 1, 0.45
+		)
 
-	for i in 14:
-		var p := Vector3(rng.randf_range(-16, 16), 0, rng.randf_range(-16, 16))
-		if p.distance_to(Vector3(8, 0, -6)) < 5.2:
+	# Bushes (moss gather)
+	for i in 16:
+		var p := Vector3(rng.randf_range(-14, 14), 0, rng.randf_range(-14, 14))
+		if p.length() < 2.5:
 			continue
 		p.y = VisualKit._h(p.x, p.z)
-		_add_rock(p, "river_pebble", "苔むした岩", rng.randf() > 0.4)
-
-	for i in 12:
-		var p := Vector3(rng.randf_range(-14, 14), 0, rng.randf_range(-14, 14))
-		p.y = VisualKit._h(p.x, p.z)
-		_add_moss_clump(p)
-
-	# distant soft hills
-	for i in 6:
-		var hill := MeshInstance3D.new()
-		var s := SphereMesh.new()
-		s.radius = rng.randf_range(5.0, 8.5)
-		s.height = s.radius * 0.5
-		hill.mesh = s
-		hill.material_override = VisualKit.foliage_material(
-			Color(0.40, 0.55, 0.36), Color(0.28, 0.40, 0.26)
+		var bname: String = AssetLibrary.bushes()[rng.randi_range(0, AssetLibrary.bushes().size() - 1)]
+		_add_interactable_model(
+			p, bname, rng.randf_range(1.3, 2.0), rng.randf() * 360.0,
+			"moss_%d_%d" % [int(p.x * 10), int(p.z * 10)],
+			"こけの茂み", "湿った香り。こけ房が採れそうだ。",
+			"moss_tuft", 1, 0.7
 		)
-		var ang := i / 6.0 * TAU + 0.3
-		hill.position = Vector3(cos(ang) * 30.0, -1.5, sin(ang) * 30.0)
-		_gen().add_child(hill)
+
+	# Rocks
+	for i in 18:
+		var p := Vector3(rng.randf_range(-16, 16), 0, rng.randf_range(-16, 16))
+		if p.distance_to(Vector3(8, 0, -6)) < 5.5:
+			continue
+		p.y = VisualKit._h(p.x, p.z)
+		var rname: String = AssetLibrary.rocks_small()[rng.randi_range(0, AssetLibrary.rocks_small().size() - 1)]
+		if rng.randf() > 0.7:
+			rname = AssetLibrary.rocks_large()[rng.randi_range(0, 1)]
+		_add_interactable_model(
+			p, rname, rng.randf_range(1.0, 1.7), rng.randf() * 360.0,
+			"rock_%d_%d" % [int(p.x * 10), int(p.z * 10)],
+			"苔むした岩", "手のひらに収まる石。ポケットに入れられそうだ。",
+			"river_pebble", 1, 0.55
+		)
+
+	# Decorative logs
+	for i in 6:
+		var p := Vector3(rng.randf_range(-12, 12), 0, rng.randf_range(-12, 12))
+		if p.length() < 4.0:
+			continue
+		p.y = VisualKit._h(p.x, p.z)
+		var logn := AssetLibrary.instance("log" if rng.randf() > 0.4 else "log_large", rng.randf_range(1.0, 1.5), rng.randf() * 360.0)
+		_gen().add_child(logn)
+		logn.global_position = p
+
+	# Distant hill silhouettes using large dark trees as backdrop
+	for i in 10:
+		var ang := i / 10.0 * TAU
+		var p := Vector3(cos(ang) * 24.0, -0.2, sin(ang) * 24.0)
+		var t := AssetLibrary.instance("tree_tall", rng.randf_range(3.5, 5.0), rng.randf() * 360.0)
+		_gen().add_child(t)
+		t.global_position = p
 
 
-func _scatter_grass() -> void:
-	var blade := VisualKit.make_grass_blade_mesh()
-	var mm := MultiMesh.new()
-	mm.transform_format = MultiMesh.TRANSFORM_3D
-	mm.mesh = blade
-	mm.instance_count = 420
-
+func _scatter_grass_models() -> void:
 	var rng := RandomNumberGenerator.new()
-	rng.seed = 77
-	var i := 0
-	while i < mm.instance_count:
+	rng.seed = 99
+	for i in 160:
 		var x := rng.randf_range(-18, 18)
 		var z := rng.randf_range(-18, 18)
 		var p := Vector3(x, 0, z)
@@ -189,272 +194,46 @@ func _scatter_grass() -> void:
 			continue
 		if p.distance_to(Vector3(8, 0, -6)) < 5.0:
 			continue
-		var y := VisualKit._h(x, z)
-		var xf := Transform3D.IDENTITY
-		xf = xf.scaled(Vector3(
-			rng.randf_range(0.7, 1.3),
-			rng.randf_range(0.7, 1.45),
-			rng.randf_range(0.7, 1.3)
-		))
-		xf = xf.rotated(Vector3.UP, rng.randf() * TAU)
-		xf.origin = Vector3(x, y, z)
-		mm.set_instance_transform(i, xf)
-		i += 1
-
-	var mmi := MultiMeshInstance3D.new()
-	mmi.name = "GrassField"
-	mmi.multimesh = mm
-	mmi.material_override = VisualKit.grass_material()
-	mmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	_gen().add_child(mmi)
+		p.y = VisualKit._h(x, z)
+		var gname: String = AssetLibrary.grass_clumps()[rng.randi_range(0, AssetLibrary.grass_clumps().size() - 1)]
+		var g := AssetLibrary.instance(gname, rng.randf_range(1.0, 1.8), rng.randf() * 360.0)
+		_gen().add_child(g)
+		g.global_position = p
 
 
-func _add_deciduous(pos: Vector3, rng: RandomNumberGenerator) -> void:
+func _add_interactable_model(
+	pos: Vector3,
+	asset_name: String,
+	scale: float,
+	yaw: float,
+	id: String,
+	display: String,
+	examine: String,
+	item: String,
+	amount: int,
+	col_radius: float
+) -> void:
 	var body := Interactable.new()
-	body.interact_id = "tree_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = "葉ずれの木"
-	body.examine_text = "樹皮が温かい。折れた枝が採れそうだ。"
-	body.item_id = "softwood"
-	body.item_amount = rng.randi_range(1, 2)
-	body.position = pos
-
-	var trunk_h := rng.randf_range(1.8, 2.8)
-	var trunk := MeshInstance3D.new()
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = 0.12
-	cyl.bottom_radius = 0.30
-	cyl.height = trunk_h
-	cyl.radial_segments = 10
-	trunk.mesh = cyl
-	trunk.material_override = VisualKit.bark_material(
-		Color(0.40, 0.26, 0.16).lerp(Color(0.48, 0.32, 0.20), rng.randf())
-	)
-	trunk.position.y = trunk_h * 0.5
-	trunk.rotation_degrees.z = rng.randf_range(-4, 4)
-	body.add_child(trunk)
-
-	var leaf_col := Color(0.34, 0.58, 0.32).lerp(Color(0.48, 0.66, 0.34), rng.randf())
-	var dark := leaf_col.darkened(0.28)
-	var mat := VisualKit.foliage_material(leaf_col, dark)
-
-	# layered soft canopy (flattened spheres + offsets)
-	var layers := [
-		Vector3(0.0, trunk_h + 0.55, 0.0),
-		Vector3(0.35, trunk_h + 0.25, 0.15),
-		Vector3(-0.3, trunk_h + 0.3, -0.2),
-		Vector3(0.1, trunk_h + 0.9, -0.15),
-		Vector3(-0.15, trunk_h + 0.75, 0.25),
-	]
-	for li in layers.size():
-		var leaves := MeshInstance3D.new()
-		var sphere := SphereMesh.new()
-		sphere.radius = rng.randf_range(0.65, 1.05) * (1.0 if li < 3 else 0.75)
-		sphere.height = sphere.radius * rng.randf_range(1.3, 1.7)
-		sphere.radial_segments = 12
-		sphere.rings = 8
-		leaves.mesh = sphere
-		leaves.material_override = mat
-		leaves.position = layers[li]
-		leaves.scale = Vector3(
-			rng.randf_range(1.0, 1.35),
-			rng.randf_range(0.7, 0.95),
-			rng.randf_range(1.0, 1.35)
-		)
-		body.add_child(leaves)
-
-	var col := CollisionShape3D.new()
-	var shape := CylinderShape3D.new()
-	shape.radius = 0.65
-	shape.height = trunk_h + 1.4
-	col.shape = shape
-	col.position.y = shape.height * 0.4
-	body.add_child(col)
-	_gen().add_child(body)
-
-
-func _add_pine(pos: Vector3, rng: RandomNumberGenerator) -> void:
-	var body := Interactable.new()
-	body.interact_id = "pine_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = "青葉の針葉樹"
-	body.examine_text = "香りが高い。青葉が採れそうだ。"
-	body.item_id = "pine_needle"
-	body.item_amount = rng.randi_range(1, 2)
-	body.position = pos
-
-	var trunk_h := rng.randf_range(2.2, 3.2)
-	var trunk := MeshInstance3D.new()
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = 0.08
-	cyl.bottom_radius = 0.22
-	cyl.height = trunk_h
-	trunk.mesh = cyl
-	trunk.material_override = VisualKit.bark_material(Color(0.35, 0.24, 0.18))
-	trunk.position.y = trunk_h * 0.5
-	body.add_child(trunk)
-
-	var mat := VisualKit.foliage_material(Color(0.22, 0.42, 0.30), Color(0.12, 0.28, 0.18))
-	for k in 4:
-		var cone := MeshInstance3D.new()
-		var cm := CylinderMesh.new()
-		var r := 1.1 - k * 0.18
-		cm.top_radius = 0.02
-		cm.bottom_radius = r
-		cm.height = 0.85
-		cone.mesh = cm
-		cone.material_override = mat
-		cone.position.y = 1.0 + k * 0.55
-		body.add_child(cone)
-
-	var col := CollisionShape3D.new()
-	var shape := CylinderShape3D.new()
-	shape.radius = 0.7
-	shape.height = trunk_h + 1.0
-	col.shape = shape
-	col.position.y = shape.height * 0.4
-	body.add_child(col)
-	_gen().add_child(body)
-
-
-func _add_flower(pos: Vector3, rng: RandomNumberGenerator) -> void:
-	var body := Interactable.new()
-	body.interact_id = "flower_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = "ひだまり草"
-	body.examine_text = "小さな花が揺れている。花弁をそっと摘めそうだ。"
-	body.item_id = "sunpetal"
-	body.item_amount = 1
-	body.position = pos
-
-	var stem := MeshInstance3D.new()
-	var cyl := CylinderMesh.new()
-	cyl.top_radius = 0.02
-	cyl.bottom_radius = 0.03
-	cyl.height = 0.45
-	stem.mesh = cyl
-	var sm := StandardMaterial3D.new()
-	sm.albedo_color = Color(0.25, 0.5, 0.28)
-	stem.material_override = sm
-	stem.position.y = 0.22
-	body.add_child(stem)
-
-	var petal_cols := [
-		Color(0.98, 0.78, 0.38),
-		Color(0.95, 0.58, 0.68),
-		Color(0.88, 0.82, 0.98),
-		Color(1.0, 0.92, 0.62),
-		Color(0.75, 0.88, 0.98),
-	]
-	var base_col: Color = petal_cols[rng.randi_range(0, petal_cols.size() - 1)]
-	var pmat := StandardMaterial3D.new()
-	pmat.albedo_color = base_col
-	pmat.roughness = 0.45
-	pmat.emission_enabled = true
-	pmat.emission = base_col
-	pmat.emission_energy_multiplier = 0.15
-
-	for p in 6:
-		var petal := MeshInstance3D.new()
-		var sphere := SphereMesh.new()
-		sphere.radius = 0.1
-		petal.mesh = sphere
-		petal.material_override = pmat
-		var ang := p / 6.0 * TAU
-		petal.position = Vector3(cos(ang) * 0.11, 0.48, sin(ang) * 0.11)
-		petal.scale = Vector3(1.2, 0.4, 0.75)
-		body.add_child(petal)
-
-	var center := MeshInstance3D.new()
-	var cs := SphereMesh.new()
-	cs.radius = 0.07
-	center.mesh = cs
-	var cm := StandardMaterial3D.new()
-	cm.albedo_color = Color(0.95, 0.82, 0.3)
-	center.material_override = cm
-	center.position.y = 0.49
-	body.add_child(center)
-
-	var col := CollisionShape3D.new()
-	var shape := SphereShape3D.new()
-	shape.radius = 0.4
-	col.shape = shape
-	col.position.y = 0.25
-	body.add_child(col)
-	_gen().add_child(body)
-
-
-func _add_rock(pos: Vector3, item: String, label: String, with_moss: bool = false) -> void:
-	var body := Interactable.new()
-	body.interact_id = "rock_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = label
-	body.examine_text = "手のひらに収まる石。ポケットに入れられそうだ。"
+	body.interact_id = id
+	body.display_name = display
+	body.examine_text = examine
 	body.item_id = item
-	body.item_amount = 1
+	body.item_amount = amount
 	body.position = pos
 
-	var mesh := MeshInstance3D.new()
-	var sphere := SphereMesh.new()
-	sphere.radius = randf_range(0.3, 0.6)
-	sphere.height = sphere.radius * randf_range(0.95, 1.35)
-	sphere.radial_segments = 10
-	mesh.mesh = sphere
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = Color(0.52, 0.54, 0.56).lerp(Color(0.46, 0.48, 0.42), randf())
-	mat.roughness = 0.82
-	mesh.material_override = mat
-	mesh.position.y = sphere.height * 0.25
-	mesh.scale = Vector3(randf_range(0.95, 1.45), randf_range(0.5, 0.8), randf_range(0.95, 1.35))
-	mesh.rotation_degrees = Vector3(randf_range(-20, 20), randf_range(0, 360), randf_range(-12, 12))
-	body.add_child(mesh)
-
-	if with_moss:
-		var moss := MeshInstance3D.new()
-		var ms := SphereMesh.new()
-		ms.radius = 0.14
-		moss.mesh = ms
-		moss.material_override = VisualKit.foliage_material(Color(0.34, 0.52, 0.32))
-		moss.position = mesh.position + Vector3(0.06, 0.1, 0.02)
-		moss.scale = Vector3(1.5, 0.35, 1.2)
-		body.add_child(moss)
+	var model := AssetLibrary.instance(asset_name, scale, yaw)
+	body.add_child(model)
 
 	var col := CollisionShape3D.new()
 	var shape := SphereShape3D.new()
-	shape.radius = 0.45
+	shape.radius = col_radius * maxf(scale * 0.35, 0.8)
 	col.shape = shape
-	col.position.y = 0.2
-	body.add_child(col)
-	_gen().add_child(body)
-
-
-func _add_moss_clump(pos: Vector3) -> void:
-	var body := Interactable.new()
-	body.interact_id = "moss_%d_%d" % [int(pos.x * 10), int(pos.z * 10)]
-	body.display_name = "こけの丘"
-	body.examine_text = "湿った香り。こけ房が採れそうだ。"
-	body.item_id = "moss_tuft"
-	body.item_amount = 1
-	body.position = pos
-
-	var mat := VisualKit.foliage_material(Color(0.32, 0.50, 0.34), Color(0.2, 0.36, 0.24))
-	for i in 4:
-		var mesh := MeshInstance3D.new()
-		var sphere := SphereMesh.new()
-		sphere.radius = 0.26 + i * 0.04
-		mesh.mesh = sphere
-		mesh.material_override = mat
-		mesh.position = Vector3(randf_range(-0.18, 0.18), 0.08, randf_range(-0.18, 0.18))
-		mesh.scale = Vector3(1.35, 0.38, 1.15)
-		body.add_child(mesh)
-
-	var col := CollisionShape3D.new()
-	var shape := SphereShape3D.new()
-	shape.radius = 0.5
-	col.shape = shape
-	col.position.y = 0.1
+	col.position.y = shape.radius * 0.6
 	body.add_child(col)
 	_gen().add_child(body)
 
 
 func _add_lights() -> void:
-	# 影を溶かして柔らかくする補助光
 	var fill := OmniLight3D.new()
 	fill.light_color = Color(0.75, 0.88, 1.0)
 	fill.light_energy = 0.85
@@ -486,26 +265,24 @@ func _add_lights() -> void:
 
 func _add_ambience() -> void:
 	var pollen := GPUParticles3D.new()
-	pollen.name = "Pollen"
-	pollen.amount = 40
-	pollen.lifetime = 8.0
+	pollen.amount = 48
+	pollen.lifetime = 9.0
 	pollen.preprocess = 2.0
-	pollen.visibility_aabb = AABB(Vector3(-20, 0, -20), Vector3(40, 12, 40))
+	pollen.visibility_aabb = AABB(Vector3(-22, 0, -22), Vector3(44, 14, 44))
 	var mat := ParticleProcessMaterial.new()
 	mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
 	mat.emission_box_extents = Vector3(16, 2, 16)
-	mat.direction = Vector3(0.2, 0.4, 0.1)
-	mat.spread = 40.0
-	mat.initial_velocity_min = 0.15
-	mat.initial_velocity_max = 0.45
-	mat.gravity = Vector3(0, 0.02, 0)
+	mat.direction = Vector3(0.2, 0.45, 0.1)
+	mat.spread = 45.0
+	mat.initial_velocity_min = 0.12
+	mat.initial_velocity_max = 0.4
+	mat.gravity = Vector3(0, 0.015, 0)
 	mat.scale_min = 0.04
-	mat.scale_max = 0.09
-	mat.color = Color(1.0, 0.95, 0.7, 0.75)
+	mat.scale_max = 0.1
+	mat.color = Color(1.0, 0.95, 0.7, 0.8)
 	pollen.process_material = mat
 	var draw := SphereMesh.new()
 	draw.radius = 0.5
-	draw.height = 1.0
 	pollen.draw_pass_1 = draw
 	pollen.position = Vector3(0, 2.5, 0)
 	_gen().add_child(pollen)
