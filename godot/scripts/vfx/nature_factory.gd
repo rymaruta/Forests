@@ -6,9 +6,9 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 2.15
-const HERO_BASE_R := 0.32
-const HERO_TOP_R := 0.16
+const HERO_TRUNK_H := 1.95
+const HERO_BASE_R := 0.34
+const HERO_TOP_R := 0.17
 const HERO_CANOPY_R := 1.28
 const HERO_SEED := 2901
 
@@ -56,12 +56,12 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var trunk_h := h * (1.05 if hero else 0.92)
 	var toe_n := 0 if hero else (0 if backdrop else 4)
 	# ヒーローは根OBJが裾を持つので幹下端を少し浮かせて重ねる
-	var trunk_start_y := 0.48 if (hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj")) else 0.0
+	var trunk_start_y := 0.72 if (hero and ResourceLoader.exists("res://assets/meshes/root_hero.obj")) else 0.0
 	var trunk_mesh_h := trunk_h - trunk_start_y
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_mesh_h, base_r * (0.92 if trunk_start_y > 0.0 else 1.0), top_r,
 		28 if hero else 16, lean,
-		0.022 if hero else 0.028, true,
+		0.035 if hero else 0.028, true,
 		0
 	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake root_hero.obj — 幹裾＋丸趾。趾の谷を残す（溶かしすぎ禁止）。"""
+"""Bake root_hero.obj — 幹下半＋趾を一体の soft-union（継ぎ目・浮き球禁止）。"""
 from __future__ import annotations
 
 import math
@@ -9,11 +9,11 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "root_hero.obj"
-RES = 110
+RES = 120
 PAD = 0.05
-K_TRUNK = 0.11
-K_TOE = 0.11  # 幹へしっかり溶かす（浮き球禁止）。趾の谷は配置で残す
+K = 0.11
 BASE_R = 0.32
+TOP_Y = 0.85  # 幹下半まで含めて継ぎ目を消す
 
 
 def soft_min(a, b, k):
@@ -26,29 +26,30 @@ def soft_max(a, b, k):
 
 
 def main():
-    trunk_specs = []
-    for i in range(7):
-        y = 0.10 + i * 0.085
-        r = BASE_R * (1.05 - i * 0.03)
-        trunk_specs.append((0.0, y, 0.0, r, r * 0.88, r))
+    specs = []  # cx,cy,cz,rx,ry,rz
+    # 幹円柱を縦に連続（上まで）
+    n = 10
+    for i in range(n):
+        t = i / (n - 1)
+        y = 0.08 + t * (TOP_Y - 0.08)
+        # 裾だけ少し太い
+        flare = 1.0 + 0.22 * max(0.0, 1.0 - y / 0.35) ** 2
+        r = BASE_R * flare * (1.0 - 0.12 * t)
+        specs.append((0.0, y, 0.0, r, r * 0.85, r))
 
-    toe_specs = []
+    # 趾：幹裾から連続して外へ細長く
     for i in range(4):
         a = i / 4 * math.tau + 0.55
-        # 放射方向に細長い趾（丸ブロブ禁止）
         ca, sa = math.cos(a), math.sin(a)
-        reach = BASE_R + 0.10
-        # 外側の趾：XZ に長く、Y は低め
-        toe_specs.append((ca * reach, 0.12, sa * reach, 0.20, 0.13, 0.14))
-        toe_specs.append((ca * (reach + 0.08), 0.10, sa * (reach + 0.08), 0.12, 0.10, 0.10))
-        toe_specs.append((ca * (BASE_R * 0.55), 0.20, sa * (BASE_R * 0.55), 0.14, 0.14, 0.13))
-        toe_specs.append((ca * (BASE_R * 0.28), 0.30, sa * (BASE_R * 0.28), 0.11, 0.12, 0.11))
+        # 幹側面から生え、地面へ寝る
+        specs.append((ca * BASE_R * 0.35, 0.22, sa * BASE_R * 0.35, 0.16, 0.14, 0.15))
+        specs.append((ca * (BASE_R + 0.06), 0.14, sa * (BASE_R + 0.06), 0.17, 0.12, 0.13))
+        specs.append((ca * (BASE_R + 0.16), 0.10, sa * (BASE_R + 0.16), 0.13, 0.10, 0.11))
 
-    all_specs = trunk_specs + toe_specs
-    rs = [max(s[3], s[4], s[5]) for s in all_specs]
-    xs = [s[0] for s in all_specs]
-    ys = [s[1] for s in all_specs]
-    zs = [s[2] for s in all_specs]
+    rs = [max(s[3], s[4], s[5]) for s in specs]
+    xs = [s[0] for s in specs]
+    ys = [s[1] for s in specs]
+    zs = [s[2] for s in specs]
     mn = np.array([
         min(xs[i] - rs[i] for i in range(len(xs))),
         min(ys[i] - rs[i] for i in range(len(ys))),
@@ -70,19 +71,11 @@ def main():
         return d * min(rx, ry, rz)
 
     field = None
-    for s in trunk_specs:
+    for s in specs:
         d = ell(*s)
-        field = d if field is None else soft_min(field, d, K_TRUNK)
+        field = d if field is None else soft_min(field, d, K)
 
-    # 各趾グループ（4楕円）を幹へ soft-union
-    for i in range(0, len(toe_specs), 4):
-        toe_field = ell(*toe_specs[i])
-        for j in range(1, 4):
-            toe_field = soft_min(toe_field, ell(*toe_specs[i + j]), K_TOE)
-        field = soft_min(field, toe_field, K_TOE)
-
-    # 床カットは弱め（鋭い穴・白縁を出さない）。底はわずかに丸く残す
-    field = soft_max(field, -Y + 0.002, 0.06)
+    field = soft_max(field, -Y + 0.002, 0.05)
 
     verts, faces, _, _ = marching_cubes(
         field,
@@ -107,7 +100,7 @@ def main():
     faces = np.array(new_faces)
 
     with OUT.open("w") as fo:
-        fo.write("# root soft-union toes=4 k_toe=%.2f\n" % K_TOE)
+        fo.write("# root+lower-trunk soft-union k=%.2f top=%.2f\n" % (K, TOP_Y))
         for v in verts:
             fo.write("v %.5f %.5f %.5f\n" % tuple(v))
         for f in faces:
