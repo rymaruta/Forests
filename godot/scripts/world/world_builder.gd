@@ -339,39 +339,25 @@ func _rand_point(rng: RandomNumberGenerator, min_len: float, pond_clear: float) 
 
 
 func _add_lights() -> void:
+	# WebGL でも安定するよう Omni は少数に絞る
 	var fill := OmniLight3D.new()
 	fill.light_color = ForestsPalette.FILL_COOL
-	fill.light_energy = 1.1
-	fill.omni_range = 50.0
-	fill.position = Vector3(-10, 13, 14)
+	fill.light_energy = 0.85
+	fill.omni_range = 42.0
+	fill.position = Vector3(-8, 11, 12)
 	_gen().add_child(fill)
 
 	var warm := OmniLight3D.new()
 	warm.light_color = ForestsPalette.FILL_WARM
-	warm.light_energy = 1.0
-	warm.omni_range = 36.0
-	warm.position = Vector3(12, 7.5, -4)
+	warm.light_energy = 0.8
+	warm.omni_range = 28.0
+	warm.position = Vector3(10, 6.5, -3)
 	_gen().add_child(warm)
 
-	var ground := OmniLight3D.new()
-	ground.light_color = ForestsPalette.BOUNCE_GREEN
-	ground.light_energy = 0.6
-	ground.omni_range = 32.0
-	ground.position = Vector3(0, 1.5, 2)
-	_gen().add_child(ground)
-
-	var pond_l := OmniLight3D.new()
-	pond_l.light_color = Color(0.72, 0.94, 0.96)
-	pond_l.light_energy = 0.75
-	pond_l.omni_range = 11.0
-	pond_l.position = Vector3(8, 1.6, -6)
-	_gen().add_child(pond_l)
-
-	# cottage warm window glow
 	var home_l := OmniLight3D.new()
 	home_l.light_color = Color(1.0, 0.85, 0.55)
-	home_l.light_energy = 0.85
-	home_l.omni_range = 8.0
+	home_l.light_energy = 0.7
+	home_l.omni_range = 7.0
 	home_l.position = Vector3(-6.0, 1.4, 5.2)
 	_gen().add_child(home_l)
 

@@ -25,15 +25,20 @@ func _ready() -> void:
 	_refresh_item_chip()
 	_update_action_button()
 
-	# Web の await/_ready 相性を避け、同期生成＋物理ロック
+	# Web 安定のため同期生成＋物理ロック
 	player.set_physics_process(false)
 	player.velocity = Vector3.ZERO
 	world_builder.build()
 	_apply_loaded_save()
-	player.global_position = Vector3(0.0, VisualKit._h(0.0, 3.0) + 0.4, 3.0)
+	var spawn := Vector3(0.0, VisualKit._h(0.0, 3.0) + 0.5, 3.0)
+	player.global_position = spawn
 	player.velocity = Vector3.ZERO
 	player.visible = true
 	player.set_physics_process(true)
+	# カメラを即座に正しい位置へ
+	camera_pivot.global_position = spawn + Vector3(0, 1.0, 0)
+	camera_pivot.yaw = 0.55
+	camera_pivot.pitch = -0.22
 	GameState.toast_requested.emit("森が息づいた")
 
 	if GameState.show_tutorial:
