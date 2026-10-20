@@ -7,40 +7,40 @@ static func load_shader(path: String) -> Shader:
 	return load(path) as Shader
 
 
-static func terrain_material() -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_terrain.gdshader")
-	m.set_shader_parameter("grass_tex", load("res://assets/textures/grass.png"))
-	m.set_shader_parameter("dirt_tex", load("res://assets/textures/dirt.png"))
-	m.set_shader_parameter("tint", Vector3(ForestsPalette.GRASS_B.r, ForestsPalette.GRASS_B.g, ForestsPalette.GRASS_B.b))
+static func terrain_material() -> Material:
+	# Web 安定優先: まずは StandardMaterial（シェーダー障害切り分け）
+	var m := StandardMaterial3D.new()
+	m.albedo_color = ForestsPalette.GRASS_B
+	m.albedo_texture = load("res://assets/textures/grass.png")
+	m.uv1_scale = Vector3(8, 8, 8)
+	m.roughness = 0.92
 	return m
 
 
-static func foliage_material(color: Color, dark: Color = Color.BLACK) -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_foliage.gdshader")
-	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
-	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
-	var dcol := dark if (dark.a > 0.01 and dark != Color.BLACK) else color.darkened(0.38)
-	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
-	m.set_shader_parameter("wind_strength", 0.15)
-	m.set_shader_parameter("roughness_val", 0.62)
+static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Material:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = color
+	m.albedo_texture = load("res://assets/textures/leaf.png")
+	m.roughness = 0.7
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
 	return m
 
 
-static func water_material() -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_water.gdshader")
-	m.set_shader_parameter("shallow_color", Vector3(ForestsPalette.WATER_SHALLOW.r, ForestsPalette.WATER_SHALLOW.g, ForestsPalette.WATER_SHALLOW.b))
-	m.set_shader_parameter("deep_color", Vector3(ForestsPalette.WATER_DEEP.r, ForestsPalette.WATER_DEEP.g, ForestsPalette.WATER_DEEP.b))
+static func water_material() -> Material:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(ForestsPalette.WATER_SHALLOW.r, ForestsPalette.WATER_SHALLOW.g, ForestsPalette.WATER_SHALLOW.b, 0.82)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	m.roughness = 0.08
+	m.metallic = 0.15
 	return m
 
 
-static func grass_material() -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_grass.gdshader")
-	m.set_shader_parameter("tip_color", Color(0.58, 0.76, 0.36))
-	m.set_shader_parameter("root_color", Color(0.22, 0.42, 0.22))
+static func grass_material() -> Material:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = Color(0.45, 0.68, 0.32)
+	m.roughness = 0.9
+	m.cull_mode = BaseMaterial3D.CULL_DISABLED
+	m.vertex_color_use_as_albedo = true
 	return m
 
 
@@ -53,23 +53,14 @@ static func bark_material(tint: Color = ForestsPalette.BARK_WARM) -> StandardMat
 	return m
 
 
-static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_bark.gdshader")
-	m.set_shader_parameter("bark_tex", load("res://assets/textures/bark.png"))
-	m.set_shader_parameter("bark_color", Vector3(tint.r, tint.g, tint.b))
-	var bd := tint.darkened(0.45)
-	m.set_shader_parameter("bark_dark", Vector3(bd.r, bd.g, bd.b))
-	return m
+static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Material:
+	return bark_material(tint)
 
 
-static func character_material(base: Color, shadow: Color = Color.BLACK) -> ShaderMaterial:
-	var m := ShaderMaterial.new()
-	m.shader = load_shader("res://assets/shaders/stylized_character.gdshader")
-	m.set_shader_parameter("base_color", Vector3(base.r, base.g, base.b))
-	if shadow == Color.BLACK:
-		shadow = base.darkened(0.4)
-	m.set_shader_parameter("shadow_color", Vector3(shadow.r, shadow.g, shadow.b))
+static func character_material(base: Color, shadow: Color = Color.BLACK) -> Material:
+	var m := StandardMaterial3D.new()
+	m.albedo_color = base
+	m.roughness = 0.7
 	return m
 
 

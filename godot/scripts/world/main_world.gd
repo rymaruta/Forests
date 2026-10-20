@@ -38,6 +38,18 @@ func _ready() -> void:
 	camera_pivot.pitch = -0.22
 	camera_pivot.snap_to_target()
 
+	# Web描画確認用の無陰影マーカー（必ず見えるはず）
+	var marker := MeshInstance3D.new()
+	var box := BoxMesh.new()
+	box.size = Vector3(1.6, 1.6, 1.6)
+	marker.mesh = box
+	var mm := StandardMaterial3D.new()
+	mm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mm.albedo_color = Color(1.0, 0.15, 0.1)
+	marker.material_override = mm
+	marker.position = spawn + Vector3(0, 1.2, -2.0)
+	add_child(marker)
+
 	var gen := world_builder.get_node_or_null("Generated")
 	var count := gen.get_child_count() if gen else 0
 	GameState.toast_requested.emit("森が息づいた (%d)" % count)
