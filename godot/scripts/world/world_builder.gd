@@ -11,6 +11,7 @@ func build() -> void:
 	_scatter_trees()
 	_scatter_flowers_bushes_rocks()
 	_scatter_grass()
+	_make_spawn_garden()
 	_make_boundary()
 	_add_lights()
 	_add_ambience()
@@ -368,6 +369,45 @@ func _rand_point(rng: RandomNumberGenerator, min_len: float, pond_clear: float) 
 			continue
 		return p
 	return Vector3(rng.randf_range(4, 10), 0, rng.randf_range(4, 10))
+
+
+func _make_spawn_garden() -> void:
+	## スポーン周りを意図的に美しく（ランダム散布だけにしない）
+	var rng := RandomNumberGenerator.new()
+	rng.seed = 99
+	var cols := [
+		Color(0.98, 0.72, 0.4),
+		Color(0.95, 0.55, 0.68),
+		Color(0.7, 0.72, 0.96),
+		Color(0.95, 0.92, 0.65),
+	]
+	for i in 16:
+		var ang := i / 16.0 * TAU
+		var r := 4.2 + (i % 3) * 0.35
+		var p := Vector3(cos(ang) * r, 0, sin(ang) * r + 2.5)
+		p.y = VisualKit._h(p.x, p.z)
+		var f := _make_flower(rng, cols[i % cols.size()])
+		f.position = p
+		f.scale = Vector3.ONE * rng.randf_range(1.05, 1.35)
+		_gen().add_child(f)
+	# soft contact shadow under spawn ring
+	for i in 8:
+		var ang := i / 8.0 * TAU
+		var disc := MeshInstance3D.new()
+		var cm := CylinderMesh.new()
+		cm.top_radius = 0.55
+		cm.bottom_radius = 0.55
+		cm.height = 0.01
+		disc.mesh = cm
+		var m := _mat(Color(0.12, 0.18, 0.1, 0.22), 1.0)
+		m.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		disc.material_override = m
+		var x := cos(ang) * 3.4
+		var z := sin(ang) * 3.4 + 2.5
+		disc.position = Vector3(x, VisualKit._h(x, z) + 0.01, z)
+		disc.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		_gen().add_child(disc)
 
 
 func _add_lights() -> void:
