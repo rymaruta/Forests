@@ -158,20 +158,20 @@ static func _root_flare_mul(t: float) -> float:
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## フレアから下外へ掃引する指。単球ソーセージ禁止。
-	if toes <= 0 or t > 0.30:
+	## フレア上の丸い指。星型尖り／単球ソーセージ禁止。
+	if toes <= 0 or t > 0.28:
 		return 1.0
-	# 接地寄りで最大、上へ滑らかに消える
-	var fall := 1.0 - t / 0.30
+	var fall := 1.0 - t / 0.28
 	fall = fall * fall * (3.0 - 2.0 * fall)
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.55
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.40, 0.0, 1.0)
+		# 広めローブで尖りを消し、丸いパッドにする
+		var lobe: float = clampf(1.0 - d / 0.52, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.48 * best * fall
+	return 1.0 + 0.40 * best * fall
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

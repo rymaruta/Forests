@@ -23,31 +23,30 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 大きめ少数（細粒密集はパフ感を壊す）
+    # 縦長の雲冠（横広扁平禁止）。大きめ少数。
     specs = [
-        ((0.0, 0.55, 0.0), 0.48),
-        ((0.0, 0.88, 0.0), 0.38),
-        ((0.0, 0.24, 0.0), 0.40),
+        ((0.0, 0.58, 0.0), 0.46),
+        ((0.0, 0.95, 0.0), 0.40),
+        ((0.0, 0.28, 0.0), 0.38),
     ]
     for i in range(6):
         a = i / 6 * math.tau + 0.18
-        # 房を少し外へ：谷が読める
         specs.append(
             (
-                (math.cos(a) * 0.58, 0.50 + 0.04 * math.sin(i), math.sin(a) * 0.58),
-                0.34,
+                (math.cos(a) * 0.50, 0.55 + 0.05 * math.sin(i), math.sin(a) * 0.50),
+                0.33,
             )
         )
     for i in range(5):
         a = i / 5 * math.tau + 0.5
-        specs.append(((math.cos(a) * 0.32, 0.98, math.sin(a) * 0.32), 0.28))
-    specs.append(((0.0, 1.22, 0.0), 0.26))
+        specs.append(((math.cos(a) * 0.28, 1.08, math.sin(a) * 0.28), 0.27))
+    specs.append(((0.0, 1.35, 0.0), 0.24))
     for i in range(5):
         a = i / 5 * math.tau + 0.1
-        specs.append(((math.cos(a) * 0.40, 0.14, math.sin(a) * 0.40), 0.28))
+        specs.append(((math.cos(a) * 0.36, 0.16, math.sin(a) * 0.36), 0.26))
     for i in range(4):
         a = i / 4 * math.tau + 0.35
-        specs.append(((math.cos(a) * 0.26, 0.70, math.sin(a) * 0.26), 0.22))
+        specs.append(((math.cos(a) * 0.24, 0.78, math.sin(a) * 0.24), 0.22))
     return specs
 
 
