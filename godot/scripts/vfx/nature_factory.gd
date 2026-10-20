@@ -55,11 +55,11 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var trunk_h := h * (1.05 if hero else 0.92)
 	var trunk := MeshInstance3D.new()
 	var toe_n := 4 if hero else (0 if backdrop else 4)
-	# ヒーローは幾何フルート弱め（規則柱に見える）。溝はシェーダ任せ
+	# ヒーローは幾何フルート無し（規則柱禁止）。溝はテクスチャ＋シェーダ
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_h, base_r, top_r,
 		40 if hero else 16, lean,
-		0.010 if hero else 0.028, true,
+		0.0 if hero else 0.028, true,
 		toe_n
 	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
@@ -73,7 +73,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		toe.mesh = CraftMeshes.uv_sphere(toe_r, 18 if hero else 10, 20 if hero else 12, 0.02, float(i) * 2.7, 0.97)
 		toe.material_override = VisualKit.bark_shader_material(bark_tint)
 		var reach := (base_r * 0.95) if hero else (base_r * 0.85)
-		toe.position = Vector3(ca * reach, toe_r * 0.42, sa * reach)
+		# 底を丸く見せる（床で切った平底禁止）
+		toe.position = Vector3(ca * reach, toe_r * 0.78, sa * reach)
 		toe.scale = Vector3(1.12, 1.05, 1.12)
 		toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(toe)
@@ -86,7 +87,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 				join.mesh = CraftMeshes.uv_sphere(jr, 12, 14, 0.008, float(i) * 1.7 + float(j), 0.98)
 				join.material_override = VisualKit.bark_shader_material(bark_tint)
 				var jrch := lerpf(base_r * 0.25, reach * 0.85, t)
-				var jy := lerpf(0.34, toe_r * 0.55, t)
+				var jy := lerpf(0.40, toe_r * 0.75, t)
 				join.position = Vector3(ca * jrch, jy, sa * jrch)
 				join.scale = Vector3(1.15, 1.1, 1.15)
 				join.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

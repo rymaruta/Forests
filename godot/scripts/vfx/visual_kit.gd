@@ -94,8 +94,8 @@ static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Mate
 	m.set_shader_parameter("bark_color", Vector3(tint.r, tint.g, tint.b))
 	var bd := tint.darkened(0.38)
 	m.set_shader_parameter("bark_dark", Vector3(bd.r, bd.g, bd.b))
-	m.set_shader_parameter("uv_scale_x", 2.2)
-	m.set_shader_parameter("uv_scale_y", 3.4)
+	m.set_shader_parameter("uv_scale_x", 1.6)
+	m.set_shader_parameter("uv_scale_y", 2.6)
 	return m
 
 

@@ -42,11 +42,11 @@ void fragment() {
 	float g3 = 0.5 + 0.5 * sin(ang * 5.5 + y * 0.7 + 0.4);
 	float world_groove = g1 * 0.50 + g2 * 0.32 + g3 * 0.18;
 	world_groove = smoothstep(0.32, 0.74, world_groove);
-	float groove = mix(tex.r * 0.55 + 0.18, world_groove, 0.78);
+	// テクスチャの有機溝を主に、ワールド sine は補助（規則柱禁止）
+	float groove = mix(world_groove, tex.r * 0.85 + 0.08, 0.62);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
 	ndl = mix(0.82, 1.0, ndl);
-	// コントラスト控えめ（規則柱っぽい強溝を避ける）
-	vec3 base = mix(bark_dark, bark_color, 0.38 + groove * 0.40);
+	vec3 base = mix(bark_dark, bark_color, 0.36 + groove * 0.44);
 	base *= 0.90 + ndl * 0.14;
 	ALBEDO = base;
 	ROUGHNESS = 0.99;
