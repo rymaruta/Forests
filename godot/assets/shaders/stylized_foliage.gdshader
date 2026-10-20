@@ -54,9 +54,9 @@ void fragment() {
 	float f_mid = _vnoise(v_world * 12.0 + 1.7);
 	float f_hi = _vnoise(v_world * 28.0 + 4.2);
 	float flock = f_lo * 0.46 + f_mid * 0.36 + f_hi * 0.18;
-	float crevice = clamp(1.0 - NORMAL.y * 1.1, 0.0, 1.0);
-	crevice = pow(crevice, 1.25);
-	float lobe_ao = mix(1.0, 0.55, crevice);
+	float crevice = clamp(1.0 - NORMAL.y * 0.95, 0.0, 1.0);
+	crevice = crevice * crevice;
+	float lobe_ao = mix(1.0, 0.72, crevice);
 	// 毛羽っぽい擬似法線
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));

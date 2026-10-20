@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照の雲房：小さめ房が密集。"""
+"""Bake canopy_hero.obj — 参照：大きめの房が少数、柔らかい谷でつながる。"""
 from __future__ import annotations
 
 import math
@@ -11,9 +11,9 @@ from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
 BASE_R = 1.28
-RES = 140
-PAD = 0.12
-K_BLEND = 0.10
+RES = 128
+PAD = 0.14
+K_BLEND = 0.13
 SEED = 2901
 
 
@@ -23,33 +23,30 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
+    # 大きめ少数（細粒密集はパフ感を壊す）
     specs = [
-        ((0.0, 0.50, 0.0), 0.38),
-        ((0.0, 0.78, 0.0), 0.30),
-        ((0.0, 0.26, 0.0), 0.32),
+        ((0.0, 0.55, 0.0), 0.48),
+        ((0.0, 0.88, 0.0), 0.38),
+        ((0.0, 0.24, 0.0), 0.40),
     ]
-    # 外周の中房（雲の盛り上がり）
-    for i in range(9):
-        a = i / 9 * math.tau + 0.12
+    for i in range(6):
+        a = i / 6 * math.tau + 0.18
         specs.append(
             (
-                (math.cos(a) * 0.50, 0.46 + 0.05 * math.sin(i * 1.4), math.sin(a) * 0.50),
-                0.26,
+                (math.cos(a) * 0.52, 0.50 + 0.04 * math.sin(i), math.sin(a) * 0.52),
+                0.36,
             )
         )
-    for i in range(8):
-        a = i / 8 * math.tau + 0.4
-        specs.append(((math.cos(a) * 0.34, 0.74, math.sin(a) * 0.34), 0.22))
-    for i in range(7):
-        a = i / 7 * math.tau + 0.08
-        specs.append(((math.cos(a) * 0.38, 0.16, math.sin(a) * 0.38), 0.22))
-    specs.append(((0.0, 1.08, 0.0), 0.24))
-    # 表層の小房（パフ感）
-    for i in range(16):
-        a = i / 16 * math.tau + 0.2
-        y = 0.30 + 0.50 * ((i % 6) / 5.0)
-        rxy = 0.40 + 0.12 * math.sin(i * 1.7)
-        specs.append(((math.cos(a) * rxy, y, math.sin(a) * rxy), 0.15))
+    for i in range(5):
+        a = i / 5 * math.tau + 0.5
+        specs.append(((math.cos(a) * 0.32, 0.98, math.sin(a) * 0.32), 0.28))
+    specs.append(((0.0, 1.22, 0.0), 0.26))
+    for i in range(5):
+        a = i / 5 * math.tau + 0.1
+        specs.append(((math.cos(a) * 0.40, 0.14, math.sin(a) * 0.40), 0.28))
+    for i in range(4):
+        a = i / 4 * math.tau + 0.35
+        specs.append(((math.cos(a) * 0.26, 0.70, math.sin(a) * 0.26), 0.22))
     return specs
 
 
@@ -60,9 +57,9 @@ def main() -> None:
     for c, r in lobe_specs():
         centers.append(
             (
-                c[0] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
-                c[1] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
-                c[2] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[0] * BASE_R + rng.uniform(-0.004, 0.004) * BASE_R,
+                c[1] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[2] * BASE_R + rng.uniform(-0.004, 0.004) * BASE_R,
             )
         )
         radii.append(r * BASE_R * rng.uniform(0.998, 1.002))

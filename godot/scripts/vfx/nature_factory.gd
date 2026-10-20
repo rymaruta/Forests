@@ -61,7 +61,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_mesh_h, base_r * (0.92 if trunk_start_y > 0.0 else 1.0), top_r,
 		28 if hero else 16, lean,
-		0.030 if hero else 0.028, true,
+		0.022 if hero else 0.028, true,
 		0
 	)
 	trunk.material_override = VisualKit.bark_shader_material(bark_tint)
