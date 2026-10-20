@@ -16,19 +16,19 @@ void vertex() {
 void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
-	// 柔らかい縦木目（歯車の鋭い溝禁止）
 	float ang = atan(v_world.z, v_world.x);
-	float g1 = 0.5 + 0.5 * sin(ang * 8.0 + v_world.y * 0.55);
-	float g2 = 0.5 + 0.5 * sin(ang * 13.0 + 0.9);
-	float world_groove = mix(g1, g2, 0.30);
-	world_groove = smoothstep(0.15, 0.85, world_groove);
-	float groove = mix(tex.r * 0.65 + 0.1, world_groove, 0.90);
+	// Bench距離でも読める縦溝（コントラスト強め）
+	float g1 = 0.5 + 0.5 * sin(ang * 8.0 + v_world.y * 0.6);
+	float g2 = 0.5 + 0.5 * sin(ang * 14.0 + 1.2);
+	float world_groove = mix(g1, g2, 0.32);
+	world_groove = smoothstep(0.12, 0.88, world_groove);
+	float groove = mix(tex.r * 0.55 + 0.15, world_groove, 0.92);
 	float ndl = clamp(dot(NORMAL, normalize(vec3(0.2, 1.0, 0.15))), 0.0, 1.0);
-	ndl = mix(0.74, 1.0, ndl);
-	vec3 base = mix(bark_dark, bark_color, 0.22 + groove * 0.62);
-	base *= 0.88 + ndl * 0.16;
+	ndl = mix(0.70, 1.0, ndl);
+	vec3 base = mix(bark_dark, bark_color, 0.18 + groove * 0.70);
+	base *= 0.86 + ndl * 0.18;
 	ALBEDO = base;
-	ROUGHNESS = 0.98;
+	ROUGHNESS = 0.99;
 	SPECULAR = 0.0;
 	METALLIC = 0.0;
 }
