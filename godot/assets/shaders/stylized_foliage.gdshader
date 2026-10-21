@@ -37,11 +37,10 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	// 短く密なパイル。長いジャギー禁止
-	// 短く密なパイル。高周波ジャギーは抑えてフェルトへ
-	float fuzz = _hash31(VERTEX * 36.0 + 2.7) * 0.022
-		+ _hash31(VERTEX * 72.0) * 0.012
-		+ _hash31(VERTEX * 140.0 + 1.1) * 0.005;
+	// 短く密なパイル。長いジャギー禁止。輪郭に薄い毛羽を足す
+	float fuzz = _hash31(VERTEX * 48.0 + 2.7) * 0.016
+		+ _hash31(VERTEX * 96.0) * 0.010
+		+ _hash31(VERTEX * 180.0 + 1.1) * 0.004;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -53,46 +52,46 @@ void vertex() {
 }
 
 void fragment() {
-	// フェルト：柔らかい短パイル＋リム散乱。砂粒ノイズ禁止。
-	vec3 tex_a = texture(leaf_tex, v_world.xz * 1.8).rgb;
-	vec3 tex_b = texture(leaf_tex, v_world.xy * 1.8).rgb;
-	vec3 tex_c = texture(leaf_tex, v_world.zy * 1.8).rgb;
+	// フェルト：密な短パイル＋弱いリム。砂粒ノイズ禁止。
+	vec3 tex_a = texture(leaf_tex, v_world.xz * 2.4).rgb;
+	vec3 tex_b = texture(leaf_tex, v_world.xy * 2.4).rgb;
+	vec3 tex_c = texture(leaf_tex, v_world.zy * 2.4).rgb;
 	vec3 wn = abs(NORMAL);
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 
-	float pile = _vnoise(v_world * 10.0 + 0.4);
-	float fiber = _vnoise(v_world * 28.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 56.0 + 7.4);
-	float flock = pile * 0.32 + fiber * 0.44 + fiber2 * 0.24;
+	float pile = _vnoise(v_world * 14.0 + 0.4);
+	float fiber = _vnoise(v_world * 36.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 72.0 + 7.4);
+	float flock = pile * 0.28 + fiber * 0.46 + fiber2 * 0.26;
 
-	// 房の谷は柔らかく（黒穴の球接合に見せない）
+	// 房の谷：柔らかい雲影（黒穴の球接合に見せない）
 	float crevice = clamp(1.0 - NORMAL.y * 0.98, 0.0, 1.0);
-	crevice = pow(crevice, 1.9);
-	float lobe_ao = mix(1.0, 0.82, crevice);
+	crevice = pow(crevice, 1.85);
+	float lobe_ao = mix(1.0, 0.78, crevice);
 
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
 	vec3 t2 = normalize(cross(NORMAL, t1));
-	n += (fiber - 0.5) * 0.42 * t1;
-	n += (fiber2 - 0.5) * 0.26 * t2;
-	n += (pile - 0.5) * 0.22 * t1;
+	n += (fiber - 0.5) * 0.50 * t1;
+	n += (fiber2 - 0.5) * 0.32 * t2;
+	n += (pile - 0.5) * 0.26 * t1;
 	n = normalize(n);
 
 	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.22 + 0.78, 0.0, 1.0);
-	float up = clamp(n.y * 0.18 + 0.82, 0.78, 1.0);
-	float fiber_catch = mix(0.92, 1.10, flock) * ndl;
+	ndl = clamp(ndl * 0.18 + 0.82, 0.0, 1.0);
+	float up = clamp(n.y * 0.16 + 0.84, 0.80, 1.0);
+	float fiber_catch = mix(0.90, 1.12, flock) * ndl;
 
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 1.45) * 0.78;
+	float rim = pow(1.0 - facing, 1.55) * 0.92;
 
-	vec3 base = mix(leaf_dark, leaf_color, 0.44 + fiber_catch * 0.32 + up * 0.16);
-	base = mix(base, leaf_color * (0.92 + tex.g * 0.12), flock_mix * 0.48);
-	base *= mix(0.99, 1.018, flock);
+	vec3 base = mix(leaf_dark, leaf_color, 0.40 + fiber_catch * 0.34 + up * 0.14);
+	base = mix(base, leaf_color * (0.90 + tex.g * 0.16), flock_mix * 0.58);
+	base *= mix(0.985, 1.025, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim * 1.15;
-	base *= mix(0.992, 1.012, fiber2);
+	base += leaf_color * rim * 1.35;
+	base *= mix(0.988, 1.016, fiber2);
 
 	float under = clamp(0.20 - v_obj.y * 0.14, 0.0, 0.14);
 	base *= 1.0 - under;

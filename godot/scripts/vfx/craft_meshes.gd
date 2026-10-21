@@ -112,18 +112,17 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 太い縦彫刻（約6本）。裾は弱め。
-			var rip_amt0 := bark_ripple * lerpf(0.10, 1.0, clampf((t0 - 0.14) / 0.30, 0.0, 1.0))
-			var rip_amt1 := bark_ripple * lerpf(0.10, 1.0, clampf((t1 - 0.14) / 0.30, 0.0, 1.0))
-			var w0 := 0.85 * sin(a0 * 1.3 + t0 * 0.9) + 0.35 * sin(a0 * 2.7 + t0 * 2.0)
-			var w1 := 0.85 * sin(a1 * 1.3 + t0 * 0.9) + 0.35 * sin(a1 * 2.7 + t0 * 2.0)
-			var w2 := 0.85 * sin(a0 * 1.3 + t1 * 0.9) + 0.35 * sin(a0 * 2.7 + t1 * 2.0)
-			var w3 := 0.85 * sin(a1 * 1.3 + t1 * 0.9) + 0.35 * sin(a1 * 2.7 + t1 * 2.0)
-			# 手彫り寄り：低周波の太い浅い溝（鋭い柱状ゼブラ禁止）
-			var ripple0 := 1.0 + rip_amt0 * (0.78 * sin(a0 * 2.2 + w0 * 0.7) + 0.22 * sin(a0 * 4.0 + t0 * 0.9 + 0.6))
-			var ripple1 := 1.0 + rip_amt0 * (0.78 * sin(a1 * 2.2 + w1 * 0.7) + 0.22 * sin(a1 * 4.0 + t0 * 0.9 + 0.6))
-			var ripple2 := 1.0 + rip_amt1 * (0.78 * sin(a0 * 2.2 + w2 * 0.7) + 0.22 * sin(a0 * 4.0 + t1 * 0.9 + 0.6))
-			var ripple3 := 1.0 + rip_amt1 * (0.78 * sin(a1 * 2.2 + w3 * 0.7) + 0.22 * sin(a1 * 4.0 + t1 * 0.9 + 0.6))
+			# 幾何溝はごく浅く（硬い稜線ハイライト防止）。彫りはシェーダ色差へ。
+			var rip_amt0 := bark_ripple * lerpf(0.08, 1.0, clampf((t0 - 0.16) / 0.28, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.08, 1.0, clampf((t1 - 0.16) / 0.28, 0.0, 1.0))
+			var w0 := 0.70 * sin(a0 * 1.1 + t0 * 0.7) + 0.30 * sin(a0 * 2.3 + t0 * 1.4)
+			var w1 := 0.70 * sin(a1 * 1.1 + t0 * 0.7) + 0.30 * sin(a1 * 2.3 + t0 * 1.4)
+			var w2 := 0.70 * sin(a0 * 1.1 + t1 * 0.7) + 0.30 * sin(a0 * 2.3 + t1 * 1.4)
+			var w3 := 0.70 * sin(a1 * 1.1 + t1 * 0.7) + 0.30 * sin(a1 * 2.3 + t1 * 1.4)
+			var ripple0 := 1.0 + rip_amt0 * (0.85 * sin(a0 * 2.0 + w0 * 0.55) + 0.15 * sin(a0 * 3.4 + t0 * 0.7))
+			var ripple1 := 1.0 + rip_amt0 * (0.85 * sin(a1 * 2.0 + w1 * 0.55) + 0.15 * sin(a1 * 3.4 + t0 * 0.7))
+			var ripple2 := 1.0 + rip_amt1 * (0.85 * sin(a0 * 2.0 + w2 * 0.55) + 0.15 * sin(a0 * 3.4 + t1 * 0.7))
+			var ripple3 := 1.0 + rip_amt1 * (0.85 * sin(a1 * 2.0 + w3 * 0.55) + 0.15 * sin(a1 * 3.4 + t1 * 0.7))
 			# 接地フィレット：最下端だけ少し内へ（平パッド切断面を丸く）
 			var fillet0 := _ground_fillet(t0)
 			var fillet1 := _ground_fillet(t1)
@@ -165,7 +164,7 @@ static func _root_flare_mul(t: float) -> float:
 		return 1.0
 	var ft := 1.0 - t / 0.42
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.12 * ft
+	return 1.0 + 0.05 * ft
 
 
 static func _ground_fillet(t: float) -> float:
@@ -173,34 +172,38 @@ static func _ground_fillet(t: float) -> float:
 	if t >= 0.045:
 		return 1.0
 	var u := 1.0 - t / 0.045
-	return 1.0 - 0.10 * u * u
+	return 1.0 - 0.07 * u * u
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 粘土趾：重なりローブで丸パッド。フック／星型／板状禁止。
-	if toes <= 0 or t > 0.34:
+	## 粘土趾：下帯で半径を保ち肉厚パッドにする（テーパー楔＝フィン化を防ぐ）。
+	if toes <= 0 or t > 0.50:
 		return 1.0
-	var u := clampf(t / 0.34, 0.0, 1.0)
-	var env := exp(-pow((u - 0.10) / 0.28, 2.0))
+	var u := clampf(t / 0.50, 0.0, 1.0)
+	# 下〜22%はフル厚、その上でなだらかに幹へ戻す
+	var env: float
+	if u <= 0.22:
+		env = 1.0
+	else:
+		env = exp(-pow((u - 0.22) / 0.30, 2.0))
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.38
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
 		var lobe: float = clampf(1.0 - d / 0.50, 0.0, 1.0)
-		lobe = pow(lobe, 1.55)
+		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	# 丸先端パッド。尖り／スカート溶断禁止
-	return 1.0 + 0.80 * best * env
+	return 1.0 + 0.88 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
-	## 上面をわずかに丸めるだけ（強リフト＝フックになるので禁止）
+	## ごく低い丘だけ。強リフト＝先端が浮くフィン／フックになる
 	var excess := maxf(boost - 1.0, 0.0)
-	if excess <= 0.001 or t > 0.34:
+	if excess <= 0.001 or t > 0.36:
 		return 0.0
-	var u := clampf(t / 0.34, 0.0, 1.0)
-	var mound := exp(-pow((u - 0.14) / 0.18, 2.0))
-	return excess * 0.42 * mound * height * 0.11
+	var u := clampf(t / 0.36, 0.0, 1.0)
+	var mound := exp(-pow((u - 0.14) / 0.16, 2.0))
+	return excess * 0.28 * mound * height * 0.07
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

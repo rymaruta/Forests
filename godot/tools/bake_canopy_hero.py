@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 150
 PAD = 0.13
-K_BLEND = 0.12
+K_BLEND = 0.10
 SEED = 2901
 
 
@@ -23,23 +23,24 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
+    # 参照：中小房の密集クラウド（大房だけだとブロブ化）
     specs = [
-        ((0.0, 0.48, 0.0), 0.46),
-        ((0.0, 0.78, 0.0), 0.40),
-        ((0.0, 0.30, 0.0), 0.36),
-        ((0.0, 1.05, 0.0), 0.30),
+        ((0.0, 0.50, 0.0), 0.38),
+        ((0.0, 0.78, 0.0), 0.34),
+        ((0.0, 0.28, 0.0), 0.30),
+        ((0.0, 1.02, 0.0), 0.26),
     ]
-    for i in range(6):
-        a = i / 6 * math.tau + 0.18
-        y = 0.52 + 0.06 * math.sin(i * 1.5)
-        r = 0.36 if i % 2 == 0 else 0.32
-        specs.append(((math.cos(a) * 0.50, y, math.sin(a) * 0.50), r))
+    for i in range(8):
+        a = i / 8 * math.tau + 0.14
+        y = 0.48 + 0.08 * math.sin(i * 1.7)
+        r = 0.30 if i % 2 == 0 else 0.26
+        specs.append(((math.cos(a) * 0.52, y, math.sin(a) * 0.52), r))
+    for i in range(7):
+        a = i / 7 * math.tau + 0.42
+        specs.append(((math.cos(a) * 0.34, 0.82, math.sin(a) * 0.34), 0.24))
     for i in range(5):
-        a = i / 5 * math.tau + 0.48
-        specs.append(((math.cos(a) * 0.30, 0.88, math.sin(a) * 0.30), 0.28))
-    for i in range(3):
-        a = i / 3 * math.tau + 0.70
-        specs.append(((math.cos(a) * 0.18, 1.12, math.sin(a) * 0.18), 0.24))
+        a = i / 5 * math.tau + 0.66
+        specs.append(((math.cos(a) * 0.20, 1.08, math.sin(a) * 0.20), 0.20))
     return specs
 
 
