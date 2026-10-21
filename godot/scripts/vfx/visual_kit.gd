@@ -30,6 +30,8 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	m.set_shader_parameter("flock_mix", 0.94)
 	m.set_shader_parameter("nap_scale", 28.0)
 	m.set_shader_parameter("nap_strength", 1.55)
+	# 縁アルファ柔縁を確実にブレンド
+	m.render_priority = 1
 	return m
 
 
