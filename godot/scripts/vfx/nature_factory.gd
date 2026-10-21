@@ -50,8 +50,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照マスク mean: 幹≈(0.49,0.37,0.27) 冠≈(0.46,0.49,0.32)
 	var bark_tint := Color(0.41, 0.30, 0.20) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
-	var leaf := Color(0.30, 0.34, 0.23) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.18, 0.24, 0.14)
+	var leaf := Color(0.32, 0.36, 0.26) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.20, 0.26, 0.16)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	var trunk_h := h * (1.05 if hero else 0.92)
@@ -65,7 +65,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.07 if hero else 0.028,
+		0.10 if hero else 0.028,
 		true,
 		toe_n
 	)
