@@ -1,0 +1,22 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://5s27d7y8fcoo"
+path="res://.godot/imported/toe_skirt.obj-b50de1e9d011fc9acffb4a7acc48b8bc.mesh"
+
+[deps]
+
+files=["res://.godot/imported/toe_skirt.obj-b50de1e9d011fc9acffb4a7acc48b8bc.mesh"]
+
+source_file="res://assets/meshes/toe_skirt.obj"
+dest_files=["res://.godot/imported/toe_skirt.obj-b50de1e9d011fc9acffb4a7acc48b8bc.mesh", "res://.godot/imported/toe_skirt.obj-b50de1e9d011fc9acffb4a7acc48b8bc.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
+force_disable_mesh_compression=false

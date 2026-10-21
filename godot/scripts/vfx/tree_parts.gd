@@ -86,24 +86,31 @@ static func toe_skirt_part() -> Node3D:
 	## 部品3: 粘土趾＋裾だけ。短い丘メッシュ。
 	var root := Node3D.new()
 	root.name = "PartToeSkirt"
-	var bark_mat := VisualKit.bark_shader_material(BARK)
+	# 趾は幹より一段暗い暖茶（参照 mean≈118/91/68）
+	var bark_mat := VisualKit.bark_shader_material(Color(0.26, 0.19, 0.14))
 	var toes := MeshInstance3D.new()
 	toes.name = "ToeSkirt"
-	# 短い高さで趾を最大化。上端半径は幹柱 BASE_R に合わせる。
-	toes.mesh = CraftMeshes.trunk(
-		TOE_H,
-		TOE_BOTTOM_R,
-		BASE_R,
-		96,
-		0.0,
-		0.0,
-		true,
-		5
-	)
+	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):
+		toes.mesh = load("res://assets/meshes/toe_skirt.obj") as Mesh
+	if toes.mesh == null:
+		toes.mesh = CraftMeshes.trunk(
+			TOE_H,
+			TOE_BOTTOM_R,
+			BASE_R,
+			96,
+			0.0,
+			0.0,
+			true,
+			5
+		)
 	toes.material_override = bark_mat
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var baked_h := 0.50
+	var s := TOE_H / baked_h
+	# 参照：横に広がる裾 aspect≈3
+	toes.scale = Vector3(s * 1.70, s * 0.78, s * 1.70)
 	root.add_child(toes)
-	root.rotation.y = 0.72
+	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
 	root.set_meta("part_height", TOE_H)
 	return root

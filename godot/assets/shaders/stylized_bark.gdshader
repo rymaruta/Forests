@@ -89,12 +89,12 @@ void fragment() {
 	// 股AO：ベイク＋内向き法線で参照級の深い谷
 	float inward = clamp(-v_n.y * 0.35 + (1.0 - abs(v_n.x)) * 0.25, 0.0, 1.0);
 	float crotch = smoothstep(0.55, 0.95, v_y01) * inward;
-	float crease = mix(0.32, 1.0, pow(v_ao, 0.80)) * mix(1.0, 0.42, crotch);
+	float crease = mix(0.30, 1.0, pow(v_ao, 0.78)) * mix(1.0, 0.32, crotch);
 	base *= crease * wrap;
 	base *= 0.94 + 0.08 * (1.0 - v_y01 * 0.45);
 	// 参照木部 mean≈156/145/128
-	base *= 1.40;
-	base *= vec3(0.94, 1.08, 1.20);
+	base *= 1.46;
+	base *= vec3(0.97, 1.06, 1.14);
 
 	ALBEDO = base;
 }
