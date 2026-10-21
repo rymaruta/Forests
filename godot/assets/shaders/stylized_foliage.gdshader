@@ -70,9 +70,9 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 	float mound = _vnoise(VERTEX * 4.0 + 0.7) * 0.022
 		+ _vnoise(VERTEX * 8.5 + 2.3) * 0.015
 		+ _vnoise(VERTEX * 14.0 + 5.1) * 0.010;
-	float fuzz = _vnoise(VERTEX * 34.0 + 1.3) * 0.018
-		+ _vnoise(VERTEX * 68.0 + 4.7) * 0.010
-		+ _vnoise(VERTEX * 16.0 + 9.1) * 0.006;
+	float fuzz = _vnoise(VERTEX * 38.0 + 1.3) * 0.020
+		+ _vnoise(VERTEX * 76.0 + 4.7) * 0.011
+		+ _vnoise(VERTEX * 18.0 + 9.1) * 0.007;
 	VERTEX += NORMAL * (mound + fuzz);
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
