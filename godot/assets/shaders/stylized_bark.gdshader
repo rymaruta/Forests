@@ -100,13 +100,13 @@ void fragment() {
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
 	// 趾だけ接地影（幹は掛けない＝組み立ての二色割れ禁止）
-	float ground = mix(0.70, 1.0, smoothstep(0.02, 0.42, v_y01));
+	float ground = mix(0.62, 1.0, smoothstep(0.02, 0.40, v_y01));
 	base *= mix(1.0, ground, ground_contact);
 	// 幹：クール木部 156/145/128。趾：やや暖寄りで mean≈118
-	base *= mix(1.90, 1.78, ground_contact);
-	vec3 cool = vec3(0.95, 1.18, 1.58);
-	vec3 warm = vec3(1.08, 1.02, 0.94);
-	base *= mix(cool, warm, ground_contact * 0.72);
+	base *= mix(1.84, 1.70, ground_contact);
+	vec3 cool = vec3(0.94, 1.18, 1.60);
+	vec3 warm = vec3(1.06, 1.00, 0.92);
+	base *= mix(cool, warm, ground_contact * 0.70);
 	// ごく弱い高さグラデ（組み立てでも滑らか）
 	base *= mix(0.96, 1.03, smoothstep(0.05, 0.75, v_y01));
 
