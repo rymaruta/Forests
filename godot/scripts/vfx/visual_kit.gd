@@ -106,14 +106,15 @@ static func cobble_material(tint: Color = Color(0.50, 0.50, 0.50)) -> Material:
 	## 不透明のニュートラル灰石（茶テクスチャ禁止・クリーム溶け禁止）
 	var m := StandardMaterial3D.new()
 	m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
-	# unshaded で暖色ライトの茶化けを止める
-	m.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 	m.albedo_color = tint
 	m.albedo_texture = null
 	m.roughness = 1.0
 	m.metallic = 0.0
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	m.cull_mode = BaseMaterial3D.CULL_BACK
+	# 頂点色で薄くならないよう無効化
+	m.vertex_color_use_as_albedo = false
 	return m
 
 

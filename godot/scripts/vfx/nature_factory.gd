@@ -211,26 +211,25 @@ static func cottage() -> Node3D:
 	plinth.material_override = stone
 	plinth.position = Vector3(0, 0.08, -0.1)
 	root.add_child(plinth)
-	# 前面の石：床 y=0 に埋めない（半埋めでクリーム床が透けて幽霊石になる）
+	# 前面の石：潰さない丸石。床に埋めず体積を残す（薄い楕円＝幽霊石禁止）
 	for i in 8:
-		var rad := 0.22 + fmod(float(i) * 0.012, 0.04)
+		var rad := 0.24 + fmod(float(i) * 0.012, 0.04)
 		var cob := MeshInstance3D.new()
-		cob.mesh = CraftMeshes.uv_sphere(rad, 12, 14, 0.06, float(i) * 4.7, 0.78)
+		cob.mesh = CraftMeshes.uv_sphere(rad, 14, 16, 0.07, float(i) * 4.7, 1.0)
 		var tint := Color(0.46, 0.46, 0.48).lerp(Color(0.34, 0.35, 0.36), fmod(float(i) * 0.19, 1.0))
 		cob.material_override = VisualKit.cobble_material(tint)
-		# 球半径ぶん上げて接地（半月切り欠け禁止）
-		cob.position = Vector3(-1.55 + float(i) * 0.44, rad * 0.78 + 0.02, 1.58)
-		cob.scale = Vector3(1.20, 0.95, 1.10)
+		cob.position = Vector3(-1.55 + float(i) * 0.44, rad + 0.01, 1.60)
+		cob.scale = Vector3(1.05, 1.15, 1.0)
 		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cob)
 	for i in 4:
 		for side in [-1.0, 1.0]:
-			var rad := 0.20
+			var rad := 0.22
 			var cob := MeshInstance3D.new()
-			cob.mesh = CraftMeshes.uv_sphere(rad, 11, 13, 0.05, float(i) * 3.1 + side, 0.80)
+			cob.mesh = CraftMeshes.uv_sphere(rad, 12, 14, 0.06, float(i) * 3.1 + side, 1.0)
 			cob.material_override = VisualKit.cobble_material(Color(0.40, 0.40, 0.41))
-			cob.position = Vector3(side * 1.72, rad * 0.80 + 0.02, -0.7 + float(i) * 0.55)
-			cob.scale = Vector3(1.15, 0.95, 1.20)
+			cob.position = Vector3(side * 1.72, rad + 0.01, -0.7 + float(i) * 0.55)
+			cob.scale = Vector3(1.0, 1.12, 1.05)
 			cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(cob)
 
