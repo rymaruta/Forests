@@ -87,17 +87,17 @@ func _build_visual() -> void:
 	for side in [-1.0, 1.0]:
 		_mi(CraftMeshes.uv_sphere(0.105, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.28 * side, 1.20, -0.22), Vector3(1.05, 1.15, 0.95))
 
-	# 目：正円の黒＋白いハイライト（縦長オーバル禁止）
+	# 目：横に広い丸（縦長オーバル禁止）。頭の縦スケールに負けないよう Y を抑える
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.058, 10, 12), _cm(Color(0.10, 0.06, 0.04), Color(0.02, 0.01, 0.01)), Vector3(0.092 * side, 1.20, 0.268), Vector3(1.0, 1.0, 0.85))
+		_mi(CraftMeshes.uv_sphere(0.056, 10, 12), _cm(Color(0.10, 0.06, 0.04), Color(0.02, 0.01, 0.01)), Vector3(0.092 * side, 1.20, 0.270), Vector3(1.15, 0.88, 0.80))
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.016, 5, 6)
+		shine.mesh = CraftMeshes.uv_sphere(0.015, 5, 6)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
 		sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		sm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 		shine.material_override = sm
-		shine.position = Vector3(0.100 * side, 1.215, 0.308)
+		shine.position = Vector3(0.100 * side, 1.212, 0.310)
 		shine.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh_root.add_child(shine)
 
