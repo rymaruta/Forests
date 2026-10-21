@@ -114,9 +114,9 @@ func _build_visual() -> void:
 	# 麦わら：広いつば＋丸い麦色クラウン＋太い赤帯
 	var straw := Color(0.88, 0.70, 0.38)
 	var straw_d := Color(0.55, 0.38, 0.18)
-	# つばは参照幅に寄せる＋低い丸ドームクラウン
-	_mi(CraftMeshes.uv_sphere(0.44, 16, 28, 0.04, 2.0, 0.55), _cm(hat, hat.darkened(0.28), 0.88), Vector3(0, 1.28, -0.02), Vector3(1.15, 1.10, 1.15))
-	_mi(CraftMeshes.uv_sphere(0.27, 16, 18, 0.02, 2.6, 0.58), _cm(straw, straw_d, 0.82), Vector3(0, 1.48, -0.02), Vector3(1.08, 1.00, 1.08))
+	# つばは参照幅に寄せる＋低い丸ドームクラウン（織り感は flock）
+	_mi(CraftMeshes.uv_sphere(0.44, 16, 28, 0.04, 2.0, 0.55), _cm(hat, hat.darkened(0.28), 0.95), Vector3(0, 1.28, -0.02), Vector3(1.15, 1.10, 1.15))
+	_mi(CraftMeshes.uv_sphere(0.27, 16, 18, 0.02, 2.6, 0.58), _cm(straw, straw_d, 0.92), Vector3(0, 1.48, -0.02), Vector3(1.08, 1.00, 1.08))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
 	band_m.top_radius = 0.248
