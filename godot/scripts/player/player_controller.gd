@@ -59,7 +59,7 @@ func _build_visual() -> void:
 		_mi(CraftMeshes.uv_sphere(0.11, 10, 12, 0.015, side + 3.0, 0.32), _cm(boot_c, boot_c.darkened(0.20), 0.45), Vector3(0.13 * side, 0.32, 0.04), Vector3(1.25, 1.20, 1.20))
 
 	# 一体フレアワンピ（裾を広げて脚を見せる）
-	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.72), Vector3(0, 0.30, 0))
+	_mi(CraftMeshes.trunk(0.70, 0.38, 0.150, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.72), Vector3(0, 0.26, 0))
 
 	# 袖＋手元：参照どおり体側に自然に下ろす。手先は太い丸い拳
 	for side in [-1.0, 1.0]:
