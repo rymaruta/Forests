@@ -94,7 +94,7 @@ void fragment() {
 	base *= 0.94 + 0.08 * (1.0 - v_y01 * 0.45);
 	// 参照木部 mean≈156/145/128
 	base *= 1.58;
-	base *= vec3(0.95, 1.10, 1.22);
+	base *= vec3(0.94, 1.09, 1.26);
 
 	ALBEDO = base;
 }
