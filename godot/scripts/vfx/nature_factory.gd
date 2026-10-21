@@ -257,18 +257,29 @@ static func cottage() -> Node3D:
 	_beam(root, wood, Vector3(0, 0.42, 1.28), Vector3(3.35, 0.24, 0.20))
 	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(3.35, 0.22, 0.20))
 	_beam(root, wood, Vector3(0, 1.95, 1.28), Vector3(3.35, 0.24, 0.20))
+	# 前面斜め梁を太く前面に（参照ハーフティンバー）
 	var d1 := MeshInstance3D.new()
 	var dm := BoxMesh.new()
-	dm.size = Vector3(1.25, 0.16, 0.12)
+	dm.size = Vector3(1.35, 0.20, 0.14)
 	d1.mesh = dm
 	d1.material_override = wood
-	d1.position = Vector3(-0.82, 1.18, 1.32)
-	d1.rotation_degrees.z = 28
+	d1.position = Vector3(-0.82, 1.18, 1.36)
+	d1.rotation_degrees.z = 32
 	root.add_child(d1)
 	var d2 := d1.duplicate() as MeshInstance3D
-	d2.position = Vector3(0.82, 1.18, 1.32)
-	d2.rotation_degrees.z = -28
+	d2.position = Vector3(0.82, 1.18, 1.36)
+	d2.rotation_degrees.z = -32
 	root.add_child(d2)
+	var d3 := d1.duplicate() as MeshInstance3D
+	d3.position = Vector3(-0.82, 1.55, 1.36)
+	d3.rotation_degrees.z = -28
+	d3.scale = Vector3(0.85, 1.0, 1.0)
+	root.add_child(d3)
+	var d4 := d1.duplicate() as MeshInstance3D
+	d4.position = Vector3(0.82, 1.55, 1.36)
+	d4.rotation_degrees.z = 28
+	d4.scale = Vector3(0.85, 1.0, 1.0)
+	root.add_child(d4)
 
 	for side in [-1.0, 1.0]:
 		_beam(root, wood, Vector3(side * 1.70, 1.18, -1.1), Vector3(0.16, 1.75, 0.14))
