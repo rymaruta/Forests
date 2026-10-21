@@ -124,7 +124,7 @@ static func assemble_hero() -> Node3D:
 	root.name = "HeroTreeAssembled"
 
 	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
-	var bark_sheet := Color(0.42, 0.28, 0.16)
+	var bark_sheet := Color(0.34, 0.22, 0.13)
 	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
 
 	var toes := toe_skirt_part()
