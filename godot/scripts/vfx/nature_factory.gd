@@ -388,9 +388,10 @@ static func cottage() -> Node3D:
 	chim_cap.position = Vector3(-1.05, 3.55, 0.15)
 	root.add_child(chim_cap)
 
-	# 段
-	_beam(root, wood, Vector3(0, 0.32, 1.75), Vector3(1.5, 0.18, 0.6))
-	_beam(root, wood, Vector3(0, 0.18, 1.95), Vector3(1.2, 0.14, 0.45))
+	# 段（参照のポーチ段）
+	_beam(root, wood, Vector3(0, 0.34, 1.72), Vector3(1.55, 0.16, 0.55))
+	_beam(root, wood, Vector3(0, 0.20, 1.92), Vector3(1.30, 0.14, 0.48))
+	_beam(root, wood, Vector3(0, 0.08, 2.08), Vector3(1.05, 0.12, 0.38))
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 88
