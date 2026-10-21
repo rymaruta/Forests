@@ -48,13 +48,14 @@ func _bake_csg_in(n: Node) -> void:
 
 func _build_stage() -> void:
 	# 参照シート相当のニュートラル灰
-	RenderingServer.set_default_clear_color(Color(0.78, 0.78, 0.76))
+	# 参照シート寄りの暖灰（冷たい中性灰で幹がプラスチックに見えるのを避ける）
+	RenderingServer.set_default_clear_color(Color(0.86, 0.85, 0.82))
 
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.78, 0.78, 0.76)
+	env.background_color = Color(0.86, 0.85, 0.82)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color(0.90, 0.90, 0.88)
+	env.ambient_light_color = Color(0.92, 0.91, 0.88)
 	# アンビエント過多だと繊維法線が消える。参照級の柔らかい方向光を残す
 	# 参照：高キー柔らか光。深影で粘土がプラスチックに見えるのを避ける
 	# アンビエント過多だと樹皮溝・フェルト繊維が消える。参照級の柔らかい方向光を残す
@@ -97,7 +98,7 @@ func _build_stage() -> void:
 	floor_mi.mesh = plane
 	var fm := StandardMaterial3D.new()
 	fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	fm.albedo_color = Color(0.78, 0.78, 0.76)
+	fm.albedo_color = Color(0.86, 0.85, 0.82)
 	fm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	floor_mi.material_override = fm
 	floor_mi.position.y = 0.0
