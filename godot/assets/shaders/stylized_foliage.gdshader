@@ -65,10 +65,9 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 }
 
 	void vertex() {
-	// 短いフェルト毛羽。ギザ輪郭にならない程度
-	float fuzz = _hash31(VERTEX * 26.0 + 2.7) * 0.010
-		+ _hash31(VERTEX * 54.0) * 0.005
-		+ _hash31(VERTEX * 90.0 + 1.1) * 0.003;
+	// 短いフェルト毛羽。ギザ輪郭を避ける
+	float fuzz = _hash31(VERTEX * 26.0 + 2.7) * 0.007
+		+ _hash31(VERTEX * 54.0) * 0.004;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -89,11 +88,11 @@ void fragment() {
 	vec3 tex = _triplanar_col(leaf_tex, v_world, v_n, nap_scale);
 	vec3 n = _triplanar_nrm(leaf_n_tex, v_world, v_n, nap_scale * 1.10);
 
-	// 高周波中心の均一フェルト。中周波モトルは弱く
-	float pile = _vnoise(v_world * 14.0 + 0.4);
-	float fiber = _vnoise(v_world * 28.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 56.0 + 7.4);
-	float flock = pile * 0.30 + fiber * 0.40 + fiber2 * 0.30;
+	// 超高周波のみ。中周波モトル（斑）禁止
+	float pile = _vnoise(v_world * 22.0 + 0.4);
+	float fiber = _vnoise(v_world * 48.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 96.0 + 7.4);
+	float flock = pile * 0.20 + fiber * 0.40 + fiber2 * 0.40;
 
 	// ベイクAO＋法線谷。柔らかく深い雲影
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
@@ -107,13 +106,13 @@ void fragment() {
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
-	base = mix(base, mix(leaf_dark * 0.94, leaf_color * 1.08, tex_l), flock_mix * 0.70);
-	// 細い均一フェルト。振幅を上げて参照 hp_std≈3.7 へ
-	base *= mix(0.86, 1.16, flock);
-	float grit = _vnoise(v_world * 120.0 + 1.7);
-	float grit2 = _vnoise(v_world * 220.0 + 4.2);
-	float grit3 = _vnoise(v_world * 360.0 + 9.1);
-	base *= mix(0.86, 1.14, grit * 0.35 + grit2 * 0.35 + grit3 * 0.30);
+	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.06, tex_l), flock_mix * 0.55);
+	// 細い均一フェルト。振幅は参照 hp_std≈3.7
+	base *= mix(0.90, 1.12, flock);
+	float grit = _vnoise(v_world * 160.0 + 1.7);
+	float grit2 = _vnoise(v_world * 280.0 + 4.2);
+	float grit3 = _vnoise(v_world * 440.0 + 9.1);
+	base *= mix(0.88, 1.12, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	base *= 1.34;
 
