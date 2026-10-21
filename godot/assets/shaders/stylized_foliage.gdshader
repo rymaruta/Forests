@@ -120,8 +120,8 @@ void fragment() {
 	base *= mix(0.90, 1.10, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.92;
-	base *= vec3(0.94, 1.03, 1.01);
+	base *= 1.84;
+	base *= vec3(0.955, 1.02, 1.00);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	// 縁だけフェルト溶かし。本体は洗わない
@@ -137,13 +137,13 @@ void fragment() {
 	base *= 1.0 - under;
 
 	// シルエット柔縁：縁でアルファフェード＋ノイズ（白ハロー禁止）
-	float edge = pow(1.0 - facing, 1.05);
+	float edge = pow(1.0 - facing, 0.92);
 	float dither = _vnoise(v_world * 160.0 + 3.1) * 0.55
 		+ _vnoise(v_world * 320.0 + 8.7) * 0.45;
-	float fade = smoothstep(0.28, 0.92, edge) * (0.55 + dither * 0.55);
+	float fade = smoothstep(0.18, 0.88, edge) * (0.62 + dither * 0.55);
 	float alpha = clamp(1.0 - fade, 0.0, 1.0);
 	// 葉色のまま薄く。背景へ溶かすが白縁にしない
-	base = mix(base, leaf_color * 0.92, fade * 0.35);
+	base = mix(base, leaf_color * 0.90, fade * 0.40);
 
 	ALBEDO = base;
 	ALPHA = alpha;
