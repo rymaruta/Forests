@@ -165,12 +165,12 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：丸め中房＋地味オリーブ（ミント禁止）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.92, 1.10, 0.92)
-		var sheet_leaf := Color(0.31, 0.38, 0.24)
-		var sheet_dark := Color(0.15, 0.20, 0.12)
+		canopy_mesh.scale *= Vector3(0.88, 1.16, 0.88)
+		var sheet_leaf := Color(0.33, 0.40, 0.25)
+		var sheet_dark := Color(0.16, 0.21, 0.13)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
 	# フォーク先端だけ覗く
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.60, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)

@@ -408,36 +408,48 @@ static func cottage() -> Node3D:
 		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.43), Vector3(0.56, 0.05, 0.02))
 		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.43), Vector3(0.05, 0.56, 0.02))
 
-	# 煙突：細い芯＋前面に飛び出す不揃い石（一体直方に見えない）
+	# 煙突：不揃い直方コース＋端の丸石（リング積み禁止）
 	var chim := MeshInstance3D.new()
 	var chim_m := BoxMesh.new()
-	chim_m.size = Vector3(0.28, 1.05, 0.28)
+	chim_m.size = Vector3(0.34, 0.20, 0.34)
 	chim.mesh = chim_m
 	chim.material_override = VisualKit.cobble_material(Color(0.30, 0.30, 0.32))
-	chim.position = Vector3(-1.05, 3.20, 0.10)
+	chim.position = Vector3(-1.05, 2.70, 0.15)
 	root.add_child(chim)
-	for ci in 12:
+	for ci in 6:
 		var course := MeshInstance3D.new()
-		var rad := 0.12 + fmod(float(ci) * 0.019, 0.06)
-		course.mesh = CraftMeshes.uv_sphere(rad, 8, 10, 0.12, float(ci) * 2.4, 0.98)
+		var cm := BoxMesh.new()
+		cm.size = Vector3(
+			0.38 + fmod(float(ci) * 0.06, 0.10),
+			0.14 + fmod(float(ci) * 0.03, 0.05),
+			0.38 + fmod(float(ci) * 0.05, 0.08)
+		)
+		course.mesh = cm
 		course.material_override = VisualKit.cobble_material(
-			Color(0.24, 0.24, 0.26).lerp(Color(0.46, 0.44, 0.40), fmod(float(ci) * 0.31, 1.0))
+			Color(0.26, 0.26, 0.28).lerp(Color(0.44, 0.42, 0.38), fmod(float(ci) * 0.29, 1.0))
 		)
-		var ang := float(ci) * 1.1
 		course.position = Vector3(
-			-1.05 + cos(ang) * 0.10,
-			2.70 + float(ci) * 0.095,
-			0.22 + sin(ang) * 0.08
+			-1.05 + fmod(float(ci) * 0.03, 0.04) - 0.02,
+			2.82 + float(ci) * 0.155,
+			0.15 + fmod(float(ci) * 0.02, 0.03) - 0.015
 		)
-		course.scale = Vector3(1.65 + fmod(float(ci) * 0.09, 0.30), 0.68, 1.55 + fmod(float(ci) * 0.07, 0.25))
+		course.rotation_degrees.y = fmod(float(ci) * 9.0, 8.0) - 4.0
 		course.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(course)
+		# 角を丸石で崩す
+		var nub := MeshInstance3D.new()
+		nub.mesh = CraftMeshes.uv_sphere(0.09 + fmod(float(ci) * 0.01, 0.03), 7, 8, 0.08, float(ci), 0.9)
+		nub.material_override = VisualKit.cobble_material(Color(0.34, 0.33, 0.31))
+		nub.position = course.position + Vector3(0.16 * (1.0 if ci % 2 == 0 else -1.0), 0.0, 0.14)
+		nub.scale = Vector3(1.2, 0.7, 1.1)
+		nub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(nub)
 	var chim_cap := MeshInstance3D.new()
 	var cap_m := BoxMesh.new()
-	cap_m.size = Vector3(0.50, 0.08, 0.50)
+	cap_m.size = Vector3(0.52, 0.09, 0.52)
 	chim_cap.mesh = cap_m
 	chim_cap.material_override = VisualKit.cobble_material(Color(0.26, 0.26, 0.28))
-	chim_cap.position = Vector3(-1.05, 3.88, 0.15)
+	chim_cap.position = Vector3(-1.05, 3.82, 0.15)
 	root.add_child(chim_cap)
 
 	# 段（参照のポーチ段：扉幅に寄せる）
