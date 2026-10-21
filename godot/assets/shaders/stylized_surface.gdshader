@@ -50,10 +50,10 @@ vec3 _triplanar_col(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 }
 
 void vertex() {
-	// 漆喰の粗いナプ：頂点を少し押し出して影が乗る
-	float fuzz = _vnoise(VERTEX * 18.0 + 1.3) * 0.010
-		+ _vnoise(VERTEX * 42.0 + 4.2) * 0.005
-		+ _vnoise(VERTEX * 90.0 + 7.7) * 0.002;
+	// 漆喰の粗いナプ：頂点を押し出して影が乗る（参照のざらつき）
+	float fuzz = _vnoise(VERTEX * 14.0 + 1.3) * 0.016
+		+ _vnoise(VERTEX * 36.0 + 4.2) * 0.008
+		+ _vnoise(VERTEX * 80.0 + 7.7) * 0.0035;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_n = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
