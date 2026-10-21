@@ -133,7 +133,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：参照の控えめフレア（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.48, 1.08, 0.48)
+		toe_mesh.scale *= Vector3(0.50, 0.98, 0.50)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
