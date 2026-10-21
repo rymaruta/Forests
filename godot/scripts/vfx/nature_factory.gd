@@ -73,21 +73,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# ヒーロー：幹裾に丸い粘土趾パッドを重ねて一体感を出す（別体貼り付け禁止に近い重ね）
-	if hero:
-		for i in 4:
-			var pad := MeshInstance3D.new()
-			pad.name = "ToePad%d" % i
-			pad.mesh = CraftMeshes.uv_sphere(0.26, 14, 18, 0.04, 3.1 + float(i) * 2.7, 0.72)
-			pad.material_override = bark_mat
-			var a := float(i) / 4.0 * TAU + 0.38
-			# 床に少し沈めて薄いフィン／白縁を出さない
-			pad.position = Vector3(cos(a) * base_r * 1.10, 0.08, sin(a) * base_r * 1.05)
-			pad.scale = Vector3(1.28, 0.88, 1.12)
-			pad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			root.add_child(pad)
-
 	# 参照：幹頂の短い V フォーク。冠に食い込ませて黒い三角割れを隠す。
+	# （別体趾球は床フィンが出るので捨てた。趾は一本メッシュのみ）
 	for b in 2:
 		var br := MeshInstance3D.new()
 		var blen := 0.40 if hero else rng.randf_range(0.35, 0.5)
