@@ -400,10 +400,10 @@ static func cottage() -> Node3D:
 		glm.size = Vector3(0.56, 0.56, 0.05)
 		glass.mesh = glm
 		var gmat := StandardMaterial3D.new()
-		gmat.albedo_color = Color(0.95, 0.55, 0.18)
+		gmat.albedo_color = Color(0.98, 0.48, 0.12)
 		gmat.emission_enabled = true
-		gmat.emission = Color(1.0, 0.52, 0.14)
-		gmat.emission_energy_multiplier = 3.0
+		gmat.emission = Color(1.0, 0.45, 0.08)
+		gmat.emission_energy_multiplier = 3.4
 		gmat.roughness = 0.70
 		gmat.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 		glass.material_override = gmat
