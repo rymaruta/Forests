@@ -164,8 +164,8 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：参照全体樹の縦長中房へ（部品Benchは維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as Node3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.90, 1.18, 0.90)
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
+		canopy_mesh.scale *= Vector3(0.88, 1.22, 0.88)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.56, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)

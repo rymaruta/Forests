@@ -59,22 +59,22 @@ func _build_visual() -> void:
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
 
-	# 袖＋手元：体側に下ろしつつ外側に読ませる
+	# 袖＋手元：体より前・外側に出して腕として読ませる
 	for side in [-1.0, 1.0]:
 		var arm_root := Node3D.new()
-		arm_root.position = Vector3(0.28 * side, 0.82, 0.06)
-		arm_root.rotation_degrees.x = 168.0
-		arm_root.rotation_degrees.z = 14.0 * side
+		arm_root.position = Vector3(0.34 * side, 0.80, 0.12)
+		arm_root.rotation_degrees.x = 155.0
+		arm_root.rotation_degrees.z = 18.0 * side
 		mesh_root.add_child(arm_root)
 		var upper := MeshInstance3D.new()
-		upper.mesh = CraftMeshes.trunk(0.40, 0.070, 0.050, 14)
+		upper.mesh = CraftMeshes.trunk(0.42, 0.068, 0.048, 14)
 		upper.material_override = _cm(cloth, cloth_d, 0.50)
 		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.058, 8, 9)
+		hand.mesh = CraftMeshes.uv_sphere(0.055, 8, 9)
 		hand.material_override = _cm(skin, skin.darkened(0.22))
-		hand.position = Vector3(0.0, 0.42, 0.0)
+		hand.position = Vector3(0.0, 0.44, 0.0)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
 

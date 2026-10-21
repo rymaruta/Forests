@@ -201,15 +201,15 @@ static func cottage() -> Node3D:
 	var wall := VisualKit.plaster_material()
 	var wood := VisualKit.bark_shader_material(Color(0.20, 0.12, 0.07))
 	var roof := VisualKit.roof_tile_material()
-	var stone := VisualKit.cobble_material(Color(0.40, 0.40, 0.41))
+	var stone := VisualKit.cobble_material(Color(0.34, 0.34, 0.36))
 
-	# 石積み：濃い不透明の丸石だけ。白い板は隠す
+	# 石積み：濃い不透明の丸石だけ。白い板は隠す（プラinthは石色で埋める）
 	var plinth := MeshInstance3D.new()
 	var pm := BoxMesh.new()
-	pm.size = Vector3(3.4, 0.22, 2.6)
+	pm.size = Vector3(3.35, 0.18, 2.55)
 	plinth.mesh = pm
 	plinth.material_override = stone
-	plinth.position = Vector3(0, 0.08, -0.1)
+	plinth.position = Vector3(0, 0.06, -0.1)
 	root.add_child(plinth)
 	# 前面の石：潰した球ベース（直方の角を読ませない）
 	for i in 16:
