@@ -62,7 +62,8 @@ void vertex() {
 	if (v_ao < 0.01) {
 		v_ao = 1.0;
 	}
-	v_y01 = clamp(VERTEX.y / 1.55, 0.0, 1.0);
+	// ワールド高さで勾配（部品結合時のローカルY割れ＝幹薄茶/趾濃茶を防ぐ）
+	v_y01 = clamp(v_world.y / 1.70, 0.0, 1.0);
 }
 
 void fragment() {

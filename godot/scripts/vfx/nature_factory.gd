@@ -211,26 +211,25 @@ static func cottage() -> Node3D:
 	plinth.material_override = stone
 	plinth.position = Vector3(0, 0.08, -0.1)
 	root.add_child(plinth)
-	# 前面の石：二段の詰まった丸石。床に埋めず体積を残す
-	for i in 10:
-		var rad := 0.20 + fmod(float(i) * 0.013, 0.05)
+	# 前面の石：潰した直方＋丸み。球バブル列禁止
+	for i in 12:
 		var cob := MeshInstance3D.new()
-		cob.mesh = CraftMeshes.uv_sphere(rad, 14, 16, 0.09, float(i) * 4.7, 1.0)
-		var tint := Color(0.36, 0.36, 0.38).lerp(Color(0.26, 0.27, 0.28), fmod(float(i) * 0.19, 1.0))
+		var bm := BoxMesh.new()
+		bm.size = Vector3(0.38 + fmod(float(i) * 0.07, 0.12), 0.28 + fmod(float(i) * 0.05, 0.10), 0.32)
+		cob.mesh = bm
+		var tint := Color(0.34, 0.34, 0.36).lerp(Color(0.24, 0.25, 0.26), fmod(float(i) * 0.19, 1.0))
 		cob.material_override = VisualKit.cobble_material(tint)
-		cob.position = Vector3(-1.70 + float(i) * 0.38, rad * 0.70 + 0.04, 1.58)
-		cob.scale = Vector3(1.25, 0.85, 1.15)
+		cob.position = Vector3(-1.85 + float(i) * 0.34, 0.18, 1.55)
+		cob.rotation_degrees.y = fmod(float(i) * 17.0, 28.0) - 14.0
 		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cob)
-	for i in 9:
-		var rad := 0.16 + fmod(float(i) * 0.011, 0.04)
-		var cob := MeshInstance3D.new()
-		cob.mesh = CraftMeshes.uv_sphere(rad, 12, 14, 0.08, float(i) * 5.3 + 1.0, 1.0)
-		cob.material_override = VisualKit.cobble_material(Color(0.30, 0.31, 0.32).lerp(Color(0.40, 0.40, 0.42), fmod(float(i) * 0.17, 1.0)))
-		cob.position = Vector3(-1.55 + float(i) * 0.39, 0.22 + rad * 0.35, 1.50)
-		cob.scale = Vector3(1.35, 0.75, 1.20)
-		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(cob)
+		var cap := MeshInstance3D.new()
+		cap.mesh = CraftMeshes.uv_sphere(0.14 + fmod(float(i) * 0.01, 0.04), 10, 12, 0.06, float(i) * 3.1, 0.9)
+		cap.material_override = VisualKit.cobble_material(tint.lightened(0.04))
+		cap.position = cob.position + Vector3(0.0, 0.12, 0.02)
+		cap.scale = Vector3(1.4, 0.7, 1.2)
+		cap.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(cap)
 	for i in 4:
 		for side in [-1.0, 1.0]:
 			var rad := 0.22

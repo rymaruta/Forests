@@ -128,30 +128,32 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：縦趾を立て、餅裾を抑える（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as Node3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.66, 1.48, 0.66)
+		toe_mesh.scale *= Vector3(0.70, 1.32, 0.70)
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
 	# 趾の立ち上がりを残しつつ水平割れを消す（食い込み過ぎで餅裾にしない）
-	trunk.position.y = TOE_H * 0.50
+	trunk.position.y = TOE_H * 0.46
 	# 結合時のみ：幹を短く太く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as Node3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(1.12, 0.86, 1.12)
+		trunk_mesh.scale *= Vector3(1.10, 0.88, 1.10)
 	root.add_child(trunk)
 
-	# 参照全体樹の中幹横枝（部品Benchには出さない）
+	# 参照全体樹の中幹横枝：球カプセル連鎖（直方スタブ禁止）
 	var bark_mat := VisualKit.bark_shader_material(BARK)
 	for side in [-1.0, 1.0]:
-		var stub := MeshInstance3D.new()
-		stub.mesh = CraftMeshes.trunk(0.26, 0.040, 0.022, 16)
-		stub.material_override = bark_mat
-		stub.position = Vector3(0.20 * side, trunk.position.y + TRUNK_H * 0.36, 0.02)
-		stub.rotation_degrees.z = -82.0 * side
-		stub.rotation_degrees.x = 6.0
-		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(stub)
+		var base_y := trunk.position.y + TRUNK_H * 0.34
+		for k in 3:
+			var stub := MeshInstance3D.new()
+			var rr := 0.038 - float(k) * 0.008
+			stub.mesh = CraftMeshes.uv_sphere(rr, 8, 10, 0.02, float(k) + side, 1.05)
+			stub.material_override = bark_mat
+			stub.position = Vector3((0.16 + float(k) * 0.07) * side, base_y + float(k) * 0.02, 0.02)
+			stub.scale = Vector3(1.35, 0.85, 1.0)
+			stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(stub)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"

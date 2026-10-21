@@ -43,7 +43,7 @@ func _build_visual() -> void:
 	# Benchクリーム背景でも溶ける白肌禁止
 	var cloth := Color(0.26, 0.46, 0.50)
 	var cloth_d := Color(0.14, 0.30, 0.34)
-	var skin := Color(0.78, 0.58, 0.46)
+	var skin := Color(0.72, 0.52, 0.40)
 	var hat := Color(0.74, 0.56, 0.30)
 	var scarf_col := Color(0.90, 0.40, 0.28)
 	var hair_c := Color(0.20, 0.11, 0.07)
