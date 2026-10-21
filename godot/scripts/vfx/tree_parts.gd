@@ -34,8 +34,8 @@ static func canopy_part() -> Node3D:
 	canopy.material_override = VisualKit.foliage_material(LEAF, LEAF_DARK)
 	var baked_r := 1.30
 	var s := CANOPY_R / baked_r
-	# 参照冠：縦に積んだ重い雲。aspect≈1.4
-	canopy.scale = Vector3(s * 1.24, s * 0.96, s * 1.24)
+	# 参照冠：aspect≈1.4（中密度メッシュ）
+	canopy.scale = Vector3(s * 1.14, s * 0.98, s * 1.14)
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)

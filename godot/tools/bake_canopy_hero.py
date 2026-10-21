@@ -14,8 +14,8 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-# 大きな房。参照の溶けた雲へ
-K_BLEND = 0.098
+# 中密度の丸丘。細粒ポップコーン禁止・大きな球の貼り付けも禁止
+K_BLEND = 0.088
 SEED = 2901
 AO_SAMPLES = 18
 
@@ -26,39 +26,42 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 縦に積んだ大きな丸丘。横に広げすぎない。
+    # 参照冠: 中〜大の丸丘が密に重なる雲。r≥0.18。
     specs = [
-        ((0.00, 0.34, 0.00), 0.44),
-        ((0.02, 0.56, -0.02), 0.38),
-        ((0.00, 0.16, 0.02), 0.40),
-        ((0.00, 0.74, 0.00), 0.32),
-        ((0.10, 0.64, 0.07), 0.26),
-        ((-0.09, 0.66, -0.05), 0.26),
-        ((0.06, 0.44, -0.10), 0.28),
-        ((-0.07, 0.42, 0.10), 0.28),
+        ((0.00, 0.36, 0.00), 0.40),
+        ((0.03, 0.56, -0.02), 0.34),
+        ((-0.02, 0.18, 0.02), 0.36),
+        ((0.00, 0.72, 0.00), 0.28),
+        ((0.10, 0.62, 0.08), 0.24),
+        ((-0.10, 0.64, -0.06), 0.24),
     ]
-    # 外周（横半径を抑えて縦シルエット）
-    for i in range(6):
-        a = i / 6 * math.tau + 0.14
-        y = 0.30 + 0.08 * math.sin(i * 1.7)
-        r = 0.32 if i % 2 == 0 else 0.28
-        rad = 0.44 + 0.03 * math.sin(i * 1.4)
+    for i in range(8):
+        a = i / 8 * math.tau + 0.12
+        y = 0.32 + 0.07 * math.sin(i * 1.8)
+        r = 0.28 if i % 2 == 0 else 0.24
+        rad = 0.48 + 0.04 * math.sin(i * 1.5)
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
-    for i in range(4):
-        a = i / 4 * math.tau + 0.50
+    for i in range(6):
+        a = i / 6 * math.tau + 0.42
         specs.append(
             (
                 (
-                    math.cos(a) * 0.24,
-                    0.52 + 0.05 * math.cos(i * 1.3),
-                    math.sin(a) * 0.24,
+                    math.cos(a) * 0.28,
+                    0.50 + 0.05 * math.cos(i * 1.2),
+                    math.sin(a) * 0.28,
                 ),
-                0.24,
+                0.22,
             )
         )
-    for i in range(4):
-        a = i / 4 * math.tau + 0.28
-        specs.append(((math.cos(a) * 0.18, 0.10, math.sin(a) * 0.18), 0.22))
+    # 中房の追加密度（細粒は置かない）
+    for i in range(10):
+        a = i / 10 * math.tau + 0.20
+        y = 0.36 + 0.14 * ((i * 37) % 10) / 10.0
+        rad = 0.30 + 0.14 * ((i * 19) % 10) / 10.0
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.18 + 0.03 * (i % 3)))
+    for i in range(5):
+        a = i / 5 * math.tau + 0.25
+        specs.append(((math.cos(a) * 0.18, 0.10, math.sin(a) * 0.18), 0.20))
     return specs
 
 
