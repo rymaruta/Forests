@@ -41,8 +41,8 @@ func _build_visual() -> void:
 		c.queue_free()
 
 	# Benchクリーム背景でも溶ける白肌禁止
-	var cloth := Color(0.20, 0.42, 0.46)
-	var cloth_d := Color(0.10, 0.26, 0.30)
+	var cloth := Color(0.18, 0.40, 0.44)
+	var cloth_d := Color(0.09, 0.24, 0.28)
 	var skin := Color(0.78, 0.56, 0.42)
 	var hat := Color(0.78, 0.60, 0.32)
 	var scarf_col := Color(0.90, 0.40, 0.28)
