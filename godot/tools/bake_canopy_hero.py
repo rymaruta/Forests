@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：横広の雲。中小房が重なる。"""
+"""Bake canopy_hero.obj — 参照：横広雲。下縁を上げて幹・枝を見せる。"""
 from __future__ import annotations
 
 import math
@@ -12,8 +12,8 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
 BASE_R = 1.18
 RES = 148
-PAD = 0.14
-K_BLEND = 0.12
+PAD = 0.12
+K_BLEND = 0.10
 SEED = 2901
 
 
@@ -23,27 +23,24 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：横広・低め。頂を突き上げない。
+    # 下縁を高く：幹差し込み穴は中心房だけで塞ぐ（下段リング禁止）
     specs = [
-        ((0.0, 0.42, 0.0), 0.46),
-        ((0.0, 0.72, 0.0), 0.40),
-        ((0.0, 0.16, 0.0), 0.40),
-        ((0.0, 0.98, 0.0), 0.30),
+        ((0.0, 0.55, 0.0), 0.48),
+        ((0.0, 0.85, 0.0), 0.40),
+        ((0.0, 0.38, 0.0), 0.36),  # 下は軽く、幹を隠さない
+        ((0.0, 1.08, 0.0), 0.30),
     ]
-    for i in range(8):
-        a = i / 8 * math.tau + 0.12
-        y = 0.44 + 0.05 * math.sin(i * 1.7)
+    for i in range(7):
+        a = i / 7 * math.tau + 0.18
+        y = 0.58 + 0.06 * math.sin(i * 1.5)
         r = 0.36 if i % 2 == 0 else 0.32
-        specs.append(((math.cos(a) * 0.52, y, math.sin(a) * 0.52), r))
-    for i in range(6):
-        a = i / 6 * math.tau + 0.40
-        specs.append(((math.cos(a) * 0.34, 0.78, math.sin(a) * 0.34), 0.30))
+        specs.append(((math.cos(a) * 0.50, y, math.sin(a) * 0.50), r))
     for i in range(5):
-        a = i / 5 * math.tau + 0.28
-        specs.append(((math.cos(a) * 0.40, 0.22, math.sin(a) * 0.40), 0.28))
+        a = i / 5 * math.tau + 0.50
+        specs.append(((math.cos(a) * 0.32, 0.88, math.sin(a) * 0.32), 0.30))
     for i in range(4):
-        a = i / 4 * math.tau + 0.65
-        specs.append(((math.cos(a) * 0.22, 0.95, math.sin(a) * 0.22), 0.26))
+        a = i / 4 * math.tau + 0.70
+        specs.append(((math.cos(a) * 0.20, 1.10, math.sin(a) * 0.20), 0.26))
     return specs
 
 
@@ -104,6 +101,8 @@ def main() -> None:
         ),
     )
     verts = verts + mn
+    # 幹が刺さるよう下端をわずかに上げたローカル原点
+    verts[:, 1] -= verts[:, 1].min()
     cent = verts.mean(0)
     new_faces = []
     for f in faces:

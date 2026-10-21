@@ -48,7 +48,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 
 	# 参照画素 mean: 幹≈(107,80,57) 冠≈(90,99,62)
 	# 参照マスク mean: 幹≈(0.49,0.37,0.27) 冠≈(0.46,0.49,0.32)
-	var bark_tint := Color(0.42, 0.30, 0.21) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var bark_tint := Color(0.39, 0.28, 0.19) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
 	var leaf := Color(0.30, 0.34, 0.23) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.18, 0.24, 0.14)
@@ -94,7 +94,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 枝の V フォークが冠下から読める高さ
-	canopy.position = Vector3(lean * 0.08, h * 0.88, 0.0)
+	canopy.position = Vector3(lean * 0.08, h * 0.92, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。ワールド側で念のため比率固定
 		var baked_r := 1.18
