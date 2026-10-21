@@ -132,7 +132,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：冠より狭い裾＋縦趾（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.50, 1.40, 0.50)
+		toe_mesh.scale *= Vector3(0.44, 1.32, 0.44)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
@@ -146,14 +146,15 @@ static func assemble_hero() -> Node3D:
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹の中幹横枝：冠直下の短い丸いナブ
+	# 参照全体樹の中幹横枝：冠直下の短い丸いナブ（やや上向き）
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.48
+		var base_y := trunk.position.y + TRUNK_H * 0.50
 		var stub := MeshInstance3D.new()
-		stub.mesh = CraftMeshes.uv_sphere(0.055, 10, 12, 0.03, side, 1.1)
+		stub.mesh = CraftMeshes.uv_sphere(0.052, 10, 12, 0.03, side, 1.1)
 		stub.material_override = bark_mat
-		stub.position = Vector3(0.20 * side, base_y, 0.03)
-		stub.scale = Vector3(1.6, 0.85, 1.15)
+		stub.position = Vector3(0.18 * side, base_y, 0.02)
+		stub.scale = Vector3(1.55, 1.05, 1.10)
+		stub.rotation_degrees.z = -18.0 * side
 		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(stub)
 
