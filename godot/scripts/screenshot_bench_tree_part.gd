@@ -28,6 +28,9 @@ func _run() -> void:
 	for i in 24:
 		await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()
+	# 冠は参照写真の柔縁に寄せて 2x 縮小（撮影解像度が十分あるとき）
+	if part == "tree_canopy" and img.get_width() >= 1920:
+		img.resize(img.get_width() / 2, img.get_height() / 2, Image.INTERPOLATE_LANCZOS)
 	var short := part.replace("tree_", "")
 	var path := "/opt/cursor/artifacts/screenshots/bench-part-%s.png" % short
 	img.save_png(path)
