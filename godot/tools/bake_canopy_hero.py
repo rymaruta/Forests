@@ -14,7 +14,7 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-K_BLEND = 0.082
+K_BLEND = 0.074
 SEED = 2901
 AO_SAMPLES = 16
 
