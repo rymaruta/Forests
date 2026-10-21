@@ -73,8 +73,9 @@ void fragment() {
 	}
 	n = normalize(n + t_ang * (groove - 0.45) * 0.85);
 
+	// ほぼフラット：円柱のプラスチックハイライトを殺す
 	vec3 L = normalize(vec3(0.22, 0.92, 0.28));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.96, 1.03, ndl);
+	float wrap = mix(0.985, 1.015, ndl);
 	ALBEDO = base * wrap;
 }

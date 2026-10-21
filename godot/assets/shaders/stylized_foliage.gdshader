@@ -38,9 +38,9 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	// 短く密なパイル。長いジャギー禁止。輪郭に薄い毛羽を足す
-	float fuzz = _hash31(VERTEX * 48.0 + 2.7) * 0.016
-		+ _hash31(VERTEX * 96.0) * 0.010
-		+ _hash31(VERTEX * 180.0 + 1.1) * 0.004;
+	float fuzz = _hash31(VERTEX * 40.0 + 2.7) * 0.020
+		+ _hash31(VERTEX * 80.0) * 0.012
+		+ _hash31(VERTEX * 150.0 + 1.1) * 0.006;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -69,7 +69,7 @@ void fragment() {
 	// 房の谷：柔らかい雲影（黒穴の球接合に見せない）
 	float crevice = clamp(1.0 - NORMAL.y * 0.98, 0.0, 1.0);
 	crevice = pow(crevice, 1.85);
-	float lobe_ao = mix(1.0, 0.66, crevice);
+	float lobe_ao = mix(1.0, 0.60, crevice);
 
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
