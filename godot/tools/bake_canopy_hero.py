@@ -14,8 +14,8 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 丘は読めるが貼り付け球にしない。谷の柔らかさ用に少し広め
-# 丘は読めるが貼り付け球にしない
-K_BLEND = 0.085
+# 丘は読めるが貼り付け球にしない。やや溶かして重い雲に
+K_BLEND = 0.092
 SEED = 2901
 AO_SAMPLES = 16
 
@@ -117,8 +117,8 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
             hit += occ
         # soft darken in valleys; keep lit crowns bright
         dark = hit / AO_SAMPLES
-        ao[i] = 1.0 - 0.50 * (dark ** 1.15)
-    return np.clip(ao, 0.48, 1.0)
+        ao[i] = 1.0 - 0.56 * (dark ** 1.10)
+    return np.clip(ao, 0.44, 1.0)
 
 
 def main() -> None:
