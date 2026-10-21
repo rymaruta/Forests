@@ -13,9 +13,9 @@ const CANOPY_R := 1.10
 const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
-# 参照樹：幹と趾は同系の暖茶（趾だけ極端に暗くしない）
-const BARK := Color(0.38, 0.30, 0.22)
-const BARK_TOE := Color(0.27, 0.18, 0.11)
+# 参照樹：幹と趾は同じ暖茶（二色割れ禁止）
+const BARK := Color(0.36, 0.26, 0.16)
+const BARK_TOE := Color(0.36, 0.26, 0.16)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
 const LEAF := Color(0.49, 0.50, 0.33)
 const LEAF_DARK := Color(0.25, 0.27, 0.17)
