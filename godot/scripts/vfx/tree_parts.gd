@@ -13,7 +13,7 @@ const CANOPY_R := 1.10
 const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
-const BARK := Color(0.44, 0.32, 0.22)
+const BARK := Color(0.36, 0.30, 0.24)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
 const LEAF := Color(0.49, 0.50, 0.33)
 const LEAF_DARK := Color(0.25, 0.27, 0.17)
@@ -52,40 +52,31 @@ static func trunk_fork_part() -> Node3D:
 	var bark_mat := VisualKit.bark_shader_material(BARK)
 
 	var col := MeshInstance3D.new()
-	col.name = "TrunkColumn"
-	# 趾なし・浅いフレアのみ。幾何フルート禁止。
-	col.mesh = CraftMeshes.trunk(
-		TRUNK_H,
-		BASE_R,
-		TOP_R,
-		96,
-		LEAN,
-		0.0,
-		true,
-		0
-	)
+	col.name = "TrunkFork"
+	if ResourceLoader.exists("res://assets/meshes/trunk_fork.obj"):
+		col.mesh = load("res://assets/meshes/trunk_fork.obj") as Mesh
+	if col.mesh == null:
+		# フォールバック：旧円錐＋枝（ベイク前）
+		col.mesh = CraftMeshes.trunk(
+			TRUNK_H,
+			BASE_R,
+			TOP_R,
+			96,
+			LEAN,
+			0.0,
+			true,
+			0
+		)
 	col.material_override = bark_mat
 	col.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# ベイク高さ≈1.65 → TRUNK_H
+	var baked_h := 1.73
+	var s := TRUNK_H / baked_h
+	col.scale = Vector3(s * 1.12, s, s * 1.12)
 	root.add_child(col)
 
-	for b in 2:
-		var br := MeshInstance3D.new()
-		br.name = "Cradle_%d" % b
-		var blen := 0.56
-		br.mesh = CraftMeshes.branch(blen, 0.13, 0.055, 18, 0.10)
-		br.material_override = bark_mat
-		var ang := (0.55 if b == 0 else PI - 0.55) + LEAN * 1.2
-		var by := TRUNK_H * 0.78
-		br.position = Vector3(
-			cos(ang) * (BASE_R * 0.22) + LEAN * 0.1,
-			by,
-			sin(ang) * (BASE_R * 0.08)
-		)
-		br.rotation = Vector3(0.58, ang, 0.48 if b == 0 else -0.48)
-		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(br)
-
-	root.rotation.y = 0.72
+	# 参照パーツと同じくクレードル正面
+	root.rotation.y = 0.0
 	root.set_meta("part", "trunk_fork")
 	root.set_meta("part_height", TRUNK_H)
 	return root

@@ -136,9 +136,10 @@ func _spawn_subject() -> void:
 		"tree_trunk":
 			var trunk := NatureFactory.deciduous_part_trunk()
 			hold.add_child(trunk)
-			cam.position = Vector3(0.05, 1.35, 5.2)
-			cam.look_at(Vector3(0.0, 0.85, 0.0), Vector3.UP)
-			cam.fov = 28.0
+			# 参照パーツ：幹中腹〜Yクレードルを画面に埋める（全長柱を撮らない）
+			cam.position = Vector3(0.06, 1.15, 2.55)
+			cam.look_at(Vector3(0.0, 1.05, 0.0), Vector3.UP)
+			cam.fov = 26.0
 		"tree_toes":
 			var toes := NatureFactory.deciduous_part_toes()
 			hold.add_child(toes)

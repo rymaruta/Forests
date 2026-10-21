@@ -113,6 +113,8 @@ static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Mate
 	# 刷毛筋は細かく、コントラストはシェーダ側で抑える
 	m.set_shader_parameter("uv_scale_x", 1.10)
 	m.set_shader_parameter("uv_scale_y", 1.85)
+	m.set_shader_parameter("flock_mix", 0.80)
+	m.set_shader_parameter("nap_scale", 3.6)
 	return m
 
 
