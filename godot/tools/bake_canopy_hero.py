@@ -14,10 +14,10 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-# 中密度の丸丘。細粒ポップコーン禁止・大きな球の貼り付けも禁止
-K_BLEND = 0.088
+# 中密度の丸丘。谷が読めるよう溶けを抑える
+K_BLEND = 0.078
 SEED = 2901
-AO_SAMPLES = 18
+AO_SAMPLES = 20
 
 
 def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
@@ -115,9 +115,9 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        # 谷を深く（p10≈77）
-        ao[i] = 1.0 - 0.66 * (dark ** 0.92)
-    return np.clip(ao, 0.38, 1.0)
+        # 谷は読めるが p10 を潰さない
+        ao[i] = 1.0 - 0.60 * (dark ** 0.95)
+    return np.clip(ao, 0.42, 1.0)
 
 
 def main() -> None:

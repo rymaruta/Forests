@@ -35,7 +35,7 @@ static func canopy_part() -> Node3D:
 	var baked_r := 1.30
 	var s := CANOPY_R / baked_r
 	# 参照冠：aspect≈1.4（中密度メッシュ）
-	canopy.scale = Vector3(s * 1.14, s * 0.98, s * 1.14)
+	canopy.scale = Vector3(s * 1.12, s * 0.99, s * 1.12)
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
