@@ -129,10 +129,10 @@ func _spawn_subject() -> void:
 		"tree_canopy":
 			var canopy := NatureFactory.deciduous_part_canopy()
 			hold.add_child(canopy)
-			# 参照パーツ寄り：正面やや俯瞰で丘の体積を読む
-			cam.position = Vector3(0.05, 1.25, 4.4)
-			cam.look_at(Vector3(0.0, 0.78, 0.0), Vector3.UP)
-			cam.fov = 28.0
+			# 参照パーツ寄り：房の丘が画面を埋める密な寄り（全体シルエット比較はcrop側）
+			cam.position = Vector3(0.04, 1.05, 3.2)
+			cam.look_at(Vector3(0.0, 0.72, 0.0), Vector3.UP)
+			cam.fov = 26.0
 		"tree_trunk":
 			var trunk := NatureFactory.deciduous_part_trunk()
 			hold.add_child(trunk)
