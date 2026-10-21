@@ -6,11 +6,11 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.35
+const HERO_TRUNK_H := 1.40
 ## 幹本体はやや細め。フレア幅は趾ブーストに任せる（太杭＋フィン化を防ぐ）
-const HERO_BASE_R := 0.34
-const HERO_TOP_R := 0.12
-const HERO_CANOPY_R := 1.28
+const HERO_BASE_R := 0.28
+const HERO_TOP_R := 0.10
+const HERO_CANOPY_R := 1.22
 const HERO_SEED := 2901
 
 
@@ -51,10 +51,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照マスク mean: 幹≈(0.49,0.37,0.27) 冠≈(0.46,0.49,0.32)
 	# 参照の暖かい中茶
 	# 参照 bark mean ≈ (0.42, 0.32, 0.23)。縦繊維テクスチャが主で幾何溝は浅い
-	var bark_tint := Color(0.48, 0.35, 0.24) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	# 参照 leaf mean ≈ (0.59, 0.62, 0.53) だが Bench 露出で飛ぶのでセージ寄りに抑える
-	var leaf := Color(0.44, 0.50, 0.34) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.26, 0.32, 0.18)
+	var bark_tint := Color(0.46, 0.33, 0.22) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	# 参照の暖かいセージ。暗すぎるフォレスト緑を避ける
+	var leaf := Color(0.48, 0.54, 0.36) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.30, 0.36, 0.20)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	# ヒーローは幹を冠内まで伸ばして接合割れを隠す
@@ -83,15 +83,14 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	for b in 2:
 		var br := MeshInstance3D.new()
 		# 参照：短い V フォークが冠下から読める
-		var blen := 0.62 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.16 if hero else 0.06, 0.07 if hero else 0.022, 18, 0.05)
+		# 参照：短い U クレードル（鋭い V 禁止）
+		var blen := 0.55 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.055 if hero else 0.022, 18, 0.08)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.70 if b == 0 else PI - 0.70) + lean * 1.2
-		# 冠より下で外へ開き、正面から短い V が読める
-		var by := h * (0.80 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (base_r * 0.30 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.12 if hero else 0.04))
-		# 冠下に短い V が正面で読めるよう外へ開く
-		br.rotation = Vector3(0.85 if hero else 0.55, ang, 0.70 if (hero and b == 0) else (-0.70 if hero else 0.0))
+		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
+		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.22 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.08 if hero else 0.04))
+		br.rotation = Vector3(0.58 if hero else 0.55, ang, 0.48 if (hero and b == 0) else (-0.48 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 

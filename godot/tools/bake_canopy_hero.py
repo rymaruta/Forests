@@ -23,25 +23,30 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：やや縦長の丸雲。尖頂と横キノコの両方を避ける
+    # 参照：縦に積んだ丸雲。底を平らにせず下房で丸くする
     specs = [
-        ((0.0, 0.30, 0.0), 0.40),
-        ((0.0, 0.52, 0.0), 0.36),
-        ((0.0, 0.12, 0.0), 0.34),
-        ((0.0, 0.72, 0.0), 0.30),
-        ((0.0, 0.90, 0.0), 0.22),
+        ((0.0, 0.34, 0.0), 0.38),
+        ((0.0, 0.56, 0.0), 0.36),
+        ((0.0, 0.16, 0.0), 0.32),
+        ((0.0, 0.78, 0.0), 0.30),
+        ((0.0, 0.96, 0.0), 0.22),
+        # 底を丸くする下房（平坦な冠底を避ける）
+        ((0.18, 0.06, 0.10), 0.22),
+        ((-0.16, 0.05, -0.12), 0.20),
+        ((0.08, 0.04, -0.18), 0.18),
+        ((-0.10, 0.05, 0.16), 0.18),
     ]
     for i in range(7):
         a = i / 7 * math.tau + 0.12
-        y = 0.40 + 0.06 * math.sin(i * 1.7)
-        r = 0.30 if i % 2 == 0 else 0.26
-        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+        y = 0.44 + 0.06 * math.sin(i * 1.7)
+        r = 0.28 if i % 2 == 0 else 0.24
+        specs.append(((math.cos(a) * 0.44, y, math.sin(a) * 0.44), r))
     for i in range(6):
         a = i / 6 * math.tau + 0.40
-        specs.append(((math.cos(a) * 0.30, 0.64, math.sin(a) * 0.30), 0.24))
+        specs.append(((math.cos(a) * 0.28, 0.68, math.sin(a) * 0.28), 0.22))
     for i in range(4):
         a = i / 4 * math.tau + 0.55
-        specs.append(((math.cos(a) * 0.16, 0.82, math.sin(a) * 0.16), 0.18))
+        specs.append(((math.cos(a) * 0.15, 0.86, math.sin(a) * 0.15), 0.17))
     return specs
 
 

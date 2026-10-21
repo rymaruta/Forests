@@ -187,12 +187,12 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 	for i in toes:
 		# わずかに不等間隔・不等幅で機械対称を崩す
 		var center := float(i) / float(toes) * TAU + 0.28 + 0.07 * sin(float(i) * 2.1)
-		# 丸い粘土丘：裾で広く、上で溶け込む
-		var half_w := 0.48 + 0.05 * cos(float(i) * 1.7)
+		# 丸い粘土丘：裾で広く緩く、尖った星型を避ける
+		var half_w := 0.55 + 0.05 * cos(float(i) * 1.7)
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
 		var lobe: float = clampf(1.0 - d / half_w, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
-		var amp := 0.88 + 0.10 * sin(float(i) * 1.3 + 0.4)
+		var amp := 0.72 + 0.08 * sin(float(i) * 1.3 + 0.4)
 		best = maxf(best, lobe * amp)
 	return 1.0 + best * env
 
