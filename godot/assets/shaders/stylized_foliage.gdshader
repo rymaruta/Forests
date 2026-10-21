@@ -60,10 +60,11 @@ void fragment() {
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 
-	float pile = _vnoise(v_world * 14.0 + 0.4);
-	float fiber = _vnoise(v_world * 36.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 72.0 + 7.4);
-	float flock = pile * 0.28 + fiber * 0.46 + fiber2 * 0.26;
+	// 低周波パイル優先。高周波砂粒ノイズを抑えてフェルト塊へ
+	float pile = _vnoise(v_world * 9.0 + 0.4);
+	float fiber = _vnoise(v_world * 22.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 40.0 + 7.4);
+	float flock = pile * 0.42 + fiber * 0.40 + fiber2 * 0.18;
 
 	// 房の谷：柔らかい雲影（黒穴の球接合に見せない）
 	float crevice = clamp(1.0 - NORMAL.y * 0.98, 0.0, 1.0);

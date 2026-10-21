@@ -193,7 +193,7 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
 		var lobe: float = clampf(1.0 - d / half_w, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
-		var amp := 0.72 + 0.12 * sin(float(i) * 1.3 + 0.4)
+		var amp := 0.88 + 0.14 * sin(float(i) * 1.3 + 0.4)
 		best = maxf(best, lobe * amp)
 	return 1.0 + best * env
 
