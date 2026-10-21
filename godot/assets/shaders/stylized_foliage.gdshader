@@ -124,7 +124,7 @@ void fragment() {
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
 	base *= 2.56;
-	base *= vec3(0.95, 1.00, 1.025);
+	base *= vec3(0.95, 1.00, 1.03);
 
 	// 真のフレネル — 発光リム完全禁止。柔縁はアルファのみ
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
