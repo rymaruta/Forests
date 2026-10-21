@@ -65,10 +65,10 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 }
 
 	void vertex() {
-	// 短いフェルト毛羽。連続ノイズで縁をわずかに崩す
-	float fuzz = _vnoise(VERTEX * 16.0 + 1.3) * 0.008
-		+ _vnoise(VERTEX * 32.0 + 4.7) * 0.0045
-		+ _vnoise(VERTEX * 8.0 + 9.1) * 0.003;
+	// 短いフェルト毛羽。連続ノイズで縁を崩す（参照の柔毛）
+	float fuzz = _vnoise(VERTEX * 14.0 + 1.3) * 0.011
+		+ _vnoise(VERTEX * 28.0 + 4.7) * 0.006
+		+ _vnoise(VERTEX * 7.0 + 9.1) * 0.004;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -124,7 +124,7 @@ void fragment() {
 	// 白ハロー禁止。葉色縁＋背景へ溶かす（参照の柔毛シルエット）
 	base += leaf_color * soft_rim * (0.55 + flock * 0.28);
 	base += vec3(0.035, 0.032, 0.014) * soft_rim;
-	float edge_fuzz = soft_rim * (0.22 + _vnoise(v_world * 70.0) * 0.18);
+	float edge_fuzz = soft_rim * (0.30 + _vnoise(v_world * 60.0) * 0.22);
 	base = mix(base, vec3(0.92, 0.90, 0.86), edge_fuzz);
 
 	// 下側の重い帯を抑え、参照の柔らかい裾に
