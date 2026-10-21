@@ -69,14 +69,14 @@ void fragment() {
 	float flock = pile * 0.50 + fiber * 0.35 + fiber2 * 0.15;
 
 	// 参照：房の陰影が主。パイルはごく薄い面ノイズ。
-	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
-	crevice = pow(crevice, 1.15);
-	float lobe_ao = mix(1.0, 0.38, crevice);
+	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
+	crevice = pow(crevice, 1.35);
+	float lobe_ao = mix(1.0, 0.55, crevice);
 
 	vec3 L = normalize(vec3(0.28, 0.92, 0.24));
 	float ndl = clamp(dot(v_n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.78, 1.22, ndl);
-	float up = clamp(v_n.y * 0.32 + 0.80, 0.76, 1.14);
+	float wrap = mix(0.84, 1.16, ndl);
+	float up = clamp(v_n.y * 0.28 + 0.82, 0.78, 1.12);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.48 + up * 0.18 + ndl * 0.12);
