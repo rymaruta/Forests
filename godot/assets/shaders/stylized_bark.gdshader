@@ -100,8 +100,8 @@ void fragment() {
 	base *= mix(0.62, 1.0, smoothstep(0.01, 0.40, v_y01));
 	// 中暗茶：幹中〜上で G/B を上げ REF木部 156/145/128 帯へ
 	// 低Yは暖寄りで趾 mean≈118、幹上はクール寄り
-	base *= mix(1.68, 1.96, smoothstep(0.12, 0.58, v_y01));
-	base *= mix(vec3(1.06, 1.00, 0.94), vec3(0.97, 1.14, 1.28), smoothstep(0.14, 0.60, v_y01));
+	base *= mix(1.64, 1.95, smoothstep(0.12, 0.58, v_y01));
+	base *= mix(vec3(1.04, 1.02, 0.98), vec3(0.93, 1.16, 1.42), smoothstep(0.14, 0.60, v_y01));
 
 	ALBEDO = base;
 }
