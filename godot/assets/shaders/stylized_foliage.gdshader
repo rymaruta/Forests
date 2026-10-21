@@ -1,6 +1,7 @@
 shader_type spatial;
-// フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO＋縁アルファ柔縁。
-render_mode blend_mix, depth_draw_always, cull_back, unshaded;
+// フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO＋縁ディザ柔縁。
+// MSAA×半透明は白縁になるので不透明＋discard。
+render_mode blend_mix, depth_draw_opaque, cull_back, unshaded;
 
 // ミップでフェルト粒が消えないよう線形のみ
 uniform sampler2D leaf_tex : source_color, filter_linear, repeat_enable;
@@ -133,13 +134,14 @@ void fragment() {
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：縁をわずかに暗くして白縁を消し、アルファで溶かす
-	base *= mix(1.0, 0.86, smoothstep(0.35, 0.95, fres));
-	float dither = _vnoise(v_world * 210.0 + 3.1) * 0.55
-		+ _vnoise(v_world * 420.0 + 8.7) * 0.45;
-	float fade = smoothstep(0.40, 0.95, fres) * (0.52 + dither * 0.42);
-	float alpha = clamp(1.0 - fade, 0.12, 1.0);
+	// シルエット柔縁：不透明ディザ discard（MSAA白縁回避）
+	base *= mix(1.0, 0.90, smoothstep(0.40, 0.95, fres));
+	float dither = _vnoise(v_world * 220.0 + 3.1) * 0.50
+		+ _vnoise(v_world * 440.0 + 8.7) * 0.50;
+	float cut = smoothstep(0.45, 0.96, fres) * (0.55 + dither * 0.55);
+	if (cut > 0.58) {
+		discard;
+	}
 
 	ALBEDO = base;
-	ALPHA = alpha;
 }
