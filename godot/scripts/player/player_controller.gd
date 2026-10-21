@@ -146,7 +146,7 @@ func _build_visual() -> void:
 	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.012, 7.5, 0.92), _cm(scarf_col, scarf_col.darkened(0.18), 0.58), Vector3(0.24, 0.58, -0.18))
 	_mi(CraftMeshes.uv_sphere(0.08, 7, 8, 0.01, 8.0, 0.9), _cm(scarf_col.darkened(0.05), scarf_col.darkened(0.22), 0.55), Vector3(0.26, 0.48, -0.22))
 
-	mesh_root.scale = Vector3(1.06, 1.14, 1.06)
+	mesh_root.scale = Vector3(1.04, 1.10, 1.04)
 
 
 func set_move_input(v: Vector2) -> void:
