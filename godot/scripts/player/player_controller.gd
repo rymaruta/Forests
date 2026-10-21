@@ -43,7 +43,7 @@ func _build_visual() -> void:
 	# Benchクリーム背景でも溶ける白肌禁止
 	var cloth := Color(0.26, 0.46, 0.50)
 	var cloth_d := Color(0.14, 0.30, 0.34)
-	var skin := Color(0.68, 0.48, 0.36)
+	var skin := Color(0.74, 0.52, 0.38)
 	var hat := Color(0.74, 0.56, 0.30)
 	var scarf_col := Color(0.90, 0.40, 0.28)
 	var hair_c := Color(0.18, 0.10, 0.06)
@@ -118,24 +118,24 @@ func _build_visual() -> void:
 	mouth.scale = Vector3(1.1, 0.18, 0.22)
 
 	# 麦わら：柔らかいつば＋背の高い麦色クラウン（織り flock 強め）
-	_mi(CraftMeshes.uv_sphere(0.52, 14, 30, 0.04, 2.0, 0.28), _cm(hat, hat.darkened(0.34), 0.88), Vector3(0, 1.36, -0.02), Vector3(1.05, 0.85, 1.05))
+	_mi(CraftMeshes.uv_sphere(0.54, 14, 30, 0.05, 2.0, 0.26), _cm(hat, hat.darkened(0.34), 0.95), Vector3(0, 1.34, -0.02), Vector3(1.08, 0.78, 1.08))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.22
-	band_m.bottom_radius = 0.22
-	band_m.height = 0.03
+	band_m.top_radius = 0.23
+	band_m.bottom_radius = 0.23
+	band_m.height = 0.035
 	band.mesh = band_m
 	band.material_override = _cm(Color(0.88, 0.32, 0.22), Color(0.52, 0.12, 0.08), 0.40)
-	band.position = Vector3(0, 1.40, -0.02)
+	band.position = Vector3(0, 1.38, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
-	_mi(CraftMeshes.trunk(0.34, 0.21, 0.16, 18), _cm(Color(0.90, 0.72, 0.42), Color(0.58, 0.40, 0.20), 0.86), Vector3(0, 1.46, -0.02))
-	_mi(CraftMeshes.uv_sphere(0.20, 12, 14, 0.025, 2.8, 0.80), _cm(Color(0.92, 0.74, 0.44), Color(0.60, 0.42, 0.22), 0.84), Vector3(0, 1.72, -0.02))
+	_mi(CraftMeshes.trunk(0.36, 0.22, 0.17, 18), _cm(Color(0.90, 0.72, 0.42), Color(0.58, 0.40, 0.20), 0.92), Vector3(0, 1.44, -0.02))
+	_mi(CraftMeshes.uv_sphere(0.21, 12, 14, 0.03, 2.8, 0.80), _cm(Color(0.92, 0.74, 0.44), Color(0.60, 0.42, 0.22), 0.90), Vector3(0, 1.72, -0.02))
 
 	# マフラー：首に太い巻き＋片側の短い端（リボン垂れ禁止）
-	_mi(CraftMeshes.uv_sphere(0.18, 14, 18, 0.03, 6.0, 0.55), _cm(scarf_col, scarf_col.darkened(0.26), 0.55), Vector3(0, 0.88, 0.06), Vector3(1.55, 0.70, 1.35))
-	_mi(CraftMeshes.uv_sphere(0.12, 10, 12, 0.025, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20), 0.50), Vector3(0.16, 0.82, 0.18))
-	_mi(CraftMeshes.uv_sphere(0.09, 8, 10, 0.02, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.48), Vector3(0.20, 0.70, 0.16))
+	_mi(CraftMeshes.uv_sphere(0.20, 14, 18, 0.035, 6.0, 0.52), _cm(scarf_col, scarf_col.darkened(0.26), 0.62), Vector3(0, 0.90, 0.08), Vector3(1.60, 0.78, 1.40))
+	_mi(CraftMeshes.uv_sphere(0.13, 10, 12, 0.03, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20), 0.55), Vector3(0.16, 0.84, 0.20))
+	_mi(CraftMeshes.uv_sphere(0.095, 8, 10, 0.025, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.52), Vector3(0.20, 0.72, 0.18))
 
 	mesh_root.scale = Vector3(1.10, 1.10, 1.10)
 
