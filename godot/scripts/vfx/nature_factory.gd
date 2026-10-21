@@ -339,7 +339,7 @@ static func cottage() -> Node3D:
 	# ポーチ柱＋梁（扉幅に寄せる）
 	for side in [-1.0, 1.0]:
 		var post := MeshInstance3D.new()
-		post.mesh = CraftMeshes.trunk(1.15, 0.08, 0.065, 8)
+		post.mesh = CraftMeshes.trunk(1.15, 0.095, 0.075, 8)
 		post.material_override = wood
 		post.position = Vector3(side * 0.55, 0.42, 1.72)
 		root.add_child(post)
