@@ -48,7 +48,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 
 	# 参照画素 mean: 幹≈(107,80,57) 冠≈(90,99,62)
 	# 参照マスク mean: 幹≈(0.49,0.37,0.27) 冠≈(0.46,0.49,0.32)
-	var bark_tint := Color(0.41, 0.30, 0.20) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var bark_tint := Color(0.38, 0.27, 0.18) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
 	var leaf := Color(0.32, 0.36, 0.26) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.20, 0.26, 0.16)
