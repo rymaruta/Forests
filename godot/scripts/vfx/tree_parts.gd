@@ -147,15 +147,15 @@ static func assemble_hero() -> Node3D:
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹のクレードル枝：細い上向きフォーク
+	# 参照全体樹のクレードル枝：細い上向きフォーク（冠下に読ませる）
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.56
+		var base_y := trunk.position.y + TRUNK_H * 0.58
 		var stub := MeshInstance3D.new()
-		stub.mesh = CraftMeshes.trunk(0.22, 0.045, 0.028, 10, 0.0, 0.02)
+		stub.mesh = CraftMeshes.trunk(0.28, 0.050, 0.030, 10, 0.0, 0.02)
 		stub.material_override = bark_mat
-		stub.position = Vector3(0.10 * side, base_y, 0.02)
-		stub.rotation_degrees.z = -38.0 * side
-		stub.rotation_degrees.x = -8.0
+		stub.position = Vector3(0.11 * side, base_y, 0.04)
+		stub.rotation_degrees.z = -42.0 * side
+		stub.rotation_degrees.x = -12.0
 		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(stub)
 
@@ -165,10 +165,11 @@ static func assemble_hero() -> Node3D:
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
 		canopy_mesh.scale *= Vector3(0.92, 1.12, 0.92)
-		var sheet_leaf := Color(0.38, 0.46, 0.26)
-		var sheet_dark := Color(0.18, 0.22, 0.12)
+		var sheet_leaf := Color(0.36, 0.45, 0.25)
+		var sheet_dark := Color(0.16, 0.20, 0.11)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.60, 0.0)
+	# クレードルを少し露出
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)
