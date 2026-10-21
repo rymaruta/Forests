@@ -126,10 +126,10 @@ func _build_visual() -> void:
 	_mi(CraftMeshes.trunk(0.32, 0.20, 0.15, 18), _cm(Color(0.90, 0.72, 0.42), Color(0.58, 0.40, 0.20)), Vector3(0, 1.46, -0.02))
 	_mi(CraftMeshes.uv_sphere(0.19, 12, 14, 0.02, 2.8, 0.80), _cm(Color(0.92, 0.74, 0.44), Color(0.60, 0.42, 0.22)), Vector3(0, 1.70, -0.02))
 
-	# マフラー：首だけ（顎を覆って髭に見えるのを禁止）
-	_mi(CraftMeshes.uv_sphere(0.14, 14, 18, 0.025, 6.0, 0.62), _cm(scarf_col, scarf_col.darkened(0.26)), Vector3(0, 0.86, 0.0), Vector3(1.40, 0.55, 1.20))
-	_mi(CraftMeshes.uv_sphere(0.09, 10, 12, 0.02, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20)), Vector3(0.16, 0.80, 0.12))
-	_mi(CraftMeshes.uv_sphere(0.07, 8, 10, 0.02, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18)), Vector3(0.20, 0.68, 0.14))
+	# マフラー：首巻きを前方にも少し見せる（参照の珊瑚スカーフ）
+	_mi(CraftMeshes.uv_sphere(0.15, 14, 18, 0.025, 6.0, 0.58), _cm(scarf_col, scarf_col.darkened(0.26)), Vector3(0, 0.84, 0.04), Vector3(1.45, 0.52, 1.25))
+	_mi(CraftMeshes.uv_sphere(0.10, 10, 12, 0.02, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20)), Vector3(0.14, 0.78, 0.16))
+	_mi(CraftMeshes.uv_sphere(0.075, 8, 10, 0.02, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18)), Vector3(0.18, 0.64, 0.18))
 
 	mesh_root.scale = Vector3(1.10, 1.10, 1.10)
 
