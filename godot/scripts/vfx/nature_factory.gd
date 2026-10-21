@@ -73,8 +73,21 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
+	# ヒーロー：細長い粘土趾を幹裾に重ねる（球パッドは床フィンで捨てた）
+	if hero:
+		for i in 4:
+			var toe := MeshInstance3D.new()
+			toe.name = "ClayToe%d" % i
+			toe.mesh = CraftMeshes.clay_root_toe(0.55, 0.20, 0.08, 12, 16, 4.0 + float(i) * 3.1)
+			toe.material_override = bark_mat
+			var a := float(i) / 4.0 * TAU + 0.38
+			toe.position = Vector3(cos(a) * base_r * 0.55, 0.10, sin(a) * base_r * 0.55)
+			toe.rotation = Vector3(0.15, -a, 0.0)
+			toe.scale = Vector3(1.0, 0.85, 1.05)
+			toe.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(toe)
+
 	# 参照：幹頂の短い V フォーク。冠に食い込ませて黒い三角割れを隠す。
-	# （別体趾球は床フィンが出るので捨てた。趾は一本メッシュのみ）
 	for b in 2:
 		var br := MeshInstance3D.new()
 		var blen := 0.40 if hero else rng.randf_range(0.35, 0.5)

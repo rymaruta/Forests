@@ -65,10 +65,9 @@ void fragment() {
 	// 法線曲げを弱めて金属ハイライト感を消す（マット粘土）
 	n += t_ang * (groove - 0.5) * 0.55 * groove_mask;
 	n = normalize(n);
-	float ndl = clamp(dot(n, normalize(vec3(0.25, 0.95, 0.20))), 0.0, 1.0);
-	ndl = mix(0.96, 1.0, ndl);
-	vec3 base = mix(bark_color * 1.02, bark_dark * 0.68, groove * 1.05);
-	base *= 0.96 + ndl * 0.04;
+	// 完全マット：カスタムN·Lハイライトをやめ、溝の色差だけ
+	vec3 base = mix(bark_color * 1.04, bark_dark * 0.70, groove * 1.10);
+	base *= 0.97;
 	ALBEDO = base;
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;
