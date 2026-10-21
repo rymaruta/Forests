@@ -456,10 +456,23 @@ static func cottage() -> Node3D:
 	chim_cap.position = Vector3(-1.05, 3.82, 0.15)
 	root.add_child(chim_cap)
 
-	# 段（参照のポーチ段：扉幅に寄せる）
-	_beam(root, wood, Vector3(0, 0.34, 1.72), Vector3(1.05, 0.14, 0.48))
-	_beam(root, wood, Vector3(0, 0.20, 1.90), Vector3(0.95, 0.12, 0.42))
-	_beam(root, wood, Vector3(0, 0.08, 2.05), Vector3(0.85, 0.10, 0.34))
+	# 段（参照のポーチ段：扉幅に寄せる・段ごとに少し明度差）
+	var step_mats = [
+		VisualKit.bark_shader_material(Color(0.22, 0.13, 0.07), 0.0, 0.55),
+		VisualKit.bark_shader_material(Color(0.19, 0.11, 0.06), 0.0, 0.60),
+		VisualKit.bark_shader_material(Color(0.17, 0.10, 0.05), 0.0, 0.65),
+	]
+	for i in 3:
+		var sy := [0.34, 0.20, 0.08][i]
+		var sz := [1.72, 1.90, 2.05][i]
+		var ss := [Vector3(1.05, 0.14, 0.48), Vector3(0.95, 0.12, 0.42), Vector3(0.85, 0.10, 0.34)][i]
+		var st := MeshInstance3D.new()
+		var stm := BoxMesh.new()
+		stm.size = ss
+		st.mesh = stm
+		st.material_override = step_mats[i]
+		st.position = Vector3(0, sy, sz)
+		root.add_child(st)
 
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 88
