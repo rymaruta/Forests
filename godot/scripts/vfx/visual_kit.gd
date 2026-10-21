@@ -91,28 +91,25 @@ static func roof_tile_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
 	m.set_shader_parameter("albedo_tex", load("res://assets/textures/roof_tile.png"))
-	m.set_shader_parameter("base_color", Vector3(0.42, 0.18, 0.12))
-	m.set_shader_parameter("shadow_color", Vector3(0.18, 0.08, 0.06))
-	m.set_shader_parameter("uv_scale", 1.5)
-	m.set_shader_parameter("nap_scale", 10.0)
-	m.set_shader_parameter("flock_mix", 0.35)
-	m.set_shader_parameter("tex_mix", 0.45)
-	m.set_shader_parameter("exposure", 0.82)
-	m.set_shader_parameter("warm_bias", Vector3(1.10, 0.92, 0.86))
+	m.set_shader_parameter("base_color", Vector3(0.36, 0.14, 0.10))
+	m.set_shader_parameter("shadow_color", Vector3(0.14, 0.06, 0.04))
+	m.set_shader_parameter("uv_scale", 1.4)
+	m.set_shader_parameter("nap_scale", 9.0)
+	m.set_shader_parameter("flock_mix", 0.32)
+	m.set_shader_parameter("tex_mix", 0.40)
+	m.set_shader_parameter("exposure", 0.72)
+	m.set_shader_parameter("warm_bias", Vector3(1.12, 0.90, 0.82))
 	return m
 
 
-static func cobble_material(tint: Color = Color(0.46, 0.46, 0.44)) -> Material:
-	## 不透明の灰み野面石（dirt茶・クリーム溶け禁止）
+static func cobble_material(tint: Color = Color(0.50, 0.50, 0.50)) -> Material:
+	## 不透明のニュートラル灰石（茶テクスチャ禁止・クリーム溶け禁止）
 	var m := StandardMaterial3D.new()
 	m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
 	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	# テクスチャ無しのソリッド灰＋わずかな頂点陰影（茶色混入禁止）
 	m.albedo_color = tint
-	# 漆喰粒でグレー石。茶色 dirt は使わない
-	m.albedo_texture = load("res://assets/textures/plaster.png")
-	m.uv1_scale = Vector3(2.0, 2.0, 2.0)
-	m.uv1_triplanar = true
-	m.uv1_world_triplanar = true
+	m.albedo_texture = null
 	m.roughness = 1.0
 	m.metallic = 0.0
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED

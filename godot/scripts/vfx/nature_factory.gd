@@ -201,7 +201,7 @@ static func cottage() -> Node3D:
 	var wall := VisualKit.plaster_material()
 	var wood := VisualKit.bark_shader_material(Color(0.24, 0.15, 0.09))
 	var roof := VisualKit.roof_tile_material()
-	var stone := VisualKit.cobble_material(Color(0.48, 0.47, 0.45))
+	var stone := VisualKit.cobble_material(Color(0.52, 0.51, 0.49))
 
 	# 石積み：濃い不透明の丸石だけ。白い板は隠す
 	var plinth := MeshInstance3D.new()
@@ -215,7 +215,7 @@ static func cottage() -> Node3D:
 	for i in 8:
 		var cob := MeshInstance3D.new()
 		cob.mesh = CraftMeshes.uv_sphere(0.28 + fmod(float(i) * 0.015, 0.05), 12, 14, 0.07, float(i) * 4.7, 0.92)
-		var tint := Color(0.50, 0.49, 0.46).lerp(Color(0.36, 0.37, 0.35), fmod(float(i) * 0.19, 1.0))
+		var tint := Color(0.55, 0.54, 0.52).lerp(Color(0.40, 0.41, 0.40), fmod(float(i) * 0.19, 1.0))
 		cob.material_override = VisualKit.cobble_material(tint)
 		cob.position = Vector3(-1.55 + float(i) * 0.44, 0.28 + (0.05 if i % 2 == 0 else 0.0), 1.58)
 		cob.scale = Vector3(1.15, 1.08, 1.05)
@@ -225,7 +225,7 @@ static func cottage() -> Node3D:
 		for side in [-1.0, 1.0]:
 			var cob := MeshInstance3D.new()
 			cob.mesh = CraftMeshes.uv_sphere(0.26, 11, 13, 0.06, float(i) * 3.1 + side, 0.92)
-			cob.material_override = VisualKit.cobble_material(Color(0.44, 0.43, 0.41))
+			cob.material_override = VisualKit.cobble_material(Color(0.48, 0.48, 0.47))
 			cob.position = Vector3(side * 1.72, 0.26, -0.7 + float(i) * 0.55)
 			cob.scale = Vector3(1.10, 1.05, 1.15)
 			cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

@@ -96,9 +96,9 @@ void fragment() {
 	float crease = mix(0.20, 1.0, pow(v_ao, 0.66)) * mix(1.0, 0.24, crotch);
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
-	// 中暗茶：部品 mean≈140–155 帯（ベージュ飛ばし・黒チョコ禁止）
-	base *= 1.68;
-	base *= vec3(1.03, 1.00, 0.95);
+	// 中暗チョコ茶：全体樹シート寄り（ベージュ飛ばし禁止）
+	base *= 1.50;
+	base *= vec3(0.98, 0.96, 0.92);
 
 	ALBEDO = base;
 }

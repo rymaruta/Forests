@@ -139,8 +139,12 @@ static func assemble_hero() -> Node3D:
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
+	# 結合時のみ：参照全体樹の縦長冠へわずかに寄せる（部品Benchは維持）
+	var canopy_mesh := canopy.get_node_or_null("Canopy") as Node3D
+	if canopy_mesh:
+		canopy_mesh.scale *= Vector3(0.94, 1.10, 0.94)
 	# 幹頂〜クレードルの上に冠を被せる
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.88, 0.0)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.90, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)
