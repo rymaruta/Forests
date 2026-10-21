@@ -49,45 +49,47 @@ func _bake_csg_in(n: Node) -> void:
 func _build_stage() -> void:
 	# 参照シート相当のニュートラル灰
 	# 参照シート寄りの暖灰（冷たい中性灰で幹がプラスチックに見えるのを避ける）
-	RenderingServer.set_default_clear_color(Color(0.86, 0.85, 0.82))
+	# 参照パーツ写真寄りの暖クリーム灰
+	RenderingServer.set_default_clear_color(Color(0.92, 0.90, 0.86))
 
 	var env := Environment.new()
 	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.86, 0.85, 0.82)
+	env.background_color = Color(0.92, 0.90, 0.86)
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color(0.92, 0.91, 0.88)
 	# アンビエント過多だと繊維法線が消える。参照級の柔らかい方向光を残す
 	# 参照：高キー柔らか光。深影で粘土がプラスチックに見えるのを避ける
 	# アンビエント過多だと樹皮溝・フェルト繊維が消える。参照級の柔らかい方向光を残す
 	# 参照スタジオ：柔らか方向光。白飛びしない露出で溝・フェルトを読む
-	env.ambient_light_energy = 0.84
+	# 参照スタジオ：柔らか方向光で谷を残す。アンビエントで潰さない
+	env.ambient_light_energy = 0.72
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.00
+	env.tonemap_exposure = 1.02
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.86
-	env.adjustment_contrast = 0.90
+	env.adjustment_saturation = 0.88
+	env.adjustment_contrast = 0.92
 	$WorldEnvironment.environment = env
 
 	var key: DirectionalLight3D = $KeyLight
-	key.light_color = Color(1.0, 0.98, 0.94)
-	# 参照：左上キーで房の立体を読む。フィルで潰しすぎない
-	key.light_energy = 0.55
+	key.light_color = Color(1.0, 0.985, 0.94)
+	# 参照：左上キーで房の丘と谷を読む
+	key.light_energy = 0.68
 	key.light_specular = 0.0
 	key.shadow_enabled = true
-	key.shadow_blur = 7.0
-	key.shadow_opacity = 0.06
-	key.rotation_degrees = Vector3(-52, -32, 0)
+	key.shadow_blur = 6.0
+	key.shadow_opacity = 0.10
+	key.rotation_degrees = Vector3(-54, -36, 0)
 
 	var fill: DirectionalLight3D = $FillLight
-	fill.light_color = Color(0.95, 0.96, 0.97)
-	fill.light_energy = 0.58
+	fill.light_color = Color(0.96, 0.96, 0.97)
+	fill.light_energy = 0.42
 	fill.light_specular = 0.0
 	fill.shadow_enabled = false
-	fill.rotation_degrees = Vector3(-28, 55, 0)
+	fill.rotation_degrees = Vector3(-26, 58, 0)
 
 	var rim: DirectionalLight3D = $RimLight
-	rim.light_color = Color(0.96, 0.96, 0.98)
-	rim.light_energy = 0.22
+	rim.light_color = Color(0.97, 0.97, 0.98)
+	rim.light_energy = 0.18
 	rim.light_specular = 0.0
 	rim.shadow_enabled = false
 	rim.rotation_degrees = Vector3(-12, 155, 0)
@@ -99,7 +101,7 @@ func _build_stage() -> void:
 	floor_mi.mesh = plane
 	var fm := StandardMaterial3D.new()
 	fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
-	fm.albedo_color = Color(0.86, 0.85, 0.82)
+	fm.albedo_color = Color(0.92, 0.90, 0.86)
 	fm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 	floor_mi.material_override = fm
 	floor_mi.position.y = 0.0

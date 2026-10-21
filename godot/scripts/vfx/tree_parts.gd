@@ -14,8 +14,9 @@ const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
-const LEAF := Color(0.50, 0.56, 0.36)
-const LEAF_DARK := Color(0.30, 0.36, 0.20)
+# 参照冠の暖かいセージ（暗すぎ・冷たすぎ禁止）
+const LEAF := Color(0.62, 0.66, 0.48)
+const LEAF_DARK := Color(0.36, 0.42, 0.28)
 
 
 static func canopy_part() -> Node3D:
@@ -38,6 +39,7 @@ static func canopy_part() -> Node3D:
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
+	# 白いディザ縁は参照と乖離するので付けない。毛羽は本体シェーダのみ。
 	root.set_meta("part", "canopy")
 	root.set_meta("part_height", CANOPY_R * 1.35)
 	return root
