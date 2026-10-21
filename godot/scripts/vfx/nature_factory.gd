@@ -52,9 +52,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照マスク mean 寄り（暗すぎ黒帯を避ける）
 	var bark_tint := Color(0.46, 0.34, 0.24) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
-	# 参照マスク mean ≈0.62/0.64/0.56。Bench露出で沈むので少し明るめに置く
-	var leaf := Color(0.58, 0.61, 0.50) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.40, 0.44, 0.34)
+	# 参照の暖かいモス。灰みすぎ／ミント化を避ける
+	var leaf := Color(0.56, 0.58, 0.42) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.36, 0.40, 0.26)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	var trunk_h := h * (1.0 if hero else 0.92)
@@ -85,9 +85,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		br.mesh = CraftMeshes.branch(blen, 0.15 if hero else 0.06, 0.065 if hero else 0.022, 18, 0.05)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
 		var ang := (0.40 if b == 0 else PI - 0.40) + lean * 1.2
-		var by := h * (0.78 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (base_r * 0.18 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.06 if hero else 0.04))
-		br.rotation = Vector3(0.22 if hero else 0.55, ang, 0.40 if (hero and b == 0) else (-0.40 if hero else 0.0))
+		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.22 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.08 if hero else 0.04))
+		br.rotation = Vector3(0.35 if hero else 0.55, ang, 0.48 if (hero and b == 0) else (-0.48 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -99,8 +99,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 枝の V フォークが冠下から読める高さ
-	# 冠を下げて幹首を隠し、参照のずんぐり比に寄せる
-	canopy.position = Vector3(lean * 0.08, h * 0.86, 0.0)
+	# Vフォークが冠下から少し読める高さ
+	canopy.position = Vector3(lean * 0.08, h * 0.90, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
 		var baked_r := 1.30

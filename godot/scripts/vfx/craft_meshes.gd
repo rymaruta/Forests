@@ -159,12 +159,12 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：なだらかな裾。趾に形を任せる（全体スカート禁止）。
-	if t >= 0.42:
+	## 参照：なだらかな粘土裾。趾パッドと重ねてスイープ感を出す。
+	if t >= 0.50:
 		return 1.0
-	var ft := 1.0 - t / 0.42
+	var ft := 1.0 - t / 0.50
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.05 * ft
+	return 1.0 + 0.18 * ft
 
 
 static func _ground_fillet(t: float) -> float:
@@ -176,25 +176,24 @@ static func _ground_fillet(t: float) -> float:
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 粘土趾：下帯で半径を保ち肉厚パッドにする（テーパー楔＝フィン化を防ぐ）。
-	if toes <= 0 or t > 0.50:
+	## 粘土趾：裾フレアの上に丸パッドを重ね、スイープ一体に見せる。
+	if toes <= 0 or t > 0.46:
 		return 1.0
-	var u := clampf(t / 0.50, 0.0, 1.0)
-	# 下〜22%はフル厚、その上でなだらかに幹へ戻す
+	var u := clampf(t / 0.46, 0.0, 1.0)
 	var env: float
-	if u <= 0.22:
+	if u <= 0.18:
 		env = 1.0
 	else:
-		env = exp(-pow((u - 0.22) / 0.30, 2.0))
+		env = exp(-pow((u - 0.18) / 0.28, 2.0))
 	var best := 0.0
 	for i in toes:
-		var center := float(i) / float(toes) * TAU + 0.30
+		var center := float(i) / float(toes) * TAU + 0.28
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		# 5本でも太く丸く（半幅を広めに）
-		var lobe: float = clampf(1.0 - d / 0.42, 0.0, 1.0)
+		var lobe: float = clampf(1.0 - d / 0.46, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	return 1.0 + 0.82 * best * env
+	# パッドは控えめ：フレアが本体、趾が起伏
+	return 1.0 + 0.55 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:

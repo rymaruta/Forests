@@ -23,24 +23,25 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：中小房の密集クラウド（大房だけだとブロブ化）
+    # 参照：やや縦長の雲。横に潰れたパンケーキ冠を避ける
     specs = [
-        ((0.0, 0.50, 0.0), 0.38),
-        ((0.0, 0.78, 0.0), 0.34),
-        ((0.0, 0.28, 0.0), 0.30),
-        ((0.0, 1.02, 0.0), 0.26),
+        ((0.0, 0.42, 0.0), 0.34),
+        ((0.0, 0.72, 0.0), 0.32),
+        ((0.0, 0.22, 0.0), 0.28),
+        ((0.0, 1.05, 0.0), 0.28),
+        ((0.0, 1.28, 0.0), 0.22),
     ]
-    for i in range(8):
-        a = i / 8 * math.tau + 0.14
-        y = 0.48 + 0.08 * math.sin(i * 1.7)
-        r = 0.30 if i % 2 == 0 else 0.26
-        specs.append(((math.cos(a) * 0.52, y, math.sin(a) * 0.52), r))
     for i in range(7):
-        a = i / 7 * math.tau + 0.42
-        specs.append(((math.cos(a) * 0.34, 0.82, math.sin(a) * 0.34), 0.24))
+        a = i / 7 * math.tau + 0.14
+        y = 0.55 + 0.10 * math.sin(i * 1.7)
+        r = 0.28 if i % 2 == 0 else 0.24
+        specs.append(((math.cos(a) * 0.44, y, math.sin(a) * 0.44), r))
+    for i in range(6):
+        a = i / 6 * math.tau + 0.42
+        specs.append(((math.cos(a) * 0.28, 0.92, math.sin(a) * 0.28), 0.22))
     for i in range(5):
         a = i / 5 * math.tau + 0.66
-        specs.append(((math.cos(a) * 0.20, 1.08, math.sin(a) * 0.20), 0.20))
+        specs.append(((math.cos(a) * 0.16, 1.18, math.sin(a) * 0.16), 0.18))
     return specs
 
 
