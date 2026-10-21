@@ -116,11 +116,11 @@ void fragment() {
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
 	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.05, tex_l), flock_mix * 0.55);
 	// 細い均一フェルト。振幅は参照 hp_std≈3.7（対比控えめ）
-	base *= mix(0.89, 1.11, flock);
-	float grit = _vnoise(v_world * 320.0 + 1.7);
-	float grit2 = _vnoise(v_world * 560.0 + 4.2);
-	float grit3 = _vnoise(v_world * 880.0 + 9.1);
-	base *= mix(0.89, 1.11, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
+	base *= mix(0.88, 1.12, flock);
+	float grit = _vnoise(v_world * 360.0 + 1.7);
+	float grit2 = _vnoise(v_world * 640.0 + 4.2);
+	float grit3 = _vnoise(v_world * 960.0 + 9.1);
+	base *= mix(0.88, 1.12, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
 	base *= 2.44;
