@@ -62,7 +62,7 @@ func _build_stage() -> void:
 	# アンビエント過多だと樹皮溝・フェルト繊維が消える。参照級の柔らかい方向光を残す
 	# 参照スタジオ：柔らか方向光。白飛びしない露出で溝・フェルトを読む
 	# 参照スタジオ：柔らか方向光で谷を残す。アンビエントで潰さない
-	env.ambient_light_energy = 0.72
+	env.ambient_light_energy = 0.64
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.02
 	env.adjustment_enabled = true
@@ -73,7 +73,7 @@ func _build_stage() -> void:
 	var key: DirectionalLight3D = $KeyLight
 	key.light_color = Color(1.0, 0.985, 0.94)
 	# 参照：左上キーで房の丘と谷を読む
-	key.light_energy = 0.68
+	key.light_energy = 0.74
 	key.light_specular = 0.0
 	key.shadow_enabled = true
 	key.shadow_blur = 6.0

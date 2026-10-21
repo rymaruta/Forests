@@ -14,9 +14,9 @@ const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
-# 参照冠の暖かいセージ（ライム禁止）
-const LEAF := Color(0.63, 0.67, 0.46)
-const LEAF_DARK := Color(0.38, 0.44, 0.30)
+# 参照冠の暖かいオリーブ（淡すぎ・ライム禁止）
+const LEAF := Color(0.58, 0.62, 0.42)
+const LEAF_DARK := Color(0.32, 0.38, 0.24)
 
 
 static func canopy_part() -> Node3D:
