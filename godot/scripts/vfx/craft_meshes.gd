@@ -104,18 +104,17 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 太い少数の有機縦溝（細密ゼブラ禁止）。裾・趾は弱め
-			var rip_amt0 := bark_ripple * lerpf(0.15, 1.0, clampf((t0 - 0.14) / 0.30, 0.0, 1.0))
-			var rip_amt1 := bark_ripple * lerpf(0.15, 1.0, clampf((t1 - 0.14) / 0.30, 0.0, 1.0))
-			var w0 := 0.7 * sin(a0 * 1.6 + t0 * 1.1) + 0.4 * sin(a0 * 3.3 + t0 * 2.4)
-			var w1 := 0.7 * sin(a1 * 1.6 + t0 * 1.1) + 0.4 * sin(a1 * 3.3 + t0 * 2.4)
-			var w2 := 0.7 * sin(a0 * 1.6 + t1 * 1.1) + 0.4 * sin(a0 * 3.3 + t1 * 2.4)
-			var w3 := 0.7 * sin(a1 * 1.6 + t1 * 1.1) + 0.4 * sin(a1 * 3.3 + t1 * 2.4)
-			# 約7本の太溝＋弱い副溝
-			var ripple0 := 1.0 + rip_amt0 * (0.72 * sin(a0 * 3.5 + w0) + 0.28 * sin(a0 * 7.0 + t0 * 1.6 + 0.9))
-			var ripple1 := 1.0 + rip_amt0 * (0.72 * sin(a1 * 3.5 + w1) + 0.28 * sin(a1 * 7.0 + t0 * 1.6 + 0.9))
-			var ripple2 := 1.0 + rip_amt1 * (0.72 * sin(a0 * 3.5 + w2) + 0.28 * sin(a0 * 7.0 + t1 * 1.6 + 0.9))
-			var ripple3 := 1.0 + rip_amt1 * (0.72 * sin(a1 * 3.5 + w3) + 0.28 * sin(a1 * 7.0 + t1 * 1.6 + 0.9))
+			# 参照級：太い縦彫刻（約6本）。裾・趾は弱め。細密ゼブラ禁止。
+			var rip_amt0 := bark_ripple * lerpf(0.12, 1.0, clampf((t0 - 0.16) / 0.28, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.12, 1.0, clampf((t1 - 0.16) / 0.28, 0.0, 1.0))
+			var w0 := 0.85 * sin(a0 * 1.3 + t0 * 0.9) + 0.35 * sin(a0 * 2.7 + t0 * 2.0)
+			var w1 := 0.85 * sin(a1 * 1.3 + t0 * 0.9) + 0.35 * sin(a1 * 2.7 + t0 * 2.0)
+			var w2 := 0.85 * sin(a0 * 1.3 + t1 * 0.9) + 0.35 * sin(a0 * 2.7 + t1 * 2.0)
+			var w3 := 0.85 * sin(a1 * 1.3 + t1 * 0.9) + 0.35 * sin(a1 * 2.7 + t1 * 2.0)
+			var ripple0 := 1.0 + rip_amt0 * (0.82 * sin(a0 * 3.0 + w0) + 0.18 * sin(a0 * 6.0 + t0 * 1.3 + 0.8))
+			var ripple1 := 1.0 + rip_amt0 * (0.82 * sin(a1 * 3.0 + w1) + 0.18 * sin(a1 * 6.0 + t0 * 1.3 + 0.8))
+			var ripple2 := 1.0 + rip_amt1 * (0.82 * sin(a0 * 3.0 + w2) + 0.18 * sin(a0 * 6.0 + t1 * 1.3 + 0.8))
+			var ripple3 := 1.0 + rip_amt1 * (0.82 * sin(a1 * 3.0 + w3) + 0.18 * sin(a1 * 6.0 + t1 * 1.3 + 0.8))
 			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 + lean0, y0, sin(a0) * r0 * ripple0 * toe0)
 			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 + lean0, y0, sin(a1) * r0 * ripple1 * toe1)
 			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 + lean1, y1, sin(a0) * r1 * ripple2 * toe2)
@@ -149,29 +148,29 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：太い連続フレアが主役。趾はフレア上の指。
-	if t >= 0.42:
+	## 参照：太い連続フレア＋趾パッド。
+	if t >= 0.38:
 		return 1.0
-	var ft := 1.0 - t / 0.42
+	var ft := 1.0 - t / 0.38
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.52 * ft
+	return 1.0 + 0.48 * ft
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## フレア上の丸い指。星型尖り／単球ソーセージ禁止。
-	if toes <= 0 or t > 0.28:
+	## フレア上の丸い趾パッド。星型尖り／ソーセージ禁止。
+	if toes <= 0 or t > 0.24:
 		return 1.0
-	var fall := 1.0 - t / 0.28
+	var fall := 1.0 - t / 0.24
 	fall = fall * fall * (3.0 - 2.0 * fall)
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.55
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		# 広めローブで尖りを消し、丸いパッドにする
-		var lobe: float = clampf(1.0 - d / 0.52, 0.0, 1.0)
-		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
+		# 広いローブ＋弱い押し出し＝丸いパッド（星型禁止）
+		var lobe: float = clampf(1.0 - d / 0.58, 0.0, 1.0)
+		lobe = pow(lobe, 1.35)
 		best = maxf(best, lobe)
-	return 1.0 + 0.40 * best * fall
+	return 1.0 + 0.42 * best * fall
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

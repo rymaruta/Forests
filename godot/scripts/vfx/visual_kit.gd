@@ -27,7 +27,7 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	m.set_shader_parameter("wind_strength", 0.008)
 	m.set_shader_parameter("roughness_val", 1.0)
 	# 繊維テクスチャを読める範囲で乗せる（石モトルはシェーダ側で抑制）
-	m.set_shader_parameter("flock_mix", 0.72)
+	m.set_shader_parameter("flock_mix", 0.78)
 	return m
 
 
@@ -93,10 +93,10 @@ static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Mate
 	m.set_shader_parameter("bark_tex", load("res://assets/textures/bark.png"))
 	m.set_shader_parameter("bark_color", Vector3(tint.r, tint.g, tint.b))
 	# 溝が読めるよう暗部をしっかり落とす（ただしゼブラ帯にはしない）
-	var bd := tint.darkened(0.58)
+	var bd := tint.darkened(0.48)
 	m.set_shader_parameter("bark_dark", Vector3(bd.r, bd.g, bd.b))
-	m.set_shader_parameter("uv_scale_x", 0.90)
-	m.set_shader_parameter("uv_scale_y", 1.70)
+	m.set_shader_parameter("uv_scale_x", 0.85)
+	m.set_shader_parameter("uv_scale_y", 1.55)
 	return m
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：大きめの房が少数、柔らかい谷でつながる。"""
+"""Bake canopy_hero.obj — 参照：大きめ少数の房が柔らかい谷でつながる雲冠。"""
 from __future__ import annotations
 
 import math
@@ -10,10 +10,10 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.35  # nature_factory HERO_CANOPY_R
-RES = 128
-PAD = 0.14
-K_BLEND = 0.13  # 房の一体感と谷の両立（葡萄球列禁止）
+BASE_R = 1.35
+RES = 140
+PAD = 0.16
+K_BLEND = 0.15  # 大房を溶かしつつ谷を残す
 SEED = 2901
 
 
@@ -23,30 +23,19 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 縦長の雲冠（横広扁平禁止）。大きめ少数。
+    # 参照：少数の大房だけ。段がある雲。
     specs = [
-        ((0.0, 0.58, 0.0), 0.46),
-        ((0.0, 0.95, 0.0), 0.40),
-        ((0.0, 0.28, 0.0), 0.38),
+        ((0.0, 0.52, 0.0), 0.56),
+        ((0.0, 0.92, 0.0), 0.46),
+        ((0.0, 0.20, 0.0), 0.48),
+        ((0.0, 1.25, 0.0), 0.32),
     ]
-    for i in range(6):
-        a = i / 6 * math.tau + 0.18
-        specs.append(
-            (
-                (math.cos(a) * 0.50, 0.55 + 0.05 * math.sin(i), math.sin(a) * 0.50),
-                0.33,
-            )
-        )
-    for i in range(5):
-        a = i / 5 * math.tau + 0.5
-        specs.append(((math.cos(a) * 0.28, 1.08, math.sin(a) * 0.28), 0.27))
-    specs.append(((0.0, 1.35, 0.0), 0.24))
-    for i in range(5):
-        a = i / 5 * math.tau + 0.1
-        specs.append(((math.cos(a) * 0.36, 0.16, math.sin(a) * 0.36), 0.26))
     for i in range(4):
-        a = i / 4 * math.tau + 0.35
-        specs.append(((math.cos(a) * 0.24, 0.78, math.sin(a) * 0.24), 0.22))
+        a = i / 4 * math.tau + 0.25
+        specs.append(((math.cos(a) * 0.42, 0.55, math.sin(a) * 0.42), 0.42))
+    for i in range(3):
+        a = i / 3 * math.tau + 0.6
+        specs.append(((math.cos(a) * 0.26, 1.02, math.sin(a) * 0.26), 0.34))
     return specs
 
 
@@ -57,12 +46,12 @@ def main() -> None:
     for c, r in lobe_specs():
         centers.append(
             (
-                c[0] * BASE_R + rng.uniform(-0.004, 0.004) * BASE_R,
-                c[1] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
-                c[2] * BASE_R + rng.uniform(-0.004, 0.004) * BASE_R,
+                c[0] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[1] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
+                c[2] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
             )
         )
-        radii.append(r * BASE_R * rng.uniform(0.998, 1.002))
+        radii.append(r * BASE_R * rng.uniform(0.999, 1.001))
 
     xs = [p[0] for p in centers]
     ys = [p[1] for p in centers]
@@ -120,7 +109,7 @@ def main() -> None:
     faces = np.array(new_faces)
 
     with OUT.open("w") as fo:
-        fo.write("# dense MC canopy lobes=%d k=%.2f\n" % (len(centers), K_BLEND))
+        fo.write("# soft cloud canopy lobes=%d k=%.2f\n" % (len(centers), K_BLEND))
         for v in verts:
             fo.write("v %.5f %.5f %.5f\n" % tuple(v))
         for f in faces:

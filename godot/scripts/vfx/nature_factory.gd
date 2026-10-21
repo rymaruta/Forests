@@ -47,10 +47,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
 	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — Bench露出で明るく出るので少し暗め
-	# 参照 mean 幹≈(107,80,57) 冠≈(90,99,62) — オレンジ寄り／濃緑禁止
-	var bark_tint := Color(0.26, 0.18, 0.12) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	var leaf := Color(0.30, 0.34, 0.23) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.18, 0.24, 0.14)
+	# Bench露出後の見た目を参照 mean に寄せる（幹明るめ・冠セージ）
+	var bark_tint := Color(0.31, 0.23, 0.15) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var leaf := Color(0.33, 0.37, 0.26) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.22, 0.28, 0.18)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋趾丘）。CSG球列／MC白欠けは捨てた。
 	var trunk_h := h * (1.05 if hero else 0.92)
@@ -64,7 +64,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		72 if hero else 16,
 		lean,
-		0.060 if hero else 0.028,
+		0.12 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -72,25 +72,19 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# 参照：幹上端が短い V に割れて冠を支える（正面から見える位置）
+	# 参照：短い枝が1〜2本。欠けポリ禁止。正面で読める角度。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.62 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.045 if hero else 0.022, 12, 0.06)
+		var blen := 0.48 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.05 if hero else 0.022, 12, 0.04)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		# ほぼ ±X 方向に出して正面カメラで読む
-		var ang := (0.35 if b == 0 else PI - 0.35) + lean * 1.5
-		var by := h * (0.55 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (0.18 if hero else 0.2) + lean * 0.15, by, 0.08 if b == 0 else -0.08)
-		br.rotation = Vector3(0.42 if hero else 0.55, ang, 0.10 if b == 0 else -0.10)
+		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
+		var by := h * (0.60 if hero else (0.58 if b == 0 else 0.54))
+		# 幹表面から外へ少し出して食い込み欠けを防ぐ
+		br.position = Vector3(cos(ang) * (base_r * 0.55 if hero else 0.2) + lean * 0.1, by, sin(ang) * 0.04)
+		br.rotation = Vector3(0.75 if hero else 0.55, ang, 0.0)
+		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
-		if hero:
-			var br2 := MeshInstance3D.new()
-			br2.mesh = CraftMeshes.branch(0.30, 0.06, 0.032, 10, 0.04)
-			br2.material_override = VisualKit.bark_shader_material(bark_tint)
-			br2.position = br.position + Vector3(cos(ang) * 0.28, 0.28, sin(ang) * 0.04)
-			br2.rotation = Vector3(0.28, ang + (0.28 if b == 0 else -0.28), 0.0)
-			root.add_child(br2)
 
 	# 雲冠：ヒーローは事前生成の高解像ソフトユニオンOBJ
 	var canopy := MeshInstance3D.new()
@@ -99,10 +93,13 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	# 枝（Vフォーク）が見える余白を残す
-	canopy.position = Vector3(lean * 0.08, h * 0.88, 0.0)
+	# 枝が見える余白
+	canopy.position = Vector3(lean * 0.08, h * 0.90, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
+	# 樹皮溝が正面光で読めるようわずかにヨー
+	if hero:
+		root.rotation.y = 0.55
 
 	root.set_meta("tree_height", h)
 	root.set_meta("hero", hero)
