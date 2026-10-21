@@ -17,8 +17,8 @@ const LEAN := 0.02
 const BARK := Color(0.34, 0.24, 0.15)
 const BARK_TOE := Color(0.34, 0.24, 0.15)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
-const LEAF := Color(0.49, 0.50, 0.33)
-const LEAF_DARK := Color(0.25, 0.27, 0.17)
+const LEAF := Color(0.46, 0.50, 0.34)
+const LEAF_DARK := Color(0.24, 0.28, 0.18)
 
 
 static func canopy_part() -> Node3D:
@@ -128,7 +128,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：水平餅裾を抑え、縦趾を残す（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as Node3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.80, 1.28, 0.80)
+		toe_mesh.scale *= Vector3(0.70, 1.42, 0.70)
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
