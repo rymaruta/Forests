@@ -53,8 +53,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照 bark mean ≈ (0.42, 0.32, 0.23)。縦繊維テクスチャが主で幾何溝は浅い
 	var bark_tint := Color(0.46, 0.33, 0.22) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# 参照の暖かいセージ。暗すぎるフォレスト緑を避ける
-	var leaf := Color(0.48, 0.54, 0.36) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.30, 0.36, 0.20)
+	# 参照冠 mean ≈ (0.43, 0.46, 0.30)。微細パイルより房の陰影が主
+	var leaf := Color(0.45, 0.49, 0.33) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.28, 0.32, 0.18)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	# ヒーローは幹を冠内まで伸ばして接合割れを隠す

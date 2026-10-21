@@ -50,12 +50,12 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: canopy_hero.obj（低い横広がり雲 soft-union k=0.11／尖頂禁止）
-      幹: 一本メッシュ（96 seg／丸趾＋接地フィレット）trunk_h=1.12h
-      短い V フォークが冠下から読める（blen≈0.62）
-      HERO_TRUNK_H=1.35 / BASE_R=0.34 / TOP_R=0.12 / CANOPY_R=1.28 / SEED=2901
-  質感: 冠 unshadedフェルト（パイル粒アルベド）／樹皮 unshaded＋縦繊維テクスチャ
-  色: 幹≈0.48/0.35/0.24 冠≈0.40/0.46/0.32
-  捨てた: 深い幾何フルート／ゼブラ樹皮／縦長卵冠／Lambertで粒が消える葉
-  進行中レバー: ①フェルト表面密度（縁だけ→面全体）②趾の丸丘一体 ③幹刷毛筋の遠目可読
+  形: canopy_hero.obj（中高丸雲 soft-union k=0.07／下房で底を丸く）
+      幹: 一本メッシュ（96 seg／趾は裾だけ／接地フィレット）trunk_h=1.12h
+      短い U クレードルが冠下から読める
+      HERO_TRUNK_H=1.40 / BASE_R=0.28 / TOP_R=0.10 / CANOPY_R=1.22 / SEED=2901
+  質感: 冠 unshadedフェルト＋房AO／樹皮 unshaded＋縦繊維（幾何稜線なし）
+  色: 幹≈0.46/0.33/0.22 冠≈0.48/0.54/0.36
+  捨てた: 深い幾何フルート／ゼブラ樹皮／趾が幹中腹まで残る稜／ディザ殻／尖頂冠
+  進行中レバー: ①フェルト面の密度（最大ギャップ）②趾の丸粘土フィレット ③刷毛筋の遠目
   未達: 参照級（合格宣言禁止）。fair cmp継続。合格までワールド戻さない
