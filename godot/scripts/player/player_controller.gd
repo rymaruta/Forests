@@ -54,12 +54,13 @@ func _build_visual() -> void:
 	# 一体フレアワンピ
 	_mi(CraftMeshes.trunk(0.68, 0.32, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.28, 0))
 
-	# 袖＋手元（袖先に手が付く）
+	# 袖＋手元：肩→肘→手を一本の線でつなぐ
 	for side in [-1.0, 1.0]:
-		var arm := _mi(CraftMeshes.trunk(0.42, 0.072, 0.048, 12), _cm(cloth, cloth_d), Vector3(0.24 * side, 0.58, 0.06))
-		arm.rotation_degrees.z = 32.0 * side
-		# 袖先位置に手
-		_mi(CraftMeshes.uv_sphere(0.06, 7, 8), _cm(skin, skin.darkened(0.22)), Vector3(0.42 * side, 0.36, 0.12))
+		var upper := _mi(CraftMeshes.trunk(0.28, 0.075, 0.06, 12), _cm(cloth, cloth_d), Vector3(0.22 * side, 0.72, 0.04))
+		upper.rotation_degrees.z = 38.0 * side
+		var lower := _mi(CraftMeshes.trunk(0.24, 0.058, 0.048, 10), _cm(cloth, cloth_d), Vector3(0.36 * side, 0.52, 0.08))
+		lower.rotation_degrees.z = 18.0 * side
+		_mi(CraftMeshes.uv_sphere(0.062, 7, 8), _cm(skin, skin.darkened(0.22)), Vector3(0.44 * side, 0.38, 0.12))
 
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.20)), Vector3(0, 1.18, 0))
@@ -99,21 +100,20 @@ func _build_visual() -> void:
 	var mouth := _mi(CraftMeshes.uv_sphere(0.016, 5, 6, 0.0, 1.0, 0.14), _cm(Color(0.50, 0.28, 0.30), Color(0.30, 0.14, 0.16)), Vector3(0, 1.02, 0.275))
 	mouth.scale = Vector3(1.1, 0.18, 0.22)
 
-	# 麦わら：つば＋麦色クラウンが帯の上にしっかり見える
-	_mi(CraftMeshes.uv_sphere(0.46, 12, 28, 0.03, 2.0, 0.28), _cm(hat, hat.darkened(0.32)), Vector3(0, 1.42, -0.02))
+	# 麦わら：つば＋背の高い麦色クラウン（帯は細いリボン）
+	_mi(CraftMeshes.uv_sphere(0.48, 12, 28, 0.03, 2.0, 0.30), _cm(hat, hat.darkened(0.32)), Vector3(0, 1.40, -0.02))
+	_mi(CraftMeshes.trunk(0.30, 0.22, 0.16, 18), _cm(Color(0.86, 0.68, 0.38), Color(0.55, 0.38, 0.18)), Vector3(0, 1.48, -0.02))
+	_mi(CraftMeshes.uv_sphere(0.18, 12, 14, 0.02, 2.8, 0.75), _cm(Color(0.88, 0.70, 0.40), Color(0.58, 0.40, 0.20)), Vector3(0, 1.68, -0.02))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.20
-	band_m.bottom_radius = 0.20
-	band_m.height = 0.035
+	band_m.top_radius = 0.225
+	band_m.bottom_radius = 0.225
+	band_m.height = 0.028
 	band.mesh = band_m
 	band.material_override = _cm(Color(0.88, 0.32, 0.22), Color(0.52, 0.12, 0.08))
-	band.position = Vector3(0, 1.44, -0.02)
+	band.position = Vector3(0, 1.42, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
-	# クラウンは帯の上に麦色ドーム（珊瑚色で塗りつぶさない）
-	_mi(CraftMeshes.trunk(0.26, 0.20, 0.15, 18), _cm(hat.lightened(0.10), hat.darkened(0.22)), Vector3(0, 1.50, -0.02))
-	_mi(CraftMeshes.uv_sphere(0.17, 12, 14, 0.02, 2.8, 0.70), _cm(hat.lightened(0.12), hat.darkened(0.20)), Vector3(0, 1.66, -0.02))
 
 	# マフラー：太い首巻き（細い垂れ棒だけにしない）
 	_mi(CraftMeshes.uv_sphere(0.18, 14, 18, 0.03, 6.0, 0.70), _cm(scarf_col, scarf_col.darkened(0.26)), Vector3(0, 0.95, 0.02), Vector3(1.55, 0.72, 1.35))
