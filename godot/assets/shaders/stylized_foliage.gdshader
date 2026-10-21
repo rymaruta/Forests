@@ -65,12 +65,13 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 }
 
 	void vertex() {
-	// 中周波の二次丘（大房の上に参照の起伏）＋短いフェルト毛羽
-	float mound = _vnoise(VERTEX * 3.2 + 0.7) * 0.028
-		+ _vnoise(VERTEX * 6.4 + 2.3) * 0.014;
-	float fuzz = _vnoise(VERTEX * 26.0 + 1.3) * 0.018
-		+ _vnoise(VERTEX * 52.0 + 4.7) * 0.010
-		+ _vnoise(VERTEX * 12.0 + 9.1) * 0.005;
+	// 中〜高周波の二次丘（大房の上に参照の起伏）＋短いフェルト毛羽
+	float mound = _vnoise(VERTEX * 4.0 + 0.7) * 0.024
+		+ _vnoise(VERTEX * 8.5 + 2.3) * 0.016
+		+ _vnoise(VERTEX * 14.0 + 5.1) * 0.009;
+	float fuzz = _vnoise(VERTEX * 30.0 + 1.3) * 0.016
+		+ _vnoise(VERTEX * 60.0 + 4.7) * 0.009
+		+ _vnoise(VERTEX * 14.0 + 9.1) * 0.005;
 	VERTEX += NORMAL * (mound + fuzz);
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -102,12 +103,13 @@ void fragment() {
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
 	// 大房の谷は広く深く（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.46, pow(crevice, 1.08)) * mix(0.66, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.52, pow(crevice, 1.20)) * mix(0.72, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.90, 1.14, ndl);
-	float up = clamp(n.y * 0.24 + 0.86, 0.84, 1.12);
+	// 低コントラストの包み光（ハイライト白飛び禁止）
+	float wrap = mix(0.94, 1.08, ndl);
+	float up = clamp(n.y * 0.18 + 0.88, 0.86, 1.08);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
@@ -120,8 +122,8 @@ void fragment() {
 	base *= mix(0.89, 1.11, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.74;
-	base *= vec3(0.93, 1.03, 1.01);
+	base *= 1.70;
+	base *= vec3(0.95, 1.02, 0.995);
 
 	// 真のフレネル（0=正面, 1=縁）
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);

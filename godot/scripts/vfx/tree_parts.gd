@@ -14,9 +14,9 @@ const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
-# 参照冠の暖かいモスオリーブ（rb/g≈0.22）
-const LEAF := Color(0.50, 0.51, 0.31)
-const LEAF_DARK := Color(0.26, 0.28, 0.14)
+# 参照冠の低彩度モスオリーブ（rb/g≈0.22）
+const LEAF := Color(0.48, 0.50, 0.34)
+const LEAF_DARK := Color(0.28, 0.30, 0.18)
 
 
 static func canopy_part() -> Node3D:
