@@ -132,8 +132,8 @@ def bake_ao(verts, normals, caps, spheres, rng: random.Random) -> np.ndarray:
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        ao[i] = 1.0 - 0.72 * (dark ** 0.85)
-    return np.clip(ao, 0.30, 1.0)
+        ao[i] = 1.0 - 0.82 * (dark ** 0.80)
+    return np.clip(ao, 0.22, 1.0)
 
 
 def main() -> None:
