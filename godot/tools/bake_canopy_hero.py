@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：大房＋中房の雲。細粒密集は避ける。"""
+"""Bake canopy_hero.obj — 参照：大きな丸い雲房。尖った三角冠を避ける。"""
 from __future__ import annotations
 
 import math
@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 150
 PAD = 0.13
-K_BLEND = 0.08
+K_BLEND = 0.11
 SEED = 2901
 
 
@@ -23,25 +23,24 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：多数の中小房。大房だけだとブロブ／三角化する
+    # 参照：少数の大きな丸房。細房密集は三角シルエットになりやすい
     specs = [
-        ((0.0, 0.45, 0.0), 0.30),
-        ((0.0, 0.70, 0.0), 0.28),
-        ((0.0, 0.24, 0.0), 0.26),
-        ((0.0, 0.98, 0.0), 0.24),
-        ((0.0, 1.22, 0.0), 0.20),
+        ((0.0, 0.42, 0.0), 0.42),
+        ((0.0, 0.72, 0.0), 0.38),
+        ((0.0, 0.18, 0.0), 0.34),
+        ((0.0, 0.98, 0.0), 0.32),
     ]
-    for i in range(9):
-        a = i / 9 * math.tau + 0.12
-        y = 0.50 + 0.10 * math.sin(i * 1.9)
-        r = 0.24 if i % 2 == 0 else 0.21
-        specs.append(((math.cos(a) * 0.46, y, math.sin(a) * 0.46), r))
-    for i in range(8):
-        a = i / 8 * math.tau + 0.40
-        specs.append(((math.cos(a) * 0.30, 0.86, math.sin(a) * 0.30), 0.20))
     for i in range(6):
-        a = i / 6 * math.tau + 0.62
-        specs.append(((math.cos(a) * 0.18, 1.12, math.sin(a) * 0.18), 0.17))
+        a = i / 6 * math.tau + 0.16
+        y = 0.50 + 0.06 * math.sin(i * 1.4)
+        r = 0.34 if i % 2 == 0 else 0.30
+        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+    for i in range(5):
+        a = i / 5 * math.tau + 0.45
+        specs.append(((math.cos(a) * 0.28, 0.82, math.sin(a) * 0.28), 0.26))
+    for i in range(3):
+        a = i / 3 * math.tau + 0.70
+        specs.append(((math.cos(a) * 0.14, 1.05, math.sin(a) * 0.14), 0.22))
     return specs
 
 

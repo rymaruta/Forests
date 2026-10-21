@@ -49,8 +49,8 @@ float _groove_at(vec3 wpos) {
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float g = _groove_at(v_world);
-	// 浅い押しでシルエットに溝を出す（硬い稜線は避ける）
-	VERTEX += NORMAL * (g - 0.30) * 0.030;
+	// ごく浅い押し（硬いデジタル稜線を避ける）
+	VERTEX += NORMAL * (g - 0.32) * 0.018;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
@@ -63,9 +63,9 @@ void fragment() {
 	float y_mask = smoothstep(0.05, 0.22, v_world.y);
 	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
 
-	// 彫り：アルベド差で読む（円柱ハイライトは出さない）
-	vec3 base = mix(bark_color * 1.18, bark_dark * 0.50, clamp(groove * 1.20, 0.0, 1.0));
-	base *= 0.98 + tex.g * 0.05;
+	// 彫り：柔らかい色差（デジタルな黒溝を避ける）
+	vec3 base = mix(bark_color * 1.12, bark_dark * 0.68, clamp(groove * 0.90, 0.0, 1.0));
+	base *= 0.99 + tex.g * 0.04;
 
 	// 法線曲げを弱く：彫りの色差を主、プラスチック光沢を避ける
 	vec3 n = normalize(v_normal);
