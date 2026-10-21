@@ -67,16 +67,16 @@ void fragment() {
 	float fiber2 = _vnoise(v_world * 38.0 + 7.4);
 	float flock = pile * 0.40 + fiber * 0.42 + fiber2 * 0.18;
 
-	// 房の谷：柔らかい雲影（黒穴禁止）
-	float crevice = clamp(1.0 - v_n.y * 0.95, 0.0, 1.0);
-	crevice = pow(crevice, 1.65);
-	float lobe_ao = mix(1.0, 0.64, crevice);
+	// 房の谷：参照級の雲影（黒穴禁止、平坦塗りつぶし禁止）
+	float crevice = clamp(1.0 - v_n.y * 0.92, 0.0, 1.0);
+	crevice = pow(crevice, 1.45);
+	float lobe_ao = mix(1.0, 0.52, crevice);
 
-	// 固定キー方向の弱い包み込み（円柱ハイライト級にはしない）
+	// 固定キー方向の包み込みで房の立体を残す
 	vec3 L = normalize(vec3(0.22, 0.94, 0.20));
 	float ndl = clamp(dot(v_n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.90, 1.08, ndl);
-	float up = clamp(v_n.y * 0.18 + 0.86, 0.82, 1.06);
+	float wrap = mix(0.86, 1.14, ndl);
+	float up = clamp(v_n.y * 0.24 + 0.84, 0.80, 1.10);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.38 + flock * 0.32 + up * 0.12);

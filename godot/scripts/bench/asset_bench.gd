@@ -60,33 +60,33 @@ func _build_stage() -> void:
 	# 参照：高キー柔らか光。深影で粘土がプラスチックに見えるのを避ける
 	# アンビエント過多だと樹皮溝・フェルト繊維が消える。参照級の柔らかい方向光を残す
 	# 参照スタジオ：柔らか方向光。白飛びしない露出で溝・フェルトを読む
-	env.ambient_light_energy = 0.98
+	env.ambient_light_energy = 0.88
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 1.02
+	env.tonemap_exposure = 1.00
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.84
-	env.adjustment_contrast = 0.86
+	env.adjustment_saturation = 0.85
+	env.adjustment_contrast = 0.88
 	$WorldEnvironment.environment = env
 
 	var key: DirectionalLight3D = $KeyLight
 	key.light_color = Color(1.0, 0.98, 0.94)
-	key.light_energy = 0.38
+	key.light_energy = 0.52
 	key.light_specular = 0.0
 	key.shadow_enabled = true
-	key.shadow_blur = 8.0
-	key.shadow_opacity = 0.04
+	key.shadow_blur = 7.0
+	key.shadow_opacity = 0.05
 	key.rotation_degrees = Vector3(-50, -28, 0)
 
 	var fill: DirectionalLight3D = $FillLight
 	fill.light_color = Color(0.95, 0.96, 0.97)
-	fill.light_energy = 0.78
+	fill.light_energy = 0.62
 	fill.light_specular = 0.0
 	fill.shadow_enabled = false
 	fill.rotation_degrees = Vector3(-28, 55, 0)
 
 	var rim: DirectionalLight3D = $RimLight
 	rim.light_color = Color(0.96, 0.96, 0.98)
-	rim.light_energy = 0.20
+	rim.light_energy = 0.22
 	rim.light_specular = 0.0
 	rim.shadow_enabled = false
 	rim.rotation_degrees = Vector3(-12, 155, 0)

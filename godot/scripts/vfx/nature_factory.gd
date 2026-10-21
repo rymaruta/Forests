@@ -53,8 +53,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照 bark mean ≈ (0.42, 0.32, 0.23)。縦繊維テクスチャが主で幾何溝は浅い
 	var bark_tint := Color(0.48, 0.35, 0.24) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# 参照 leaf mean ≈ (0.59, 0.62, 0.53) だが Bench 露出で飛ぶのでセージ寄りに抑える
-	var leaf := Color(0.40, 0.46, 0.32) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.22, 0.28, 0.18)
+	var leaf := Color(0.44, 0.50, 0.34) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.26, 0.32, 0.18)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	# ヒーローは幹を冠内まで伸ばして接合割れを隠す
@@ -102,7 +102,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 幹頂は冠に食い込み、フォークは冠下に残す
-	canopy.position = Vector3(lean * 0.08, h * 0.96, 0.0)
+	canopy.position = Vector3(lean * 0.08, h * 0.98, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
 		var baked_r := 1.30

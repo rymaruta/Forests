@@ -160,11 +160,11 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 static func _root_flare_mul(t: float) -> float:
 	## 参照：なだらかな粘土裾＋趾パッドのスイープ
-	if t >= 0.48:
+	if t >= 0.55:
 		return 1.0
-	var ft := 1.0 - t / 0.48
+	var ft := 1.0 - t / 0.55
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.11 * ft
+	return 1.0 + 0.14 * ft
 
 
 static func _ground_fillet(t: float) -> float:
@@ -177,24 +177,21 @@ static func _ground_fillet(t: float) -> float:
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 	## 粘土趾：裾フレアの上に丸パッドを重ね、スイープ一体に見せる。
-	if toes <= 0 or t > 0.46:
+	if toes <= 0 or t > 0.52:
 		return 1.0
-	var u := clampf(t / 0.46, 0.0, 1.0)
-	var env: float
-	if u <= 0.18:
-		env = 1.0
-	else:
-		env = exp(-pow((u - 0.18) / 0.28, 2.0))
+	var u := clampf(t / 0.52, 0.0, 1.0)
+	# 裾から幹へ長くスイープして「貼り付け趾」を消す
+	var env: float = exp(-pow(u / 0.42, 1.6))
 	var best := 0.0
 	for i in toes:
 		# わずかに不等間隔・不等幅で機械対称を崩す
 		var center := float(i) / float(toes) * TAU + 0.28 + 0.07 * sin(float(i) * 2.1)
-		# 丸い粘土丘：狭すぎると幾何、広すぎると溶けパッド
-		var half_w := 0.46 + 0.04 * cos(float(i) * 1.7)
+		# 丸い粘土丘：裾で広く、上で溶け込む
+		var half_w := 0.48 + 0.05 * cos(float(i) * 1.7)
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
 		var lobe: float = clampf(1.0 - d / half_w, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
-		var amp := 0.98 + 0.12 * sin(float(i) * 1.3 + 0.4)
+		var amp := 0.88 + 0.10 * sin(float(i) * 1.3 + 0.4)
 		best = maxf(best, lobe * amp)
 	return 1.0 + best * env
 

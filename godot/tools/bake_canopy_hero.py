@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 150
 PAD = 0.13
-K_BLEND = 0.11
+K_BLEND = 0.07
 SEED = 2901
 
 
