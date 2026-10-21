@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：横に広がる丸い雲房（尖った三角冠を避ける）。"""
+"""Bake canopy_hero.obj — 部品「冠」専用。丸い雲房。尖頂・横キノコ禁止。"""
 from __future__ import annotations
 
 import math
@@ -11,9 +11,9 @@ from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
 BASE_R = 1.30
-RES = 150
-PAD = 0.13
-K_BLEND = 0.07
+RES = 160
+PAD = 0.12
+K_BLEND = 0.085  # 房は読めるが貼り付け球に見えない程度
 SEED = 2901
 
 
@@ -23,34 +23,29 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：縦に積んだ丸雲。底を平らにせず下房で丸くする
+    # 参照冠: 大きな丸雲が重なる。尖った頂点なし。
     specs = [
-        ((0.0, 0.34, 0.0), 0.38),
-        ((0.0, 0.56, 0.0), 0.36),
-        ((0.0, 0.16, 0.0), 0.32),
+        ((0.0, 0.36, 0.0), 0.42),
+        ((0.0, 0.58, 0.0), 0.38),
+        ((0.0, 0.16, 0.0), 0.36),
         ((0.0, 0.78, 0.0), 0.30),
-        ((0.0, 0.96, 0.0), 0.22),
-        # 底を丸くする下房（平坦な冠底を避ける）
-        ((0.18, 0.06, 0.10), 0.22),
-        ((-0.16, 0.05, -0.12), 0.20),
-        ((0.08, 0.04, -0.18), 0.18),
-        ((-0.10, 0.05, 0.16), 0.18),
     ]
-    # 小さめの房を増やして雲の粒立ちを出す（大きな数個だけ禁止）
-    for i in range(9):
-        a = i / 9 * math.tau + 0.12
-        y = 0.42 + 0.07 * math.sin(i * 1.7)
-        r = 0.24 if i % 2 == 0 else 0.20
-        specs.append(((math.cos(a) * 0.46, y, math.sin(a) * 0.46), r))
+    # 外周の大きな房
     for i in range(8):
-        a = i / 8 * math.tau + 0.40
-        specs.append(((math.cos(a) * 0.30, 0.64, math.sin(a) * 0.30), 0.18))
+        a = i / 8 * math.tau + 0.08
+        y = 0.40 + 0.05 * math.sin(i * 1.9)
+        r = 0.30 if i % 2 == 0 else 0.26
+        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+    # 中段
     for i in range(6):
-        a = i / 6 * math.tau + 0.55
-        specs.append(((math.cos(a) * 0.16, 0.84, math.sin(a) * 0.16), 0.15))
-    for i in range(5):
-        a = i / 5 * math.tau + 0.22
-        specs.append(((math.cos(a) * 0.38, 0.28, math.sin(a) * 0.38), 0.16))
+        a = i / 6 * math.tau + 0.35
+        specs.append(((math.cos(a) * 0.28, 0.62, math.sin(a) * 0.28), 0.24))
+    # てっぺんは大きな1房（三角冠禁止）
+    specs.append(((0.0, 0.88, 0.0), 0.26))
+    # 底を丸く
+    for i in range(4):
+        a = i / 4 * math.tau + 0.2
+        specs.append(((math.cos(a) * 0.22, 0.08, math.sin(a) * 0.22), 0.20))
     return specs
 
 
@@ -61,9 +56,9 @@ def main() -> None:
     for c, r in lobe_specs():
         centers.append(
             (
-                c[0] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[0] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
                 c[1] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
-                c[2] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[2] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
             )
         )
         radii.append(r * BASE_R * rng.uniform(0.999, 1.001))
@@ -71,26 +66,16 @@ def main() -> None:
     xs = [p[0] for p in centers]
     ys = [p[1] for p in centers]
     zs = [p[2] for p in centers]
-    mn = (
-        np.array(
-            [
-                min(xs[i] - radii[i] for i in range(len(xs))),
-                min(ys[i] - radii[i] for i in range(len(ys))),
-                min(zs[i] - radii[i] for i in range(len(zs))),
-            ]
-        )
-        - PAD
-    )
-    mx = (
-        np.array(
-            [
-                max(xs[i] + radii[i] for i in range(len(xs))),
-                max(ys[i] + radii[i] for i in range(len(ys))),
-                max(zs[i] + radii[i] for i in range(len(zs))),
-            ]
-        )
-        + PAD
-    )
+    mn = np.array([
+        min(xs[i] - radii[i] for i in range(len(xs))),
+        min(ys[i] - radii[i] for i in range(len(ys))),
+        min(zs[i] - radii[i] for i in range(len(zs))),
+    ]) - PAD
+    mx = np.array([
+        max(xs[i] + radii[i] for i in range(len(xs))),
+        max(ys[i] + radii[i] for i in range(len(ys))),
+        max(zs[i] + radii[i] for i in range(len(zs))),
+    ]) + PAD
 
     linx = np.linspace(mn[0], mx[0], RES)
     liny = np.linspace(mn[1], mx[1], RES)
@@ -125,13 +110,12 @@ def main() -> None:
     faces = np.array(new_faces)
 
     with OUT.open("w") as fo:
-        fo.write("# soft cloud canopy lobes=%d k=%.2f mound\n" % (len(centers), K_BLEND))
+        fo.write("# part canopy lobes=%d k=%.2f round-cloud\n" % (len(centers), K_BLEND))
         for v in verts:
             fo.write("v %.6f %.6f %.6f\n" % (v[0], v[1], v[2]))
         for f in faces:
             fo.write("f %d %d %d\n" % (f[0] + 1, f[1] + 1, f[2] + 1))
-    print("wrote", OUT, "verts", len(verts), "faces", len(faces))
-    print("bbox", verts.min(0), verts.max(0), "height", verts[:, 1].max())
+    print("wrote", OUT, "verts", len(verts), "h", float(verts[:, 1].max()))
 
 
 if __name__ == "__main__":

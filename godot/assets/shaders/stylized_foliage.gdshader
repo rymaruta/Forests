@@ -39,9 +39,10 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	// ごく短い柔らかい毛羽（輪郭ジャギーを出さない）
-	float fuzz = _hash31(VERTEX * 18.0 + 2.7) * 0.012
-		+ _hash31(VERTEX * 36.0) * 0.006;
+	// 密な短いパイル（縁ジャギーにならない範囲）
+	float fuzz = _hash31(VERTEX * 24.0 + 2.7) * 0.020
+		+ _hash31(VERTEX * 48.0) * 0.010
+		+ _hash31(VERTEX * 96.0 + 1.3) * 0.005;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -69,25 +70,25 @@ void fragment() {
 
 	// 参照：房の陰影が主。パイルはごく薄い面ノイズ。
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
-	crevice = pow(crevice, 1.35);
-	float lobe_ao = mix(1.0, 0.55, crevice);
+	crevice = pow(crevice, 1.40);
+	float lobe_ao = mix(1.0, 0.50, crevice);
 
 	vec3 L = normalize(vec3(0.28, 0.92, 0.24));
 	float ndl = clamp(dot(v_n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.84, 1.16, ndl);
-	float up = clamp(v_n.y * 0.28 + 0.82, 0.78, 1.12);
+	float wrap = mix(0.86, 1.14, ndl);
+	float up = clamp(v_n.y * 0.26 + 0.84, 0.80, 1.10);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
-	vec3 base = mix(leaf_dark, leaf_color, 0.48 + up * 0.18 + ndl * 0.12);
-	base = mix(base, leaf_color * (0.90 + tex_l * 0.22), flock_mix * 0.70);
-	base *= mix(0.96, 1.05, flock);
+	vec3 base = mix(leaf_dark, leaf_color, 0.46 + up * 0.16 + ndl * 0.14);
+	base = mix(base, leaf_color * (0.88 + tex_l * 0.28), flock_mix * 0.80);
+	base *= mix(0.95, 1.06, flock);
 	base *= lobe_ao * wrap;
-	base *= mix(0.99, 1.015, fiber2);
+	base *= mix(0.985, 1.02, fiber2);
 
-	// 柔らかいフェルト縁：ディザ殻ではなく面の向きで薄い毛羽ハロー
+	// フェルト縁ハロー（ぼかしすぎない）
 	float facing = clamp(dot(normalize(v_n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 2.2) * 0.55;
-	base += leaf_color * soft_rim * (0.55 + flock * 0.35);
+	float soft_rim = pow(1.0 - facing, 2.4) * 0.38;
+	base += leaf_color * soft_rim * (0.45 + flock * 0.40);
 
 	float under = clamp(0.18 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
