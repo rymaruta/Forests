@@ -67,8 +67,8 @@ void fragment() {
 	n = normalize(n);
 	float ndl = clamp(dot(n, normalize(vec3(0.25, 0.95, 0.20))), 0.0, 1.0);
 	ndl = mix(0.90, 1.0, ndl);
-	vec3 base = mix(bark_color * 1.00, bark_dark * 0.78, groove * 0.95);
-	base *= 0.94 + ndl * 0.08;
+	vec3 base = mix(bark_color * 0.98, bark_dark * 0.62, groove * 1.20);
+	base *= 0.93 + ndl * 0.09;
 	ALBEDO = base;
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;

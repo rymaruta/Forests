@@ -74,9 +74,9 @@ void fragment() {
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
 	vec3 t2 = normalize(cross(NORMAL, t1));
-	n += (fiber - 0.5) * 0.30 * t1;
-	n += (fiber2 - 0.5) * 0.18 * t2;
-	n += (pile - 0.5) * 0.16 * t1;
+	n += (fiber - 0.5) * 0.42 * t1;
+	n += (fiber2 - 0.5) * 0.26 * t2;
+	n += (pile - 0.5) * 0.22 * t1;
 	n = normalize(n);
 
 	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
