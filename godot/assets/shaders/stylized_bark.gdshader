@@ -62,8 +62,9 @@ void fragment() {
 	float y_mask = smoothstep(0.05, 0.22, v_world.y);
 	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
 
-	// 彫りはアルベドのみ。照明変調ゼロ＝円柱プラスチックハイライト禁止
-	vec3 base = mix(bark_color * 1.12, bark_dark * 0.60, clamp(groove * 1.05, 0.0, 1.0));
+	// 彫りはアルベドのみ。照明変調ゼロ。溝は色差で遠目に読む
+	float g = clamp(groove * 1.25, 0.0, 1.0);
+	vec3 base = mix(bark_color * 1.14, bark_dark * 0.48, g);
 	base *= 0.98 + tex.g * 0.04;
 	ALBEDO = base;
 }
