@@ -132,30 +132,30 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：縦趾を立て、餅裾を抑える（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.52, 1.55, 0.52)
+		toe_mesh.scale *= Vector3(0.46, 1.35, 0.46)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	trunk.position.y = TOE_H * 0.50
-	# 結合時のみ：幹を短く細く（部品Benchは維持）
+	trunk.position.y = TOE_H * 0.42
+	# 結合時のみ：幹を短く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(0.98, 0.90, 0.98)
+		trunk_mesh.scale *= Vector3(1.02, 0.78, 1.02)
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹の中幹横枝：球カプセル連鎖
+	# 参照全体樹の中幹横枝：左右各1本の短い球連鎖
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.34
-		for k in 3:
+		var base_y := trunk.position.y + TRUNK_H * 0.30
+		for k in 2:
 			var stub := MeshInstance3D.new()
-			var rr := 0.036 - float(k) * 0.007
+			var rr := 0.042 - float(k) * 0.010
 			stub.mesh = CraftMeshes.uv_sphere(rr, 8, 10, 0.02, float(k) + side, 1.05)
 			stub.material_override = bark_mat
-			stub.position = Vector3((0.14 + float(k) * 0.065) * side, base_y + float(k) * 0.015, 0.02)
-			stub.scale = Vector3(1.40, 0.80, 1.0)
+			stub.position = Vector3((0.15 + float(k) * 0.08) * side, base_y + float(k) * 0.02, 0.02)
+			stub.scale = Vector3(1.50, 0.75, 1.0)
 			stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(stub)
 
@@ -164,8 +164,8 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：参照全体樹の丸い中房へ（部品Benchは維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as Node3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.95, 1.04, 0.95)
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.66, 0.0)
+		canopy_mesh.scale *= Vector3(0.97, 1.08, 0.97)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)
