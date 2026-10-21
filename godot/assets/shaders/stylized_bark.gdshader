@@ -84,9 +84,10 @@ void fragment() {
 	vec3 ridge = bark_color * 1.06;
 	vec3 valley = bark_dark * 0.72;
 	vec3 base = mix(ridge, valley, grain * 0.48 + vert * 0.30);
-	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.55);
-	base *= mix(0.88, 1.10, flock);
-	base = mix(base, base * mix(0.94, 1.06, flock), flock_mix);
+	// テクスチャは刷毛筋だけ。明るい布地にしない
+	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.28);
+	base *= mix(0.92, 1.06, flock);
+	base = mix(base, base * mix(0.96, 1.04, flock), flock_mix * 0.65);
 
 	// 股AO：ベイク＋内向き法線で参照級の深い谷（対比を残す）
 	float inward = clamp(-v_n.y * 0.40 + (1.0 - abs(v_n.x)) * 0.30, 0.0, 1.0);
@@ -99,8 +100,8 @@ void fragment() {
 	// 全体樹でベージュに飛ばないよう一段落とす（部品 mean は許容帯）
 	// 全体樹で幹=趾同色。部品趾 mean は幹に寄せる（二色割れより優先）
 	// 全体樹で中暗暖茶（ベージュ布地に見せない）
-	base *= 1.42;
-	base *= vec3(1.02, 1.00, 0.98);
+	base *= 1.38;
+	base *= vec3(1.04, 0.99, 0.94);
 
 	ALBEDO = base;
 }
