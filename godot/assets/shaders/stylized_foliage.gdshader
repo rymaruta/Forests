@@ -39,10 +39,9 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	// 密な短いパイル（縁ジャギーにならない範囲）
-	float fuzz = _hash31(VERTEX * 24.0 + 2.7) * 0.020
-		+ _hash31(VERTEX * 48.0) * 0.010
-		+ _hash31(VERTEX * 96.0 + 1.3) * 0.005;
+	// ごく短いパイル。強すぎると輪郭がジャギーになる
+	float fuzz = _hash31(VERTEX * 20.0 + 2.7) * 0.010
+		+ _hash31(VERTEX * 40.0) * 0.005;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -70,8 +69,8 @@ void fragment() {
 
 	// 参照：房の陰影が主。パイルはごく薄い面ノイズ。
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
-	crevice = pow(crevice, 1.40);
-	float lobe_ao = mix(1.0, 0.50, crevice);
+	crevice = pow(crevice, 1.55);
+	float lobe_ao = mix(1.0, 0.58, crevice);
 
 	vec3 L = normalize(vec3(0.28, 0.92, 0.24));
 	float ndl = clamp(dot(v_n, L) * 0.5 + 0.5, 0.0, 1.0);
