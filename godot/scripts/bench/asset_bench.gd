@@ -62,7 +62,7 @@ func _build_stage() -> void:
 	# アンビエント過多だと樹皮溝・フェルト繊維が消える。参照級の柔らかい方向光を残す
 	# 参照スタジオ：柔らか方向光。白飛びしない露出で溝・フェルトを読む
 	# 参照スタジオ：柔らか方向光で谷を残す。アンビエントで潰さない
-	env.ambient_light_energy = 0.64
+	env.ambient_light_energy = 0.70
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
 	env.tonemap_exposure = 1.02
 	env.adjustment_enabled = true
