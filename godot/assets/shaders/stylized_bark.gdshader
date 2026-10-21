@@ -96,11 +96,11 @@ void fragment() {
 	float crease = mix(0.20, 1.0, pow(v_ao, 0.66)) * mix(1.0, 0.24, crotch);
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
-	// 趾裾（低Y）は参照パーツより暗く：接地影を足す（p10≈50）
-	base *= mix(0.62, 1.0, smoothstep(0.01, 0.38, v_y01));
+	// 趾裾（低Y）は参照パーツより暗く：接地影を足す（p10≈50・mean≈118）
+	base *= mix(0.66, 1.0, smoothstep(0.01, 0.38, v_y01));
 	// 中暗茶：部品≈145・全体でチョコ寄り（ベージュ飛ばし禁止）
-	base *= 1.65;
-	base *= vec3(0.99, 0.97, 0.93);
+	base *= 1.70;
+	base *= vec3(1.00, 0.98, 0.94);
 
 	ALBEDO = base;
 }
