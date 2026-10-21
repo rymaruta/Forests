@@ -70,9 +70,9 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 	float mound = _vnoise(VERTEX * 4.0 + 0.7) * 0.022
 		+ _vnoise(VERTEX * 8.5 + 2.3) * 0.015
 		+ _vnoise(VERTEX * 14.0 + 5.1) * 0.010;
-	float fuzz = _vnoise(VERTEX * 38.0 + 1.3) * 0.020
-		+ _vnoise(VERTEX * 76.0 + 4.7) * 0.011
-		+ _vnoise(VERTEX * 18.0 + 9.1) * 0.007;
+	float fuzz = _vnoise(VERTEX * 38.0 + 1.3) * 0.022
+		+ _vnoise(VERTEX * 76.0 + 4.7) * 0.013
+		+ _vnoise(VERTEX * 140.0 + 9.1) * 0.008;
 	VERTEX += NORMAL * (mound + fuzz);
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -99,12 +99,10 @@ void fragment() {
 	float fiber2 = _vnoise(v_world * 120.0 + 7.4);
 	float flock = pile * 0.18 + fiber * 0.42 + fiber2 * 0.40;
 
-	// ベイクAO＋法線谷。房間の深い柔らかい影（p10≈77）
+	// ベイクAO＋法線谷。房間の柔らかい影（p10≈77、硬い黒線禁止）
 	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
-	crevice = pow(crevice, 1.25);
-	// 谷だけ深く（p10≈77）、高台は明るく保つ
-	// 大房の谷は広く深く（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.358, pow(crevice, 0.875)) * mix(0.495, 1.0, v_ao);
+	crevice = pow(crevice, 1.22);
+	float lobe_ao = mix(1.0, 0.348, pow(crevice, 0.86)) * mix(0.490, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -115,18 +113,18 @@ void fragment() {
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
 	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.05, tex_l), flock_mix * 0.55);
-	// 細い均一フェルト。振幅は参照 hp_std≈3.7（対比控えめ）
-	base *= mix(0.915, 1.085, flock);
-	float grit = _vnoise(v_world * 360.0 + 1.7);
-	float grit2 = _vnoise(v_world * 640.0 + 4.2);
-	float grit3 = _vnoise(v_world * 960.0 + 9.1);
-	base *= mix(0.915, 1.085, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
+	// 細い均一フェルト。振幅は参照 hp_std≈3.7（視認できるパイル）
+	base *= mix(0.895, 1.105, flock);
+	float grit = _vnoise(v_world * 320.0 + 1.7);
+	float grit2 = _vnoise(v_world * 580.0 + 4.2);
+	float grit3 = _vnoise(v_world * 900.0 + 9.1);
+	base *= mix(0.895, 1.105, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 2.58;
-	base *= vec3(0.955, 0.99, 1.04);
+	base *= 2.57;
+	base *= vec3(0.968, 0.985, 1.028);
 
-	// 真のフレネル — 発光リム完全禁止。柔縁はアルファのみ
+	// 真のフレネル — 暗い縁ハロー禁止。参照はわずかに柔らかい縁
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
 	float fres = pow(1.0 - ndv, 1.85);
 
@@ -134,12 +132,12 @@ void fragment() {
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：最外縁のみディザ discard（内部房の白シーム禁止）
-	base *= mix(1.0, 0.68, smoothstep(0.32, 0.98, fres));
-	float dither = _vnoise(v_world * 240.0 + 3.1) * 0.50
-		+ _vnoise(v_world * 480.0 + 8.7) * 0.50;
-	float cut = smoothstep(0.52, 0.98, fres) * (0.58 + dither * 0.45);
-	if (cut > 0.64) {
+	// シルエット柔縁：暗い縁・粗いディザ禁止。極外縁のみ細粒 discard
+	base *= mix(1.0, 0.96, smoothstep(0.55, 0.99, fres));
+	float dither = _vnoise(v_world * 420.0 + 3.1) * 0.50
+		+ _vnoise(v_world * 840.0 + 8.7) * 0.50;
+	float cut = smoothstep(0.78, 0.999, fres) * (0.28 + dither * 0.28);
+	if (cut > 0.82) {
 		discard;
 	}
 

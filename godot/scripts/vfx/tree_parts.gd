@@ -15,8 +15,8 @@ const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
-const LEAF := Color(0.49, 0.49, 0.32)
-const LEAF_DARK := Color(0.25, 0.26, 0.16)
+const LEAF := Color(0.49, 0.50, 0.33)
+const LEAF_DARK := Color(0.25, 0.27, 0.17)
 
 
 static func canopy_part() -> Node3D:
@@ -35,7 +35,7 @@ static func canopy_part() -> Node3D:
 	var baked_r := 1.28
 	var s := CANOPY_R / baked_r
 	# 参照冠：中房積雲 aspect≈1.4
-	canopy.scale = Vector3(s * 1.18, s * 0.95, s * 1.18)
+	canopy.scale = Vector3(s * 1.175, s * 0.955, s * 1.175)
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)

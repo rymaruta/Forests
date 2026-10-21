@@ -3,7 +3,7 @@
 importer="wavefront_obj"
 importer_version=1
 type="Mesh"
-uid="uid://tke07b8y2yto"
+uid="uid://ceck6r6vh8176"
 path="res://.godot/imported/canopy_hero.obj-fe762d77268f1c187b2683d75ceb2f03.mesh"
 
 [deps]
@@ -15,8 +15,8 @@ dest_files=["res://.godot/imported/canopy_hero.obj-fe762d77268f1c187b2683d75ceb2
 
 [params]
 
-generate_tangents=true
+generate_tangents=false
 scale_mesh=Vector3(1, 1, 1)
 offset_mesh=Vector3(0, 0, 0)
-optimize_mesh=true
-force_disable_mesh_compression=false
+optimize_mesh=false
+force_disable_mesh_compression=true

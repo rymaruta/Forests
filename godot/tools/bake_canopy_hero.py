@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.28
 RES = 176
 PAD = 0.16
-# 中房を残しつつ縫い目を溶かす（やや房を立てる）
+# 中房を残しつつ縫い目を溶かす（メトリクスロック帯）
 K_BLEND = 0.050
 SEED = 3402
 AO_SAMPLES = 20
@@ -29,8 +29,8 @@ def lobe_specs():
     specs = [
         ((0.00, 0.30, 0.00), 0.42),
         ((0.02, 0.50, -0.02), 0.36),
-        ((-0.02, 0.68, 0.02), 0.30),
-        ((0.00, 0.84, 0.00), 0.22),
+        ((-0.02, 0.67, 0.02), 0.30),
+        ((0.00, 0.80, 0.00), 0.23),
         ((0.04, 0.14, 0.02), 0.30),
     ]
     for i in range(9):
@@ -46,7 +46,7 @@ def lobe_specs():
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.22))
     for i in range(7):
         a = i / 7 * math.tau + 0.22
-        y = 0.64 + 0.05 * math.sin(i * 1.8)
+        y = 0.63 + 0.05 * math.sin(i * 1.8)
         rad = 0.18 + 0.05 * ((i * 3) % 5) / 5.0
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.18))
     for i in range(8):
