@@ -123,48 +123,49 @@ static func assemble_hero() -> Node3D:
 	var root := Node3D.new()
 	root.name = "HeroTreeAssembled"
 
+	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
+	var bark_sheet := Color(0.40, 0.28, 0.17)
+	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0)
+
 	var toes := toe_skirt_part()
 	toes.name = "ToeSkirt"
 	# 結合時のみ：縦趾を立て、餅裾を抑える（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.70, 1.32, 0.70)
-		# 組み立てでは幹と同色材（ground_contact=0）。部品Benchの接地影は維持。
-		toe_mesh.material_override = VisualKit.bark_shader_material(BARK, 0.0)
+		toe_mesh.scale *= Vector3(0.58, 1.45, 0.58)
+		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	# 趾の立ち上がりを残しつつ水平割れを消す（食い込み過ぎで餅裾にしない）
-	trunk.position.y = TOE_H * 0.46
-	# 結合時のみ：幹を短く太く（部品Benchは維持）
-	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as Node3D
+	trunk.position.y = TOE_H * 0.50
+	# 結合時のみ：幹を短く細く（部品Benchは維持）
+	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(1.10, 0.88, 1.10)
+		trunk_mesh.scale *= Vector3(0.98, 0.90, 0.98)
+		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹の中幹横枝：球カプセル連鎖（直方スタブ禁止）
-	var bark_mat := VisualKit.bark_shader_material(BARK)
+	# 参照全体樹の中幹横枝：球カプセル連鎖
 	for side in [-1.0, 1.0]:
 		var base_y := trunk.position.y + TRUNK_H * 0.34
 		for k in 3:
 			var stub := MeshInstance3D.new()
-			var rr := 0.038 - float(k) * 0.008
+			var rr := 0.036 - float(k) * 0.007
 			stub.mesh = CraftMeshes.uv_sphere(rr, 8, 10, 0.02, float(k) + side, 1.05)
 			stub.material_override = bark_mat
-			stub.position = Vector3((0.16 + float(k) * 0.07) * side, base_y + float(k) * 0.02, 0.02)
-			stub.scale = Vector3(1.35, 0.85, 1.0)
+			stub.position = Vector3((0.14 + float(k) * 0.065) * side, base_y + float(k) * 0.015, 0.02)
+			stub.scale = Vector3(1.40, 0.80, 1.0)
 			stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(stub)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
-	# 結合時のみ：参照全体樹のコンパクト中房へ（部品Benchは維持）
+	# 結合時のみ：参照全体樹の丸い中房へ（部品Benchは維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as Node3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.92, 1.12, 0.92)
-	# 幹頂〜クレードルに冠を深く被せる（浮き冠禁止）
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.68, 0.0)
+		canopy_mesh.scale *= Vector3(0.95, 1.04, 0.95)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.66, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)
