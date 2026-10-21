@@ -494,7 +494,7 @@ static func cottage() -> Node3D:
 		for j in 8:
 			var f := flower(rng, ForestsPalette.petals()[j % 6])
 			f.scale = Vector3.ONE * (0.32 + fmod(float(j) * 0.09, 0.10))
-			f.position = Vector3(side * 1.1 + (j - 3.5) * 0.09, 1.12 + fmod(float(j) * 0.06, 0.08), 1.60 + fmod(float(j) * 0.04, 0.05))
+			f.position = Vector3(side * 1.1 + (j - 3.5) * 0.09, 1.08 + fmod(float(j) * 0.05, 0.07), 1.58 + fmod(float(j) * 0.04, 0.05))
 			root.add_child(f)
 
 	return root
