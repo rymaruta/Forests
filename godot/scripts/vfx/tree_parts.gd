@@ -126,6 +126,7 @@ static func assemble_hero() -> Node3D:
 	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
 	var bark_sheet := Color(0.30, 0.22, 0.14)
 	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
+	var bark_toe := VisualKit.bark_shader_material(bark_sheet, 0.45, 1.0)
 
 	var toes := toe_skirt_part()
 	toes.name = "ToeSkirt"
@@ -133,7 +134,7 @@ static func assemble_hero() -> Node3D:
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
 		toe_mesh.scale *= Vector3(0.56, 1.20, 0.56)
-		toe_mesh.material_override = bark_mat
+		toe_mesh.material_override = bark_toe
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
