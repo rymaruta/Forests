@@ -71,37 +71,34 @@ void fragment() {
 	float grain = clamp((0.52 - tex_luma) * 1.20, 0.0, 1.0);
 
 	// 縦繊維を強め（参照の刷毛筋）。横モトルは弱く。
-	float vert = _vnoise(vec3(v_world.x * 38.0, v_world.y * 9.0, v_world.z * 38.0) + 0.4);
+	float vert = _vnoise(vec3(v_world.x * 48.0, v_world.y * 7.5, v_world.z * 48.0) + 0.4);
+	float vert2 = _vnoise(vec3(v_world.x * 92.0, v_world.y * 14.0, v_world.z * 92.0) + 1.7);
 	float pile = _vnoise(v_world * 22.0 + 0.3);
-	float fiber = _vnoise(v_world * 54.0 + 2.2);
-	float grit = _vnoise(v_world * 120.0 + 7.1);
-	float flock = vert * 0.42 + pile * 0.18 + fiber * 0.24 + grit * 0.16;
+	float fiber = _vnoise(v_world * 64.0 + 2.2);
+	float grit = _vnoise(v_world * 140.0 + 7.1);
+	float flock = vert * 0.38 + vert2 * 0.18 + pile * 0.12 + fiber * 0.20 + grit * 0.12;
 
 	vec3 L = normalize(vec3(0.36, 0.90, 0.18));
 	float ndl = clamp(dot(normalize(v_n), L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.90, 1.08, ndl);
+	float wrap = mix(0.88, 1.10, ndl);
 
-	vec3 ridge = bark_color * 1.06;
-	vec3 valley = bark_dark * 0.72;
-	vec3 base = mix(ridge, valley, grain * 0.48 + vert * 0.30);
+	vec3 ridge = bark_color * 1.04;
+	vec3 valley = bark_dark * 0.62;
+	vec3 base = mix(ridge, valley, grain * 0.55 + vert * 0.38 + vert2 * 0.18);
 	// テクスチャは刷毛筋だけ。明るい布地にしない
-	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.28);
-	base *= mix(0.92, 1.06, flock);
-	base = mix(base, base * mix(0.96, 1.04, flock), flock_mix * 0.65);
+	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.22);
+	base *= mix(0.88, 1.08, flock);
+	base = mix(base, base * mix(0.94, 1.05, flock), flock_mix * 0.70);
 
 	// 股AO：ベイク＋内向き法線で参照級の深い谷（対比を残す）
 	float inward = clamp(-v_n.y * 0.40 + (1.0 - abs(v_n.x)) * 0.30, 0.0, 1.0);
 	float crotch = smoothstep(0.52, 0.95, v_y01) * inward;
-	float crease = mix(0.22, 1.0, pow(v_ao, 0.70)) * mix(1.0, 0.28, crotch);
+	float crease = mix(0.20, 1.0, pow(v_ao, 0.66)) * mix(1.0, 0.24, crotch);
 	base *= crease * wrap;
-	base *= 0.92 + 0.10 * (1.0 - v_y01 * 0.45);
-	// 参照木部 mean≈156/145/128 — 均一ベージュ禁止、谷を残して平均を合わせる
-	// 部品Bench木部 mean≈156/145/128（R据え置きで G/B を上げる）
-	// 全体樹でベージュに飛ばないよう一段落とす（部品 mean は許容帯）
-	// 全体樹で幹=趾同色。部品趾 mean は幹に寄せる（二色割れより優先）
-	// 全体樹で中暗暖茶（ベージュ布地に見せない）
-	base *= 1.38;
-	base *= vec3(1.04, 0.99, 0.94);
+	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
+	// 中暗茶：部品 mean≈140–155 帯（ベージュ飛ばし・黒チョコ禁止）
+	base *= 1.55;
+	base *= vec3(1.02, 0.99, 0.94);
 
 	ALBEDO = base;
 }

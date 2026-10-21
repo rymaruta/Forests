@@ -49,29 +49,29 @@ def build_prims():
     prims = [
         (col_a, col_b, 0.245, 0.108),
     ]
-    # クレードル枝：参照の細い立ち上がり腕（全体樹シート）
-    for side, yaw in ((1.0, 0.48), (-1.0, math.pi - 0.48)):
-        root = np.array([0.03 + 0.015 * side, 1.02, 0.0])
+    # クレードル枝：中庸の太さ・長さ（耳スタブ／長い棒の両極回避）
+    for side, yaw in ((1.0, 0.50), (-1.0, math.pi - 0.50)):
+        root = np.array([0.03 + 0.018 * side, 1.01, 0.0])
         mid = np.array(
             [
-                root[0] + math.cos(yaw) * 0.34,
-                root[1] + 0.28,
-                root[2] + math.sin(yaw) * 0.04,
+                root[0] + math.cos(yaw) * 0.30,
+                root[1] + 0.25,
+                root[2] + math.sin(yaw) * 0.035,
             ]
         )
         tip = np.array(
             [
-                root[0] + math.cos(yaw) * 0.58,
-                root[1] + 0.52,
-                root[2] + math.sin(yaw) * 0.06,
+                root[0] + math.cos(yaw) * 0.50,
+                root[1] + 0.45,
+                root[2] + math.sin(yaw) * 0.055,
             ]
         )
-        prims.append((root, mid, 0.100, 0.070))
-        prims.append((mid, tip, 0.070, 0.040))
-    # 股フィラー（浅め：枝が消えない範囲）
-    crotch_a = np.array([0.03, 0.94, 0.0])
-    crotch_b = np.array([0.03, 1.08, 0.0])
-    prims.append((crotch_a, crotch_b, 0.125, 0.105))
+        prims.append((root, mid, 0.115, 0.085))
+        prims.append((mid, tip, 0.085, 0.050))
+    # 股フィラー（肩ボリューム）
+    crotch_a = np.array([0.03, 0.93, 0.0])
+    crotch_b = np.array([0.03, 1.09, 0.0])
+    prims.append((crotch_a, crotch_b, 0.140, 0.115))
     return prims
 
 

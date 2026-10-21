@@ -199,13 +199,9 @@ static func cottage() -> Node3D:
 	root.name = "Cottage"
 
 	var wall := VisualKit.plaster_material()
-	var wood := VisualKit.bark_shader_material(Color(0.26, 0.16, 0.09))
+	var wood := VisualKit.bark_shader_material(Color(0.24, 0.15, 0.09))
 	var roof := VisualKit.roof_tile_material()
-	var stone := StandardMaterial3D.new()
-	stone.albedo_color = Color(0.42, 0.40, 0.36)
-	stone.roughness = 1.0
-	stone.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-	stone.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	var stone := VisualKit.cobble_material(Color(0.48, 0.47, 0.45))
 
 	# 石積み：濃い不透明の丸石だけ。白い板は隠す
 	var plinth := MeshInstance3D.new()
@@ -218,27 +214,20 @@ static func cottage() -> Node3D:
 	# 前面の石：重なりすぎないよう1列＋少し互い違い
 	for i in 10:
 		var cob := MeshInstance3D.new()
-		cob.mesh = CraftMeshes.uv_sphere(0.26 + fmod(float(i) * 0.02, 0.06), 10, 12, 0.06, float(i) * 4.7, 0.75)
-		var cm := StandardMaterial3D.new()
-		cm.albedo_color = Color(0.38, 0.36, 0.32).lerp(Color(0.28, 0.30, 0.26), fmod(float(i) * 0.19, 1.0))
-		cm.roughness = 1.0
-		cm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-		cob.material_override = cm
-		cob.position = Vector3(-1.7 + float(i) * 0.38, 0.22 + (0.06 if i % 2 == 0 else 0.0), 1.52)
-		cob.scale = Vector3(1.1, 0.95, 1.0)
+		cob.mesh = CraftMeshes.uv_sphere(0.30 + fmod(float(i) * 0.02, 0.06), 12, 14, 0.09, float(i) * 4.7, 0.88)
+		var tint := Color(0.50, 0.49, 0.46).lerp(Color(0.36, 0.37, 0.35), fmod(float(i) * 0.19, 1.0))
+		cob.material_override = VisualKit.cobble_material(tint)
+		cob.position = Vector3(-1.7 + float(i) * 0.38, 0.26 + (0.07 if i % 2 == 0 else 0.0), 1.55)
+		cob.scale = Vector3(1.20, 1.10, 1.10)
 		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cob)
 	for i in 5:
 		for side in [-1.0, 1.0]:
 			var cob := MeshInstance3D.new()
-			cob.mesh = CraftMeshes.uv_sphere(0.24, 9, 11, 0.06, float(i) * 3.1 + side, 0.8)
-			var cm := StandardMaterial3D.new()
-			cm.albedo_color = Color(0.36, 0.35, 0.31)
-			cm.roughness = 1.0
-			cm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-			cob.material_override = cm
-			cob.position = Vector3(side * 1.68, 0.2, -0.8 + float(i) * 0.5)
-			cob.scale = Vector3(1.05, 0.9, 1.1)
+			cob.mesh = CraftMeshes.uv_sphere(0.28, 11, 13, 0.08, float(i) * 3.1 + side, 0.90)
+			cob.material_override = VisualKit.cobble_material(Color(0.44, 0.43, 0.41))
+			cob.position = Vector3(side * 1.70, 0.24, -0.8 + float(i) * 0.5)
+			cob.scale = Vector3(1.15, 1.05, 1.20)
 			cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(cob)
 
@@ -252,12 +241,12 @@ static func cottage() -> Node3D:
 	root.add_child(body)
 
 	# 前面の太いハーフティンバー
-	_beam(root, wood, Vector3(-1.65, 1.18, 1.28), Vector3(0.22, 1.75, 0.16))
-	_beam(root, wood, Vector3(1.65, 1.18, 1.28), Vector3(0.22, 1.75, 0.16))
-	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(0.22, 1.75, 0.16))
-	_beam(root, wood, Vector3(0, 0.42, 1.28), Vector3(3.35, 0.2, 0.16))
-	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(3.35, 0.18, 0.16))
-	_beam(root, wood, Vector3(0, 1.95, 1.28), Vector3(3.35, 0.2, 0.16))
+	_beam(root, wood, Vector3(-1.65, 1.18, 1.28), Vector3(0.28, 1.75, 0.20))
+	_beam(root, wood, Vector3(1.65, 1.18, 1.28), Vector3(0.28, 1.75, 0.20))
+	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(0.28, 1.75, 0.20))
+	_beam(root, wood, Vector3(0, 0.42, 1.28), Vector3(3.35, 0.24, 0.20))
+	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(3.35, 0.22, 0.20))
+	_beam(root, wood, Vector3(0, 1.95, 1.28), Vector3(3.35, 0.24, 0.20))
 	var d1 := MeshInstance3D.new()
 	var dm := BoxMesh.new()
 	dm.size = Vector3(1.25, 0.16, 0.12)
@@ -277,17 +266,18 @@ static func cottage() -> Node3D:
 		_beam(root, wood, Vector3(side * 1.70, 0.42, 0), Vector3(0.16, 0.16, 2.35))
 		_beam(root, wood, Vector3(side * 1.70, 1.95, 0), Vector3(0.16, 0.16, 2.35))
 
-	# 屋根下地＋瓦（参照：急勾配）
+	# 屋根下地（暗め）＋前面に瓦を乗せる（参照：急勾配テラコッタ）
+	var roof_under := VisualKit.cobble_material(Color(0.28, 0.18, 0.12))
 	var roof_base_l := MeshInstance3D.new()
 	var rbm := BoxMesh.new()
-	rbm.size = Vector3(4.1, 0.12, 2.05)
+	rbm.size = Vector3(4.0, 0.08, 1.95)
 	roof_base_l.mesh = rbm
-	roof_base_l.material_override = roof
-	roof_base_l.position = Vector3(0, 2.35, -0.5)
+	roof_base_l.material_override = roof_under
+	roof_base_l.position = Vector3(0, 2.32, -0.5)
 	roof_base_l.rotation_degrees.x = -38
 	root.add_child(roof_base_l)
 	var roof_base_r := roof_base_l.duplicate() as MeshInstance3D
-	roof_base_r.position = Vector3(0, 2.35, 0.5)
+	roof_base_r.position = Vector3(0, 2.32, 0.5)
 	roof_base_r.rotation_degrees.x = 38
 	root.add_child(roof_base_r)
 	_add_tiled_roof_side(root, roof, -1.0)
@@ -352,11 +342,11 @@ static func cottage() -> Node3D:
 		glm.size = Vector3(0.56, 0.56, 0.05)
 		glass.mesh = glm
 		var gmat := StandardMaterial3D.new()
-		gmat.albedo_color = Color(1.0, 0.9, 0.55)
+		gmat.albedo_color = Color(0.95, 0.72, 0.32)
 		gmat.emission_enabled = true
-		gmat.emission = Color(1.0, 0.85, 0.35)
-		gmat.emission_energy_multiplier = 2.2
-		gmat.roughness = 0.35
+		gmat.emission = Color(1.0, 0.72, 0.28)
+		gmat.emission_energy_multiplier = 3.4
+		gmat.roughness = 0.55
 		gmat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		glass.material_override = gmat
 		glass.position = Vector3(side * 1.1, 1.35, 1.40)
@@ -396,20 +386,32 @@ static func cottage() -> Node3D:
 
 
 static func _add_tiled_roof_side(root: Node3D, roof_mat: Material, side_sign: float) -> void:
-	## side_sign: -1 = 奥側, +1 = 手前側。厚みのある丸い瓦。
-	var rows := 7
-	var cols := 11
+	## side_sign: -1 = 奥側, +1 = 手前側。厚みのある丸いテラコッタ瓦。
+	var rows := 8
+	var cols := 12
 	for row in rows:
 		var t := float(row) / float(rows - 1)
-		var y := 2.2 + t * 0.78
-		var z := side_sign * (1.05 - t * 0.95)
+		var y := 2.15 + t * 0.86
+		var z := side_sign * (1.08 - t * 0.98)
 		for col in cols:
 			var tile := MeshInstance3D.new()
-			tile.mesh = CraftMeshes.uv_sphere(0.20, 7, 9, 0.04, float(col) * 1.7 + float(row), 0.55)
-			tile.material_override = roof_mat
-			var x := -1.85 + float(col) * 0.36 + (0.12 if row % 2 == 1 else 0.0)
-			tile.position = Vector3(x, y + (col % 2) * 0.012, z)
-			tile.scale = Vector3(1.15, 0.55, 1.05)
+			tile.mesh = CraftMeshes.uv_sphere(0.24, 8, 10, 0.06, float(col) * 1.7 + float(row), 0.42)
+			# 行ごとにわずかに色差（単色オレンジ板禁止）
+			var shade := 0.88 + 0.18 * fmod(float(col + row * 3), 5.0) / 5.0
+			var tm := roof_mat.duplicate() as ShaderMaterial
+			if tm:
+				var bc = tm.get_shader_parameter("base_color")
+				if typeof(bc) == TYPE_COLOR:
+					tm.set_shader_parameter("base_color", Color(bc.r * shade, bc.g * shade, bc.b * shade))
+				elif typeof(bc) == TYPE_VECTOR3:
+					tm.set_shader_parameter("base_color", bc * shade)
+				tile.material_override = tm
+			else:
+				tile.material_override = roof_mat
+			var x := -1.95 + float(col) * 0.34 + (0.12 if row % 2 == 1 else 0.0)
+			# 下地より手前に押し出して瓦の段を読ませる
+			tile.position = Vector3(x, y + 0.04 + (col % 2) * 0.016, z + side_sign * 0.04)
+			tile.scale = Vector3(1.35, 0.72, 1.25)
 			tile.rotation_degrees.x = 38.0 * side_sign
 			tile.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(tile)

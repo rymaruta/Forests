@@ -71,25 +71,52 @@ static func stone_material(tint: Color = ForestsPalette.STONE) -> Material:
 
 
 static func plaster_material() -> Material:
-	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.9, 0.86, 0.76)
-	m.albedo_texture = load("res://assets/textures/plaster.png")
-	m.uv1_scale = Vector3(3.2, 3.2, 3.2)
-	m.uv1_triplanar = true
-	m.uv1_triplanar_sharpness = 4.0
-	m.roughness = 0.98
-	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	## 参照小屋：暖色パーチメント漆喰。Benchクリーム背景に溶けないよう一段落とす。
+	var m := ShaderMaterial.new()
+	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
+	m.set_shader_parameter("albedo_tex", load("res://assets/textures/plaster.png"))
+	m.set_shader_parameter("base_color", Vector3(0.82, 0.76, 0.62))
+	m.set_shader_parameter("shadow_color", Vector3(0.58, 0.52, 0.40))
+	m.set_shader_parameter("uv_scale", 2.4)
+	m.set_shader_parameter("nap_scale", 36.0)
+	m.set_shader_parameter("flock_mix", 0.85)
+	m.set_shader_parameter("tex_mix", 0.55)
+	m.set_shader_parameter("exposure", 1.05)
+	m.set_shader_parameter("warm_bias", Vector3(1.04, 1.0, 0.92))
 	return m
 
 
 static func roof_tile_material() -> Material:
+	## 参照小屋：濃い赤茶テラコッタ瓦
+	var m := ShaderMaterial.new()
+	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
+	m.set_shader_parameter("albedo_tex", load("res://assets/textures/roof_tile.png"))
+	m.set_shader_parameter("base_color", Vector3(0.48, 0.22, 0.14))
+	m.set_shader_parameter("shadow_color", Vector3(0.22, 0.10, 0.07))
+	m.set_shader_parameter("uv_scale", 1.6)
+	m.set_shader_parameter("nap_scale", 11.0)
+	m.set_shader_parameter("flock_mix", 0.38)
+	m.set_shader_parameter("tex_mix", 0.50)
+	m.set_shader_parameter("exposure", 0.88)
+	m.set_shader_parameter("warm_bias", Vector3(1.08, 0.94, 0.88))
+	return m
+
+
+static func cobble_material(tint: Color = Color(0.46, 0.46, 0.44)) -> Material:
+	## 不透明の灰み野面石（dirt茶・クリーム溶け禁止）
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.88, 0.55, 0.38)
-	m.albedo_texture = load("res://assets/textures/roof_tile.png")
-	m.uv1_scale = Vector3(2.2, 2.2, 2.2)
+	m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	m.albedo_color = tint
+	# 漆喰粒でグレー石。茶色 dirt は使わない
+	m.albedo_texture = load("res://assets/textures/plaster.png")
+	m.uv1_scale = Vector3(2.0, 2.0, 2.0)
 	m.uv1_triplanar = true
-	m.roughness = 0.92
+	m.uv1_world_triplanar = true
+	m.roughness = 1.0
+	m.metallic = 0.0
 	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	m.cull_mode = BaseMaterial3D.CULL_BACK
 	return m
 
 
