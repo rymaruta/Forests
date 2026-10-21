@@ -132,17 +132,17 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：冠より狭い裾＋縦趾（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.58, 1.28, 0.58)
+		toe_mesh.scale *= Vector3(0.50, 1.40, 0.50)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	trunk.position.y = TOE_H * 0.36
-	# 結合時のみ：幹を少し太く短く（部品Benchは維持）
+	trunk.position.y = TOE_H * 0.40
+	# 結合時のみ：幹を細長く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(1.10, 0.88, 1.10)
+		trunk_mesh.scale *= Vector3(0.95, 1.02, 0.95)
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
@@ -162,8 +162,8 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：参照全体樹の縦長中房へ（部品Benchは維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as Node3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.92, 1.14, 0.92)
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.52, 0.0)
+		canopy_mesh.scale *= Vector3(0.90, 1.20, 0.90)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)

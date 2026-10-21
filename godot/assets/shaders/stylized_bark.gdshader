@@ -108,10 +108,10 @@ void fragment() {
 	base *= mix(1.86, 1.76, ground_contact);
 	vec3 cool = vec3(0.94, 1.18, 1.62);
 	vec3 warm_toe = vec3(1.07, 1.01, 0.93);
-	vec3 warm_sheet = vec3(1.04, 0.98, 0.82);
+	vec3 warm_sheet = vec3(1.12, 0.94, 0.74);
 	base *= mix(cool, warm_toe, ground_contact * 0.70);
-	// シート木部：参照全体樹 mean≈98/94/62 帯へ一段落とす
-	base = mix(base, base * warm_sheet * 0.68, sheet_warm);
+	// シート木部：参照全体樹 mean≈98/94/62 帯
+	base = mix(base, base * warm_sheet * 0.70, sheet_warm);
 	// ごく弱い高さグラデ（組み立てでも滑らか）
 	base *= mix(0.96, 1.03, smoothstep(0.05, 0.75, v_y01));
 
