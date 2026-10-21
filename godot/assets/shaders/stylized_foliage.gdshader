@@ -99,7 +99,8 @@ void fragment() {
 	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
-	float lobe_ao = mix(1.0, 0.42, pow(crevice, 1.00)) * mix(0.62, 1.0, v_ao);
+	// 大房の谷は広く柔らかく（細かいポップコーン影禁止）
+	float lobe_ao = mix(1.0, 0.44, pow(crevice, 1.10)) * mix(0.66, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -111,13 +112,13 @@ void fragment() {
 	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.05, tex_l), flock_mix * 0.55);
 	// 細い均一フェルト。振幅は参照 hp_std≈3.7（対比控えめ）
 	base *= mix(0.88, 1.12, flock);
-	float grit = _vnoise(v_world * 240.0 + 1.7);
-	float grit2 = _vnoise(v_world * 400.0 + 4.2);
-	float grit3 = _vnoise(v_world * 620.0 + 9.1);
+	float grit = _vnoise(v_world * 280.0 + 1.7);
+	float grit2 = _vnoise(v_world * 480.0 + 4.2);
+	float grit3 = _vnoise(v_world * 720.0 + 9.1);
 	base *= mix(0.88, 1.12, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.92;
+	base *= 1.82;
 	base *= vec3(0.98, 1.005, 0.995);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);

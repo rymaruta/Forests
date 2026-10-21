@@ -14,9 +14,9 @@ const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
-# 参照冠の落ち着いたモスオリーブ
-const LEAF := Color(0.46, 0.50, 0.32)
-const LEAF_DARK := Color(0.23, 0.27, 0.15)
+# 参照冠の低彩度モスオリーブ
+const LEAF := Color(0.47, 0.51, 0.33)
+const LEAF_DARK := Color(0.24, 0.28, 0.16)
 
 
 static func canopy_part() -> Node3D:
@@ -34,8 +34,8 @@ static func canopy_part() -> Node3D:
 	canopy.material_override = VisualKit.foliage_material(LEAF, LEAF_DARK)
 	var baked_r := 1.28
 	var s := CANOPY_R / baked_r
-	# 参照冠：密中房 aspect≈1.4
-	canopy.scale = Vector3(s * 1.12, s * 1.00, s * 1.12)
+	# 参照冠：大房積雲 aspect≈1.4
+	canopy.scale = Vector3(s * 1.14, s * 0.94, s * 1.14)
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)

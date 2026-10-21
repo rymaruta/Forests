@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 部品「冠」専用。中房の密積雲＋頂点AO。"""
+"""Bake canopy_hero.obj — 部品「冠」専用。大きな丸丘の柔らかい積雲＋頂点AO。"""
 from __future__ import annotations
 
 import math
@@ -12,10 +12,10 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
 BASE_R = 1.28
 RES = 176
-PAD = 0.15
-# 中房を残しつつ密に溶かす（体積はAOで）
-K_BLEND = 0.055
-SEED = 3204
+PAD = 0.16
+# 大房は残しつつ縫い目を溶かす
+K_BLEND = 0.062
+SEED = 3301
 AO_SAMPLES = 20
 
 
@@ -25,44 +25,33 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 中サイズ房の高密度積雲。大球プリミティブでも細粒ポップコーンでもない。
-    # 横に広い丸丘。尖塔ピラミッド禁止。
+    # 参照冠: 少数の大きな丸丘。ポップコーン禁止。
     specs = [
-        ((0.00, 0.26, 0.00), 0.38),
-        ((0.02, 0.44, -0.02), 0.34),
-        ((-0.02, 0.58, 0.02), 0.28),
-        ((0.00, 0.70, 0.00), 0.20),
-        ((0.04, 0.14, 0.02), 0.32),
+        # 芯
+        ((0.00, 0.32, 0.00), 0.48),
+        ((0.02, 0.54, -0.02), 0.42),
+        ((-0.02, 0.72, 0.02), 0.34),
+        ((0.00, 0.88, 0.00), 0.24),
+        # 外周の大房
+        ((0.40, 0.34, 0.08), 0.38),
+        ((-0.38, 0.36, -0.06), 0.37),
+        ((0.10, 0.32, 0.40), 0.36),
+        ((-0.08, 0.30, -0.40), 0.36),
+        ((0.32, 0.50, -0.28), 0.32),
+        ((-0.30, 0.52, 0.26), 0.32),
+        ((0.28, 0.50, 0.28), 0.30),
+        ((-0.26, 0.48, -0.30), 0.30),
+        # 上段の丸丘
+        ((0.20, 0.70, 0.12), 0.26),
+        ((-0.18, 0.72, -0.10), 0.26),
+        ((0.04, 0.74, -0.20), 0.24),
+        ((-0.06, 0.68, 0.20), 0.24),
+        # 裾
+        ((0.26, 0.14, 0.20), 0.30),
+        ((-0.24, 0.12, -0.18), 0.30),
+        ((0.08, 0.10, -0.28), 0.28),
+        ((-0.06, 0.11, 0.30), 0.28),
     ]
-    # 外周リング（下〜中）広め
-    for i in range(11):
-        a = i / 11 * math.tau + 0.08
-        y = 0.24 + 0.10 * math.sin(i * 1.7)
-        rad = 0.40 + 0.06 * math.cos(i * 1.3)
-        r = 0.24 if i % 2 == 0 else 0.20
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
-    # 中段リング
-    for i in range(10):
-        a = i / 10 * math.tau + 0.33
-        y = 0.42 + 0.07 * math.cos(i * 1.4)
-        rad = 0.30 + 0.05 * math.sin(i * 1.1)
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.20))
-    # 上段は低く広く
-    for i in range(8):
-        a = i / 8 * math.tau + 0.18
-        y = 0.56 + 0.05 * math.sin(i * 1.9)
-        rad = 0.18 + 0.06 * ((i * 3) % 5) / 5.0
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.17))
-    # 裾の張り
-    for i in range(9):
-        a = i / 9 * math.tau + 0.22
-        specs.append(((math.cos(a) * 0.28, 0.10, math.sin(a) * 0.28), 0.18))
-    # 隙間埋めの小中房
-    for i in range(8):
-        a = i / 8 * math.tau + 0.55
-        y = 0.30 + 0.18 * ((i * 17) % 10) / 10.0
-        rad = 0.20 + 0.12 * ((i * 11) % 10) / 10.0
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.16))
     return specs
 
 
@@ -109,15 +98,16 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
         for d in dirs:
             w = t * d[0] + n * d[1] + b * d[2]
             occ = 0.0
-            for s in (0.08, 0.18, 0.32):
+            for s in (0.10, 0.22, 0.38):
                 q = p + w * (s * radius)
                 if sdf_at(q, centers, radii) < 0.0:
                     occ = 1.0
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        ao[i] = 1.0 - 0.64 * (dark ** 0.88)
-    return np.clip(ao, 0.40, 1.0)
+        # 広く柔らかい谷影（細かい割れ禁止）
+        ao[i] = 1.0 - 0.55 * (dark ** 0.95)
+    return np.clip(ao, 0.46, 1.0)
 
 
 def main() -> None:
@@ -199,7 +189,7 @@ def main() -> None:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", encoding="utf-8") as f:
-        f.write(f"# part canopy lobes={len(centers)} k={K_BLEND} dense-mid-mounds+ao\n")
+        f.write(f"# part canopy lobes={len(centers)} k={K_BLEND} large-soft-mounds+ao\n")
         for i, v in enumerate(verts):
             c = ao[i]
             f.write(f"v {v[0]:.6f} {v[1]:.6f} {v[2]:.6f} {c:.4f} {c:.4f} {c:.4f}\n")
