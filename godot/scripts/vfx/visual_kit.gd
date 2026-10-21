@@ -78,10 +78,10 @@ static func plaster_material() -> Material:
 	m.set_shader_parameter("base_color", Vector3(0.82, 0.76, 0.62))
 	m.set_shader_parameter("shadow_color", Vector3(0.58, 0.52, 0.40))
 	m.set_shader_parameter("uv_scale", 2.4)
-	m.set_shader_parameter("nap_scale", 36.0)
-	m.set_shader_parameter("flock_mix", 0.85)
-	m.set_shader_parameter("tex_mix", 0.55)
-	m.set_shader_parameter("exposure", 1.05)
+	m.set_shader_parameter("nap_scale", 48.0)
+	m.set_shader_parameter("flock_mix", 0.92)
+	m.set_shader_parameter("tex_mix", 0.62)
+	m.set_shader_parameter("exposure", 1.02)
 	m.set_shader_parameter("warm_bias", Vector3(1.04, 1.0, 0.92))
 	return m
 
