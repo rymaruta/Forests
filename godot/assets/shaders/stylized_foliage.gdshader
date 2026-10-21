@@ -133,7 +133,8 @@ void fragment() {
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：縁を葉色のまま薄く（白加算なし）
+	// シルエット柔縁：縁をわずかに暗くして白縁を消し、アルファで溶かす
+	base *= mix(1.0, 0.86, smoothstep(0.35, 0.95, fres));
 	float dither = _vnoise(v_world * 210.0 + 3.1) * 0.55
 		+ _vnoise(v_world * 420.0 + 8.7) * 0.45;
 	float fade = smoothstep(0.40, 0.95, fres) * (0.52 + dither * 0.42);
