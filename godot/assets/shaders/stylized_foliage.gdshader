@@ -1,6 +1,6 @@
 shader_type spatial;
-// フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO。
-render_mode blend_mix, depth_draw_opaque, cull_back, unshaded;
+// フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO＋縁ディザ柔縁。
+render_mode blend_mix, depth_draw_opaque, cull_back, unshaded, depth_prepass_alpha;
 
 // ミップでフェルト粒が消えないよう線形のみ
 uniform sampler2D leaf_tex : source_color, filter_linear, repeat_enable;
@@ -99,7 +99,7 @@ void fragment() {
 	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
-	float lobe_ao = mix(1.0, 0.44, pow(crevice, 1.05)) * mix(0.66, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.46, pow(crevice, 1.05)) * mix(0.66, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -110,28 +110,38 @@ void fragment() {
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
 	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.05, tex_l), flock_mix * 0.55);
 	// 細い均一フェルト。振幅は参照 hp_std≈3.7（対比控えめ）
-	base *= mix(0.89, 1.11, flock);
-	float grit = _vnoise(v_world * 200.0 + 1.7);
-	float grit2 = _vnoise(v_world * 340.0 + 4.2);
-	float grit3 = _vnoise(v_world * 520.0 + 9.1);
-	base *= mix(0.89, 1.11, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
+	base *= mix(0.88, 1.12, flock);
+	float grit = _vnoise(v_world * 240.0 + 1.7);
+	float grit2 = _vnoise(v_world * 400.0 + 4.2);
+	float grit3 = _vnoise(v_world * 620.0 + 9.1);
+	base *= mix(0.88, 1.12, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.94;
-	base *= vec3(0.995, 1.0, 1.005);
+	base *= 1.80;
+	base *= vec3(0.975, 1.01, 0.995);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	// 縁だけフェルト溶かし。本体は洗わない
-	float soft_rim = pow(1.0 - facing, 1.55) * 0.68;
-	float rim_mask = smoothstep(0.35, 0.95, soft_rim);
-	base += leaf_color * soft_rim * (0.40 + flock * 0.22) * rim_mask;
-	base += vec3(0.022, 0.024, 0.016) * soft_rim * rim_mask;
-	float edge_fuzz = rim_mask * (0.30 + _vnoise(v_world * 80.0) * 0.22);
+	float soft_rim = pow(1.0 - facing, 1.45) * 0.62;
+	float rim_mask = smoothstep(0.30, 0.92, soft_rim);
+	base += leaf_color * soft_rim * (0.38 + flock * 0.20) * rim_mask;
+	base += vec3(0.028, 0.026, 0.014) * soft_rim * rim_mask;
+	float edge_fuzz = rim_mask * (0.28 + _vnoise(v_world * 80.0) * 0.20);
 	base = mix(base, vec3(0.92, 0.90, 0.86), edge_fuzz);
 
 	// 下側の重い帯を抑え、参照の柔らかい裾に
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
+	// シルエット柔縁：縁帯のみ細かくディザ discard（本体は残す）
+	float edge = pow(1.0 - facing, 1.25);
+	float dither = _vnoise(v_world * 140.0 + 3.1) * 0.50
+		+ _vnoise(v_world * 280.0 + 8.7) * 0.50;
+	float cut = smoothstep(0.40, 0.95, edge) * (0.50 + dither * 0.50);
+	if (cut > 0.62) {
+		discard;
+	}
+
 	ALBEDO = base;
+	ALPHA = 1.0;
 }

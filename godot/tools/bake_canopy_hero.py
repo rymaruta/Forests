@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 部品「冠」専用。大きな丸丘の積雲＋頂点AO。"""
+"""Bake canopy_hero.obj — 部品「冠」専用。中房の密積雲＋頂点AO。"""
 from __future__ import annotations
 
 import math
@@ -11,11 +11,11 @@ from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
 BASE_R = 1.28
-RES = 172
-PAD = 0.16
-# 房は残しつつ少し溶かす（粘土球に見えない）
-K_BLEND = 0.052
-SEED = 3117
+RES = 176
+PAD = 0.15
+# 中房を残しつつ密に溶かす
+K_BLEND = 0.048
+SEED = 3204
 AO_SAMPLES = 20
 
 
@@ -25,37 +25,44 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 大きめの球房が縦に重なる積雲。細粒ポップコーン禁止。
+    # 参照冠: 中サイズ房の高密度積雲。大球プリミティブでも細粒ポップコーンでもない。
+    # 横に広い丸丘。尖塔ピラミッド禁止。
     specs = [
-        # 芯柱（下→上）
-        ((0.00, 0.28, 0.00), 0.46),
-        ((0.02, 0.52, -0.02), 0.40),
-        ((-0.02, 0.72, 0.02), 0.34),
-        ((0.00, 0.90, 0.00), 0.26),
-        # 外周の大房（中段・参照の横張り）
-        ((0.38, 0.36, 0.10), 0.36),
-        ((-0.36, 0.38, -0.08), 0.35),
-        ((0.12, 0.34, 0.36), 0.34),
-        ((-0.10, 0.32, -0.36), 0.33),
-        ((0.30, 0.48, -0.26), 0.30),
-        ((-0.28, 0.50, 0.24), 0.30),
-        # 上段の丸丘
-        ((0.22, 0.66, 0.14), 0.26),
-        ((-0.20, 0.68, -0.12), 0.26),
-        ((0.06, 0.70, -0.22), 0.24),
-        ((-0.08, 0.64, 0.22), 0.24),
-        # 裾の張り（下縁の丸み）
-        ((0.24, 0.16, 0.18), 0.28),
-        ((-0.22, 0.14, -0.16), 0.28),
-        ((0.06, 0.12, -0.26), 0.26),
-        ((-0.04, 0.13, 0.28), 0.26),
+        ((0.00, 0.26, 0.00), 0.38),
+        ((0.02, 0.44, -0.02), 0.34),
+        ((-0.02, 0.58, 0.02), 0.28),
+        ((0.00, 0.70, 0.00), 0.20),
+        ((0.04, 0.14, 0.02), 0.32),
     ]
-    # 隙間を埋める中房（少数）
-    for i in range(6):
-        a = i / 6 * math.tau + 0.35
-        y = 0.42 + 0.10 * math.sin(i * 1.7)
-        rad = 0.30 + 0.04 * math.cos(i * 1.3)
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.22))
+    # 外周リング（下〜中）広め
+    for i in range(11):
+        a = i / 11 * math.tau + 0.08
+        y = 0.24 + 0.10 * math.sin(i * 1.7)
+        rad = 0.40 + 0.06 * math.cos(i * 1.3)
+        r = 0.24 if i % 2 == 0 else 0.20
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
+    # 中段リング
+    for i in range(10):
+        a = i / 10 * math.tau + 0.33
+        y = 0.42 + 0.07 * math.cos(i * 1.4)
+        rad = 0.30 + 0.05 * math.sin(i * 1.1)
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.20))
+    # 上段は低く広く
+    for i in range(8):
+        a = i / 8 * math.tau + 0.18
+        y = 0.56 + 0.05 * math.sin(i * 1.9)
+        rad = 0.18 + 0.06 * ((i * 3) % 5) / 5.0
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.17))
+    # 裾の張り
+    for i in range(9):
+        a = i / 9 * math.tau + 0.22
+        specs.append(((math.cos(a) * 0.28, 0.10, math.sin(a) * 0.28), 0.18))
+    # 隙間埋めの小中房
+    for i in range(8):
+        a = i / 8 * math.tau + 0.55
+        y = 0.30 + 0.18 * ((i * 17) % 10) / 10.0
+        rad = 0.20 + 0.12 * ((i * 11) % 10) / 10.0
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.16))
     return specs
 
 
@@ -109,9 +116,8 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        # 谷は柔らかい影（真っ黒禁止）
-        ao[i] = 1.0 - 0.58 * (dark ** 0.92)
-    return np.clip(ao, 0.42, 1.0)
+        ao[i] = 1.0 - 0.60 * (dark ** 0.90)
+    return np.clip(ao, 0.40, 1.0)
 
 
 def main() -> None:
@@ -193,7 +199,7 @@ def main() -> None:
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
     with OUT.open("w", encoding="utf-8") as f:
-        f.write(f"# part canopy lobes={len(centers)} k={K_BLEND} cumulus-balls+ao\n")
+        f.write(f"# part canopy lobes={len(centers)} k={K_BLEND} dense-mid-mounds+ao\n")
         for i, v in enumerate(verts):
             c = ao[i]
             f.write(f"v {v[0]:.6f} {v[1]:.6f} {v[2]:.6f} {c:.4f} {c:.4f} {c:.4f}\n")
