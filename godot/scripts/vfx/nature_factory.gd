@@ -57,7 +57,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	var leaf_dark := Color(0.24, 0.30, 0.16)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
-	var trunk_h := h * (1.0 if hero else 0.92)
+	# ヒーローは幹を冠内まで伸ばして接合割れを隠す
+	var trunk_h := h * (1.12 if hero else 0.92)
 	var bark_mat := VisualKit.bark_shader_material(bark_tint)
 	# 参照：5本前後の丸趾
 	var toe_n := 5 if hero else (0 if backdrop else 4)
@@ -100,8 +101,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 枝の V フォークが冠下から読める高さ
-	# Vフォークが冠下から少し読める高さ
-	canopy.position = Vector3(lean * 0.08, h * 0.90, 0.0)
+	# 幹頂を冠に深く食い込ませ、黒い水平割れを消す
+	canopy.position = Vector3(lean * 0.08, h * 0.78, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
 		var baked_r := 1.30
