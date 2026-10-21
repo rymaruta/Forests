@@ -114,7 +114,7 @@ void fragment() {
 	float grit3 = _vnoise(v_world * 440.0 + 9.1);
 	base *= mix(0.88, 1.12, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
-	base *= 1.34;
+	base *= 1.28;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	float soft_rim = pow(1.0 - facing, 1.70) * 0.68;
