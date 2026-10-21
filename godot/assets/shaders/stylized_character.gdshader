@@ -35,13 +35,16 @@ void vertex() {
 }
 
 void fragment() {
-	float ndl = clamp(dot(NORMAL, normalize(vec3(0.25, 1.0, 0.2))), 0.0, 1.0);
-	ndl = mix(0.72, 1.0, ndl);
-	float shade = smoothstep(0.12, 0.92, ndl);
+	float ndl = clamp(dot(NORMAL, normalize(vec3(0.28, 0.95, 0.22))), 0.0, 1.0);
+	ndl = mix(0.62, 1.0, ndl);
+	float shade = smoothstep(0.10, 0.90, ndl);
 	vec3 col = mix(shadow_color, base_color, shade);
-	// フェルト微粒
-	float flock = _vnoise(v_world * 36.0) * 0.55 + _vnoise(v_world * 72.0 + 2.1) * 0.45;
-	col *= mix(1.0 - flock_amt * 0.12, 1.0 + flock_amt * 0.12, flock);
+	// フェルト／織り微粒（布と麦わらで読ませる）
+	float flock = _vnoise(v_world * 40.0) * 0.50 + _vnoise(v_world * 88.0 + 2.1) * 0.35 + _vnoise(v_world * 160.0) * 0.15;
+	col *= mix(1.0 - flock_amt * 0.16, 1.0 + flock_amt * 0.14, flock);
+	// 縦糸っぽい筋（ワンピ）
+	float weave = _vnoise(vec3(v_world.x * 28.0, v_world.y * 9.0, v_world.z * 28.0));
+	col *= mix(0.96, 1.04, weave);
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	col += vec3(1.0, 0.95, 0.85) * rim * rim_strength;
 	ALBEDO = col;

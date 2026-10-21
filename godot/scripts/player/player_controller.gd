@@ -98,25 +98,24 @@ func _build_visual() -> void:
 	var mouth := _mi(CraftMeshes.uv_sphere(0.016, 5, 6, 0.0, 1.0, 0.14), _cm(Color(0.50, 0.28, 0.30), Color(0.30, 0.14, 0.16)), Vector3(0, 1.02, 0.275))
 	mouth.scale = Vector3(1.1, 0.18, 0.22)
 
-	# 麦わら：つばを厚く・クラウンをはっきり
-	_mi(CraftMeshes.uv_sphere(0.40, 12, 28, 0.025, 2.0, 0.22), _cm(hat, hat.darkened(0.30)), Vector3(0, 1.40, -0.02))
-	_mi(CraftMeshes.trunk(0.20, 0.18, 0.15, 16), _cm(hat.lightened(0.05), hat.darkened(0.24)), Vector3(0, 1.46, -0.02))
+	# 麦わら：厚いつば＋丸いクラウン（平たいオレンジ円盤禁止）
+	_mi(CraftMeshes.uv_sphere(0.42, 12, 28, 0.03, 2.0, 0.24), _cm(hat, hat.darkened(0.32)), Vector3(0, 1.42, -0.02))
+	_mi(CraftMeshes.uv_sphere(0.20, 12, 16, 0.02, 2.5, 0.85), _cm(hat.lightened(0.06), hat.darkened(0.26)), Vector3(0, 1.52, -0.02))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.185
-	band_m.bottom_radius = 0.185
-	band_m.height = 0.05
+	band_m.top_radius = 0.195
+	band_m.bottom_radius = 0.195
+	band_m.height = 0.055
 	band.mesh = band_m
-	band.material_override = _cm(Color(0.86, 0.30, 0.22), Color(0.50, 0.12, 0.08))
-	band.position = Vector3(0, 1.48, -0.02)
+	band.material_override = _cm(Color(0.88, 0.32, 0.22), Color(0.52, 0.12, 0.08))
+	band.position = Vector3(0, 1.50, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
-	# マフラー：首を巻く環＋短い垂れ（棒パイプ禁止）
-	_mi(CraftMeshes.uv_sphere(0.16, 12, 16, 0.025, 6.0, 0.72), _cm(scarf_col, scarf_col.darkened(0.24)), Vector3(0, 0.92, 0.0), Vector3(1.45, 0.65, 1.25))
-	_mi(CraftMeshes.uv_sphere(0.09, 8, 10, 0.02, 7.0, 0.9), _cm(scarf_col, scarf_col.darkened(0.18)), Vector3(0.12, 0.86, 0.10))
-	var tail := _mi(CraftMeshes.trunk(0.22, 0.055, 0.03, 8, 0.02), _cm(scarf_col, scarf_col.darkened(0.2)), Vector3(0.16, 0.72, 0.12))
-	tail.rotation_degrees = Vector3(8, 5, 12)
+	# マフラー：太い首巻き（細い垂れ棒だけにしない）
+	_mi(CraftMeshes.uv_sphere(0.18, 14, 18, 0.03, 6.0, 0.70), _cm(scarf_col, scarf_col.darkened(0.26)), Vector3(0, 0.95, 0.02), Vector3(1.55, 0.72, 1.35))
+	_mi(CraftMeshes.uv_sphere(0.11, 10, 12, 0.025, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20)), Vector3(0.14, 0.90, 0.14))
+	_mi(CraftMeshes.uv_sphere(0.08, 8, 10, 0.02, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18)), Vector3(0.18, 0.78, 0.16))
 
 	mesh_root.scale = Vector3(1.10, 1.10, 1.10)
 
