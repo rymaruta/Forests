@@ -47,14 +47,14 @@ func _build_visual() -> void:
 	var hat := Color(0.78, 0.60, 0.32)
 	var scarf_col := Color(0.90, 0.40, 0.28)
 	var hair_c := Color(0.16, 0.09, 0.05)
-	var boot_c := Color(0.30, 0.18, 0.11)
+	var boot_c := Color(0.32, 0.20, 0.12)
 
-	# --- 下半身（暗いレギンス＋ブーツを裾から出す） ---
+	# --- 下半身（暗いレギンス＋チャンキーブーツ） ---
 	var leg_c := Color(0.16, 0.10, 0.07)
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.trunk(0.32, 0.052, 0.045, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.10 * side, 0.12, 0.02))
-		_mi(CraftMeshes.uv_sphere(0.14, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.35)), Vector3(0.12 * side, 0.06, 0.11), Vector3(1.50, 0.78, 1.75))
-		_mi(CraftMeshes.trunk(0.15, 0.072, 0.058, 10), _cm(boot_c, boot_c.darkened(0.25)), Vector3(0.11 * side, 0.12, 0.04))
+		_mi(CraftMeshes.trunk(0.30, 0.050, 0.044, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.10 * side, 0.14, 0.02))
+		_mi(CraftMeshes.uv_sphere(0.155, 9, 11, 0.05, side + 2.0, 0.78), _cm(boot_c, boot_c.darkened(0.32)), Vector3(0.12 * side, 0.05, 0.12), Vector3(1.55, 0.82, 1.85))
+		_mi(CraftMeshes.trunk(0.14, 0.080, 0.062, 10), _cm(boot_c.lightened(0.03), boot_c.darkened(0.22)), Vector3(0.11 * side, 0.12, 0.04))
 
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
