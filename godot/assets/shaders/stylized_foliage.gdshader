@@ -104,7 +104,7 @@ void fragment() {
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
 	// 大房の谷は広く深く（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.355, pow(crevice, 0.87)) * mix(0.49, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.358, pow(crevice, 0.875)) * mix(0.495, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
