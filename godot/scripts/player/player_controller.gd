@@ -87,36 +87,24 @@ func _build_visual() -> void:
 		_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.30 * side, 1.18, -0.16), Vector3(1.10, 1.20, 1.00))
 		_mi(CraftMeshes.uv_sphere(0.075, 7, 9, 0.04, 6.0 + side, 1.0), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.26 * side, 1.06, -0.18), Vector3(1.00, 1.30, 0.90))
 
-	# 目：丸い黒＋白いハイライト
+	# 目：正円の黒＋白いハイライト（縦長オーバル禁止）
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.062, 9, 11), _cm(Color(0.12, 0.07, 0.05), Color(0.03, 0.02, 0.02)), Vector3(0.095 * side, 1.19, 0.265))
+		_mi(CraftMeshes.uv_sphere(0.058, 10, 12), _cm(Color(0.10, 0.06, 0.04), Color(0.02, 0.01, 0.01)), Vector3(0.092 * side, 1.20, 0.268), Vector3(1.0, 1.0, 0.85))
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.018, 5, 6)
+		shine.mesh = CraftMeshes.uv_sphere(0.016, 5, 6)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
 		sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		sm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 		shine.material_override = sm
-		shine.position = Vector3(0.105 * side, 1.205, 0.305)
+		shine.position = Vector3(0.100 * side, 1.215, 0.308)
 		shine.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh_root.add_child(shine)
 
-	# 頬紅：極小・薄色（傷跡ラインに見えないよう低く小さく）
-	for side in [-1.0, 1.0]:
-		var cheek := MeshInstance3D.new()
-		cheek.mesh = CraftMeshes.uv_sphere(0.009, 5, 6)
-		var chm := StandardMaterial3D.new()
-		chm.albedo_color = Color(0.88, 0.68, 0.62)
-		chm.roughness = 1.0
-		chm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
-		cheek.material_override = chm
-		cheek.position = Vector3(0.168 * side, 1.08, 0.262)
-		cheek.scale = Vector3(1.35, 0.45, 0.45)
-		cheek.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		mesh_root.add_child(cheek)
+	# 頬紅は省略（薄い球が傷跡ラインに読まれるため）
 
-	var mouth := _mi(CraftMeshes.uv_sphere(0.016, 5, 6, 0.0, 1.0, 0.14), _cm(Color(0.50, 0.28, 0.30), Color(0.30, 0.14, 0.16)), Vector3(0, 1.02, 0.275))
-	mouth.scale = Vector3(1.1, 0.18, 0.22)
+	var mouth := _mi(CraftMeshes.uv_sphere(0.014, 5, 6, 0.0, 1.0, 0.12), _cm(Color(0.55, 0.32, 0.34), Color(0.32, 0.16, 0.18)), Vector3(0, 1.04, 0.278))
+	mouth.scale = Vector3(1.05, 0.16, 0.20)
 
 	# 麦わら：広いつば＋背の高い麦色クラウン。赤帯はクラウン裾の細いリングのみ。
 	_mi(CraftMeshes.uv_sphere(0.58, 14, 30, 0.05, 2.0, 0.20), _cm(hat, hat.darkened(0.34), 0.98), Vector3(0, 1.33, -0.02), Vector3(1.14, 0.62, 1.14))
