@@ -98,7 +98,7 @@ void fragment() {
 	// ベイクAO＋法線谷。柔らかく深い雲影（p10≈77）
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
 	crevice = pow(crevice, 1.35);
-	float lobe_ao = mix(1.0, 0.44, crevice) * mix(0.68, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.48, crevice) * mix(0.72, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -116,15 +116,15 @@ void fragment() {
 	base *= mix(0.86, 1.14, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.40;
-	base *= vec3(0.97, 1.0, 1.04);
+	base *= 1.32;
+	base *= vec3(0.98, 1.0, 1.025);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 1.35) * 0.70;
-	// 白ハロー禁止。葉色縁＋背景へ溶かす（参照の柔毛シルエット）
-	base += leaf_color * soft_rim * (0.55 + flock * 0.28);
-	base += vec3(0.035, 0.032, 0.014) * soft_rim;
-	float edge_fuzz = soft_rim * (0.30 + _vnoise(v_world * 60.0) * 0.22);
+	float soft_rim = pow(1.0 - facing, 1.40) * 0.62;
+	// 白ハロー禁止。葉色縁＋背景へ薄く溶かす（本体を洗わない）
+	base += leaf_color * soft_rim * (0.50 + flock * 0.25);
+	base += vec3(0.03, 0.028, 0.012) * soft_rim;
+	float edge_fuzz = soft_rim * (0.22 + _vnoise(v_world * 55.0) * 0.16);
 	base = mix(base, vec3(0.92, 0.90, 0.86), edge_fuzz);
 
 	// 下側の重い帯を抑え、参照の柔らかい裾に
