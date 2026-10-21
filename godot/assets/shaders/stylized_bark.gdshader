@@ -66,9 +66,9 @@ void fragment() {
 	n += t_ang * (groove - 0.5) * 0.55 * groove_mask;
 	n = normalize(n);
 	float ndl = clamp(dot(n, normalize(vec3(0.25, 0.95, 0.20))), 0.0, 1.0);
-	ndl = mix(0.90, 1.0, ndl);
-	vec3 base = mix(bark_color * 0.98, bark_dark * 0.62, groove * 1.20);
-	base *= 0.93 + ndl * 0.09;
+	ndl = mix(0.94, 1.0, ndl);
+	vec3 base = mix(bark_color * 0.96, bark_dark * 0.55, groove * 1.35);
+	base *= 0.95 + ndl * 0.05;
 	ALBEDO = base;
 	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;
