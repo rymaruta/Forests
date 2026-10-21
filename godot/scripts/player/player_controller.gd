@@ -47,14 +47,14 @@ func _build_visual() -> void:
 	var hat := Color(0.78, 0.60, 0.32)
 	var scarf_col := Color(0.90, 0.40, 0.28)
 	var hair_c := Color(0.16, 0.09, 0.05)
-	var boot_c := Color(0.36, 0.24, 0.15)
+	var boot_c := Color(0.30, 0.18, 0.11)
 
 	# --- 下半身（暗いレギンス＋ブーツを裾から出す） ---
-	var leg_c := Color(0.20, 0.12, 0.08)
+	var leg_c := Color(0.16, 0.10, 0.07)
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.trunk(0.30, 0.055, 0.048, 10), _cm(leg_c, leg_c.darkened(0.28)), Vector3(0.10 * side, 0.12, 0.02))
-		_mi(CraftMeshes.uv_sphere(0.135, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.32)), Vector3(0.12 * side, 0.07, 0.10), Vector3(1.45, 0.80, 1.70))
-		_mi(CraftMeshes.trunk(0.16, 0.075, 0.060, 10), _cm(boot_c.lightened(0.04), boot_c.darkened(0.22)), Vector3(0.11 * side, 0.13, 0.03))
+		_mi(CraftMeshes.trunk(0.32, 0.052, 0.045, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.10 * side, 0.12, 0.02))
+		_mi(CraftMeshes.uv_sphere(0.14, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.35)), Vector3(0.12 * side, 0.06, 0.11), Vector3(1.50, 0.78, 1.75))
+		_mi(CraftMeshes.trunk(0.15, 0.072, 0.058, 10), _cm(boot_c, boot_c.darkened(0.25)), Vector3(0.11 * side, 0.12, 0.04))
 
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
@@ -81,11 +81,10 @@ func _build_visual() -> void:
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.18)), Vector3(0, 1.18, 0))
 
-	# 髪：後ろボリューム＋横（顔前面に出さない）
-	_mi(CraftMeshes.uv_sphere(0.30, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.30, -0.20), Vector3(1.38, 1.18, 1.08))
+	# 髪：後ろボリューム＋耳後ろのみ（頬にヒゲ線が出ない）
+	_mi(CraftMeshes.uv_sphere(0.30, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.32, -0.22), Vector3(1.35, 1.15, 1.10))
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.30 * side, 1.18, -0.16), Vector3(1.10, 1.20, 1.00))
-		_mi(CraftMeshes.uv_sphere(0.075, 7, 9, 0.04, 6.0 + side, 1.0), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.26 * side, 1.06, -0.18), Vector3(1.00, 1.30, 0.90))
+		_mi(CraftMeshes.uv_sphere(0.105, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.28 * side, 1.20, -0.22), Vector3(1.05, 1.15, 0.95))
 
 	# 目：正円の黒＋白いハイライト（縦長オーバル禁止）
 	for side in [-1.0, 1.0]:

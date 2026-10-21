@@ -211,25 +211,17 @@ static func cottage() -> Node3D:
 	plinth.material_override = stone
 	plinth.position = Vector3(0, 0.08, -0.1)
 	root.add_child(plinth)
-	# 前面の石：小さめ直方＋薄い丸み（大球バブル禁止）
-	for i in 14:
+	# 前面の石：潰した球ベース（直方の角を読ませない）
+	for i in 16:
+		var tint := Color(0.38, 0.38, 0.40).lerp(Color(0.24, 0.25, 0.26), fmod(float(i) * 0.17, 1.0))
 		var cob := MeshInstance3D.new()
-		var bm := BoxMesh.new()
-		bm.size = Vector3(0.28 + fmod(float(i) * 0.05, 0.10), 0.20 + fmod(float(i) * 0.04, 0.08), 0.26)
-		cob.mesh = bm
-		var tint := Color(0.36, 0.36, 0.38).lerp(Color(0.26, 0.27, 0.28), fmod(float(i) * 0.19, 1.0))
+		cob.mesh = CraftMeshes.uv_sphere(0.16 + fmod(float(i) * 0.013, 0.05), 10, 12, 0.07, float(i) * 2.7, 0.88)
 		cob.material_override = VisualKit.cobble_material(tint)
-		cob.position = Vector3(-1.90 + float(i) * 0.29, 0.16, 1.55)
-		cob.rotation_degrees.y = fmod(float(i) * 17.0, 28.0) - 14.0
+		cob.position = Vector3(-1.95 + float(i) * 0.26, 0.14, 1.54)
+		cob.scale = Vector3(1.35 + fmod(float(i) * 0.09, 0.25), 0.62 + fmod(float(i) * 0.05, 0.18), 1.15)
+		cob.rotation_degrees.y = fmod(float(i) * 19.0, 30.0) - 15.0
 		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cob)
-		var cap := MeshInstance3D.new()
-		cap.mesh = CraftMeshes.uv_sphere(0.10 + fmod(float(i) * 0.008, 0.03), 8, 10, 0.05, float(i) * 3.1, 0.85)
-		cap.material_override = VisualKit.cobble_material(tint.lightened(0.03))
-		cap.position = cob.position + Vector3(0.0, 0.09, 0.02)
-		cap.scale = Vector3(1.25, 0.55, 1.10)
-		cap.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-		root.add_child(cap)
 	for i in 4:
 		for side in [-1.0, 1.0]:
 			var rad := 0.22
