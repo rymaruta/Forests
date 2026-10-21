@@ -13,8 +13,8 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.28
 RES = 176
 PAD = 0.16
-# 中房を残しつつ縫い目を溶かす
-K_BLEND = 0.058
+# 中房を残しつつ縫い目を溶かす（やや房を立てる）
+K_BLEND = 0.050
 SEED = 3402
 AO_SAMPLES = 20
 
