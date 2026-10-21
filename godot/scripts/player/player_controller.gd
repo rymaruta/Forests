@@ -54,11 +54,11 @@ func _build_visual() -> void:
 	# 一体フレアワンピ
 	_mi(CraftMeshes.trunk(0.68, 0.32, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.28, 0))
 
-	# 袖
+	# 袖＋手元（浮き球禁止：袖先に接続）
 	for side in [-1.0, 1.0]:
-		var arm := _mi(CraftMeshes.trunk(0.40, 0.062, 0.048, 10), _cm(cloth, cloth_d), Vector3(0.28 * side, 0.52, 0.04))
-		arm.rotation_degrees.z = 22.0 * side
-		_mi(CraftMeshes.uv_sphere(0.055, 6, 7), _cm(skin, skin.darkened(0.22)), Vector3(0.38 * side, 0.42, 0.08))
+		var arm := _mi(CraftMeshes.trunk(0.38, 0.07, 0.05, 12), _cm(cloth, cloth_d), Vector3(0.26 * side, 0.55, 0.05))
+		arm.rotation_degrees.z = 28.0 * side
+		_mi(CraftMeshes.uv_sphere(0.058, 7, 8), _cm(skin, skin.darkened(0.22)), Vector3(0.40 * side, 0.40, 0.10))
 
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.20)), Vector3(0, 1.18, 0))
