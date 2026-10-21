@@ -62,11 +62,21 @@ void fragment() {
 	float y_mask = smoothstep(0.05, 0.22, v_world.y);
 	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
 
-	// 彫りはアルベド色差のみ。強すぎる谷は偽スペキュラに見えるので中庸に
-	float g = clamp(groove * 1.05, 0.0, 1.0);
-	vec3 ridge = bark_color * 1.10;
-	vec3 valley = bark_dark * 0.62;
+	// アルベド溝＋溝法線のごく弱い包み込み（円柱ハイライトは出さない）
+	float g = clamp(groove * 1.10, 0.0, 1.0);
+	vec3 ridge = bark_color * 1.12;
+	vec3 valley = bark_dark * 0.58;
 	vec3 base = mix(ridge, valley, g);
 	base *= 0.99 + tex.g * 0.03;
-	ALBEDO = base;
+
+	vec3 n = normalize(v_normal);
+	vec3 t_ang = normalize(cross(n, vec3(0.0, 1.0, 0.0)));
+	if (length(t_ang) < 1e-3) {
+		t_ang = vec3(1.0, 0.0, 0.0);
+	}
+	n = normalize(n + t_ang * (g - 0.45) * 1.05);
+	vec3 L = normalize(vec3(0.20, 0.94, 0.24));
+	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
+	float wrap = mix(0.95, 1.04, ndl);
+	ALBEDO = base * wrap;
 }

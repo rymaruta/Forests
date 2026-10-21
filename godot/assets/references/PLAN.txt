@@ -50,11 +50,11 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: canopy_hero.obj（18大房 soft-union k=0.11）
-      幹: 一本メッシュ CraftMeshes（96 seg／弱い裾＋不規則丸趾）
-      HERO_TRUNK_H=1.42 / BASE_R=0.34 / TOP_R=0.11 / CANOPY_R=1.30 / SEED=2901
-  質感: 低周波フェルト＋Lambert／樹皮 unshaded＋溝アルベド 0.11
-  色: 幹≈0.50/0.36/0.24 冠≈0.42/0.46/0.34
-  捨てた: MC幹 / CSG趾 / 28細房三角冠 / 強スカート / 強リフト / 黒帯溝
+  形: canopy_hero.obj（22房 縦長卵 soft-union k=0.10）
+      幹: 一本メッシュ（96 seg／不規則丸趾）冠に食い込み trunk_h=1.12h
+      HERO_TRUNK_H=1.35 / BASE_R=0.34 / TOP_R=0.12 / CANOPY_R=1.28 / SEED=2901
+  質感: 密パイル＋Lambert／樹皮 unshadedアルベド溝（N·Lなし）
+  色: 幹≈0.50/0.36/0.24 冠≈0.42/0.46/0.28
+  捨てた: MC幹 / CSG趾 / キノコ冠 / 強スカート / 強リフト / 黒帯溝 / 露出ライム
   進行中レバー: ①フェルト厚み ②趾スイープ一体 ③手彫り溝の遠目可読
-  未達: 参照級（合格宣言禁止）。次: fair cmp継続。合格までワールド戻さない
+  未達: 参照級（合格宣言禁止）。fair cmp継続。合格までワールド戻さない
