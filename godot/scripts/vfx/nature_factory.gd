@@ -301,7 +301,7 @@ static func cottage() -> Node3D:
 	# 屋根：瓦のみ前面（下地板を出さない＝単色ブロック屋根禁止）
 	_add_tiled_roof_side(root, roof, -1.0)
 	_add_tiled_roof_side(root, roof, 1.0)
-	_beam(root, wood, Vector3(0, 3.02, 0), Vector3(4.0, 0.16, 0.18))
+	_beam(root, wood, Vector3(0, 3.02, 0), Vector3(4.05, 0.18, 0.22))
 	# 軒下の太い木口梁（参照の深い軒）
 	_beam(root, wood, Vector3(0, 2.12, 1.28), Vector3(3.85, 0.18, 0.28))
 	_beam(root, wood, Vector3(0, 2.12, -1.28), Vector3(3.85, 0.18, 0.28))
