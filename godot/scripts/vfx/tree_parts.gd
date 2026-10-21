@@ -164,7 +164,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：参照全体樹の縦長中房＋シート濃オリーブ（部品Bench色は維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.88, 1.22, 0.88)
+		canopy_mesh.scale *= Vector3(0.90, 1.16, 0.90)
 		var sheet_leaf := Color(0.38, 0.46, 0.26)
 		var sheet_dark := Color(0.18, 0.22, 0.12)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
