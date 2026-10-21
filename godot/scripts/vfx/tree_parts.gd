@@ -165,7 +165,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：丸め中房＋地味オリーブ（ミント禁止）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.88, 1.16, 0.88)
+		canopy_mesh.scale *= Vector3(0.90, 1.12, 0.90)
 		var sheet_leaf := Color(0.31, 0.37, 0.22)
 		var sheet_dark := Color(0.13, 0.18, 0.10)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
