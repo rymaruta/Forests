@@ -152,7 +152,7 @@ static func assemble_hero() -> Node3D:
 	for side in [-1.0, 1.0]:
 		var base_y := trunk.position.y + TRUNK_H * 0.55
 		var stub := MeshInstance3D.new()
-		stub.mesh = CraftMeshes.trunk(0.24, 0.068, 0.042, 10, 0.0, 0.02)
+		stub.mesh = CraftMeshes.trunk(0.26, 0.072, 0.044, 10, 0.0, 0.02)
 		stub.material_override = bark_mat
 		stub.position = Vector3(0.10 * side, base_y, 0.04)
 		stub.rotation_degrees.z = -40.0 * side
