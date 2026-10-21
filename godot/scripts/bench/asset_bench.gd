@@ -59,17 +59,17 @@ func _build_stage() -> void:
 	# 参照：高キー柔らか光。深影で粘土がプラスチックに見えるのを避ける
 	# アンビエント過多だと樹皮溝・フェルト繊維が消える。参照級の柔らかい方向光を残す
 	# 参照スタジオ：柔らか方向光で形・溝・フェルトが読める
-	env.ambient_light_energy = 0.88
+	env.ambient_light_energy = 0.82
 	env.tonemap_mode = Environment.TONE_MAPPER_FILMIC
-	env.tonemap_exposure = 0.98
+	env.tonemap_exposure = 1.00
 	env.adjustment_enabled = true
-	env.adjustment_saturation = 0.82
-	env.adjustment_contrast = 0.92
+	env.adjustment_saturation = 0.83
+	env.adjustment_contrast = 0.94
 	$WorldEnvironment.environment = env
 
 	var key: DirectionalLight3D = $KeyLight
 	key.light_color = Color(1.0, 0.98, 0.94)
-	key.light_energy = 0.55
+	key.light_energy = 0.60
 	key.light_specular = 0.0
 	key.shadow_enabled = true
 	key.shadow_blur = 6.5

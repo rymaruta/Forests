@@ -65,7 +65,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.10 if hero else 0.028,
+		0.12 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -78,11 +78,11 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		for i in 4:
 			var pad := MeshInstance3D.new()
 			pad.name = "ToePad%d" % i
-			pad.mesh = CraftMeshes.uv_sphere(0.24, 14, 18, 0.06, 3.1 + float(i) * 2.7, 0.58)
+			pad.mesh = CraftMeshes.uv_sphere(0.26, 14, 18, 0.05, 3.1 + float(i) * 2.7, 0.70)
 			pad.material_override = bark_mat
 			var a := float(i) / 4.0 * TAU + 0.38
-			pad.position = Vector3(cos(a) * base_r * 1.22, 0.11, sin(a) * base_r * 1.15)
-			pad.scale = Vector3(1.45, 0.72, 1.20)
+			pad.position = Vector3(cos(a) * base_r * 1.18, 0.14, sin(a) * base_r * 1.12)
+			pad.scale = Vector3(1.35, 0.95, 1.15)
 			pad.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(pad)
 
