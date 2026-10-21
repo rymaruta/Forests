@@ -21,14 +21,15 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_foliage.gdshader")
 	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
+	m.set_shader_parameter("leaf_n_tex", load("res://assets/textures/leaf_n.png"))
 	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
 	var dcol := dark if (dark.a > 0.01 and dark != Color.BLACK) else color.darkened(0.38)
 	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
 	m.set_shader_parameter("wind_strength", 0.008)
 	m.set_shader_parameter("roughness_val", 1.0)
-	# 繊維テクスチャを読める範囲で乗せる（石モトルはシェーダ側で抑制）
-	# 房陰影が主、パイルは補助
-	m.set_shader_parameter("flock_mix", 0.72)
+	m.set_shader_parameter("flock_mix", 0.92)
+	m.set_shader_parameter("nap_scale", 2.6)
+	m.set_shader_parameter("nap_strength", 0.80)
 	return m
 
 

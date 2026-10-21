@@ -14,8 +14,8 @@ const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
-const LEAF := Color(0.47, 0.52, 0.34)
-const LEAF_DARK := Color(0.30, 0.34, 0.20)
+const LEAF := Color(0.50, 0.56, 0.36)
+const LEAF_DARK := Color(0.30, 0.36, 0.20)
 
 
 static func canopy_part() -> Node3D:
