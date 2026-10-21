@@ -91,14 +91,14 @@ static func roof_tile_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
 	m.set_shader_parameter("albedo_tex", load("res://assets/textures/roof_tile.png"))
-	m.set_shader_parameter("base_color", Vector3(0.34, 0.10, 0.055))
-	m.set_shader_parameter("shadow_color", Vector3(0.12, 0.04, 0.025))
-	m.set_shader_parameter("uv_scale", 2.2)
-	m.set_shader_parameter("nap_scale", 16.0)
-	m.set_shader_parameter("flock_mix", 0.42)
-	m.set_shader_parameter("tex_mix", 0.58)
-	m.set_shader_parameter("exposure", 0.68)
-	m.set_shader_parameter("warm_bias", Vector3(1.22, 0.78, 0.64))
+	m.set_shader_parameter("base_color", Vector3(0.30, 0.09, 0.05))
+	m.set_shader_parameter("shadow_color", Vector3(0.10, 0.035, 0.02))
+	m.set_shader_parameter("uv_scale", 2.4)
+	m.set_shader_parameter("nap_scale", 18.0)
+	m.set_shader_parameter("flock_mix", 0.40)
+	m.set_shader_parameter("tex_mix", 0.62)
+	m.set_shader_parameter("exposure", 0.62)
+	m.set_shader_parameter("warm_bias", Vector3(1.15, 0.75, 0.62))
 	return m
 
 

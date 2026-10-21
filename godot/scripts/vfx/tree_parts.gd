@@ -125,52 +125,52 @@ static func assemble_hero() -> Node3D:
 
 	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
 	# 幹・趾は同一マテリアル（ground_contact分離＝二色割れ禁止）
-	# シート木部ターゲット ≈98/94/62（暖赤茶・黄緑茶禁止）
-	var bark_sheet := Color(0.268, 0.220, 0.122)
+	# シート木部ターゲット ≈98/94/62（暖赤茶・カーキ禁止）
+	var bark_sheet := Color(0.255, 0.198, 0.108)
 	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
 
 	var toes := toe_skirt_part()
 	toes.name = "ToeSkirt"
-	# 結合時のみ：参照の広い趾フレア（部品Benchスケールは維持）
+	# 結合時のみ：参照の趾フレア（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.50, 0.96, 0.50)
+		toe_mesh.scale *= Vector3(0.46, 1.00, 0.46)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	trunk.position.y = TOE_H * 0.32
-	# 結合時のみ：幹を細く（部品Benchは維持）
+	trunk.position.y = TOE_H * 0.34
+	# 結合時のみ：幹をやや細く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(0.80, 1.08, 0.80)
+		trunk_mesh.scale *= Vector3(0.86, 1.06, 0.86)
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹のクレードル枝：冠に少し埋まる短いフォーク
+	# 参照全体樹のクレードル枝：冠下で読めるフォーク
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.54
+		var base_y := trunk.position.y + TRUNK_H * 0.52
 		var stub := MeshInstance3D.new()
-		stub.mesh = CraftMeshes.trunk(0.26, 0.060, 0.038, 10, 0.0, 0.02)
+		stub.mesh = CraftMeshes.trunk(0.32, 0.062, 0.038, 10, 0.0, 0.02)
 		stub.material_override = bark_mat
-		stub.position = Vector3(0.095 * side, base_y, 0.04)
-		stub.rotation_degrees.z = -38.0 * side
-		stub.rotation_degrees.x = -10.0
+		stub.position = Vector3(0.105 * side, base_y, 0.05)
+		stub.rotation_degrees.z = -44.0 * side
+		stub.rotation_degrees.x = -12.0
 		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(stub)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
-	# 結合時のみ：縦長中房＋濃オリーブ（部品Bench色は維持）
+	# 結合時のみ：やや広い中房＋濃オリーブ（部品Bench色は維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.84, 1.16, 0.84)
-		var sheet_leaf := Color(0.32, 0.40, 0.22)
-		var sheet_dark := Color(0.14, 0.20, 0.10)
+		canopy_mesh.scale *= Vector3(0.90, 1.08, 0.90)
+		var sheet_leaf := Color(0.33, 0.41, 0.24)
+		var sheet_dark := Color(0.15, 0.21, 0.11)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
-	# クレードルに少し沈める
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.54, 0.0)
+	# クレードル先端が覗く座
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)
