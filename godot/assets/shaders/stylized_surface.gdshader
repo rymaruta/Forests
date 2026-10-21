@@ -70,7 +70,7 @@ void fragment() {
 
 	vec3 base = mix(shadow_color, base_color, ndl);
 	base = mix(base, tex * base_color / max(vec3(0.55), vec3(0.08)), tex_mix);
-	base *= mix(1.0 - flock_mix * 0.10, 1.0 + flock_mix * 0.10, flock);
+	base *= mix(1.0 - flock_mix * 0.18, 1.0 + flock_mix * 0.14, flock);
 	base *= exposure;
 	base *= warm_bias;
 
