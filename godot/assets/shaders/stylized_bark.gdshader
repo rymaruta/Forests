@@ -28,14 +28,7 @@ float _n2(vec2 p) {
 }
 
 void vertex() {
-	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	// ごく浅い幾何押し（遠目の溝はテクスチャ任せ）
-	float ang = atan(VERTEX.z, VERTEX.x);
-	float y = VERTEX.y;
-	float warp = _n2(vec2(ang * 0.8, y * 0.35)) * 0.9;
-	float g = 0.5 + 0.5 * sin((ang / 6.2831853 * 5.0 + warp) * 6.2831853);
-	g = smoothstep(0.35, 0.75, g) * smoothstep(0.04, 0.18, y);
-	VERTEX += NORMAL * (g - 0.45) * 0.012;
+	// 幾何押しなし。縦筋はテクスチャ＋アルベドのみ（硬い稜線ハイライト禁止）
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_y01 = clamp(VERTEX.y / 1.55, 0.0, 1.0);
 }
