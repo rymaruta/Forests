@@ -34,7 +34,7 @@ Step 4  ワールドへ戻す
   いま: Step1d + Step2 + Step3 並行（2026-10-21）。
     冠: fair_cmp ロック（mean≈146/152/113 rb/g≈0.219 aspect1.42）。
     幹: mean≈157/142/125 aspect1.09（REF156/145/128・1.11）— ほぼロック。
-    趾: mean≈118/90/64 p10≈62 aspect2.9 — ロック帯。ground_contact分離。
-    assemble: sheet木部≈97/90/61（REF≈98/94/62）。中庸趾・接地弱・シルエット継続。
-    cottage: 細瓦・斜梁・直方石・暖瓦・漆喰nap。traveler: 麦わら織り・腕下ろし。
+    趾: mean≈118/90/65 p10≈61 aspect2.86 — ロック帯。ground_contactは部品のみ。
+    assemble: 幹趾同一シート材。木部≈100/94/65（REF≈98/94/62）。低広趾・冠座0.58。
+    cottage: 直方煙突・細梁・狭いポーチ・軒下梁・深瓦・花箱密。traveler: 髪ボリューム・縦長。
   未達: assemble合格→小屋/旅人合格→ワールド。ワールド戻さない

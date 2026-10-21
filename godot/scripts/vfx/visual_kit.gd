@@ -75,14 +75,14 @@ static func plaster_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
 	m.set_shader_parameter("albedo_tex", load("res://assets/textures/plaster.png"))
-	m.set_shader_parameter("base_color", Vector3(0.78, 0.72, 0.58))
-	m.set_shader_parameter("shadow_color", Vector3(0.52, 0.46, 0.34))
+	m.set_shader_parameter("base_color", Vector3(0.74, 0.70, 0.58))
+	m.set_shader_parameter("shadow_color", Vector3(0.50, 0.46, 0.36))
 	m.set_shader_parameter("uv_scale", 2.8)
-	m.set_shader_parameter("nap_scale", 64.0)
-	m.set_shader_parameter("flock_mix", 0.96)
-	m.set_shader_parameter("tex_mix", 0.70)
-	m.set_shader_parameter("exposure", 0.96)
-	m.set_shader_parameter("warm_bias", Vector3(1.06, 1.0, 0.90))
+	m.set_shader_parameter("nap_scale", 78.0)
+	m.set_shader_parameter("flock_mix", 0.98)
+	m.set_shader_parameter("tex_mix", 0.74)
+	m.set_shader_parameter("exposure", 0.92)
+	m.set_shader_parameter("warm_bias", Vector3(1.02, 1.0, 0.93))
 	return m
 
 
@@ -91,14 +91,14 @@ static func roof_tile_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
 	m.set_shader_parameter("albedo_tex", load("res://assets/textures/roof_tile.png"))
-	m.set_shader_parameter("base_color", Vector3(0.44, 0.16, 0.08))
-	m.set_shader_parameter("shadow_color", Vector3(0.16, 0.06, 0.04))
+	m.set_shader_parameter("base_color", Vector3(0.40, 0.14, 0.07))
+	m.set_shader_parameter("shadow_color", Vector3(0.14, 0.05, 0.03))
 	m.set_shader_parameter("uv_scale", 1.8)
-	m.set_shader_parameter("nap_scale", 12.0)
-	m.set_shader_parameter("flock_mix", 0.40)
-	m.set_shader_parameter("tex_mix", 0.45)
-	m.set_shader_parameter("exposure", 0.80)
-	m.set_shader_parameter("warm_bias", Vector3(1.22, 0.84, 0.72))
+	m.set_shader_parameter("nap_scale", 14.0)
+	m.set_shader_parameter("flock_mix", 0.48)
+	m.set_shader_parameter("tex_mix", 0.50)
+	m.set_shader_parameter("exposure", 0.76)
+	m.set_shader_parameter("warm_bias", Vector3(1.18, 0.82, 0.70))
 	return m
 
 

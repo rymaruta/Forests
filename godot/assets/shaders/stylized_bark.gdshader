@@ -101,7 +101,7 @@ void fragment() {
 	float crease = mix(0.20, 1.0, pow(v_ao, 0.66)) * mix(1.0, 0.24, crotch);
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
-	// 趾だけ接地影（幹は掛けない＝組み立ての二色割れ禁止）
+	// 趾だけ接地影（部品Bench用）。組み立ては同一マテリアルで ground_contact=0。
 	float ground = mix(0.66, 1.0, smoothstep(0.02, 0.40, v_y01));
 	base *= mix(1.0, ground, ground_contact);
 	// 幹：クール木部 156/145/128。趾：やや暖寄り。シート：全体樹の暖茶

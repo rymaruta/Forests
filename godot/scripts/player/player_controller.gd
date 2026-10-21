@@ -56,8 +56,8 @@ func _build_visual() -> void:
 		_mi(CraftMeshes.uv_sphere(0.13, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.3)), Vector3(0.12 * side, 0.08, 0.08), Vector3(1.40, 0.85, 1.65))
 		_mi(CraftMeshes.trunk(0.18, 0.08, 0.065, 10), _cm(boot_c.lightened(0.05), boot_c.darkened(0.2)), Vector3(0.11 * side, 0.14, 0.03))
 
-	# 一体フレアワンピ（裾を少し上げて脚を見せる）
-	_mi(CraftMeshes.trunk(0.62, 0.34, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.48), Vector3(0, 0.32, 0))
+	# 一体フレアワンピ（裾を広げて脚を見せる）
+	_mi(CraftMeshes.trunk(0.66, 0.38, 0.16, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.55), Vector3(0, 0.30, 0))
 
 	# 袖＋手元：参照どおり体側に下ろす
 	for side in [-1.0, 1.0]:
@@ -81,10 +81,11 @@ func _build_visual() -> void:
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.20)), Vector3(0, 1.18, 0))
 
-	# 髪：後ろ＋横のみ（顔に被る涙滴ヘア禁止）
-	_mi(CraftMeshes.uv_sphere(0.28, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.28, -0.16), Vector3(1.30, 1.10, 0.95))
+	# 髪：後ろボリューム＋横カール（顔に被る涙滴ヘア禁止）
+	_mi(CraftMeshes.uv_sphere(0.30, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.30, -0.18), Vector3(1.38, 1.18, 1.05))
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.27 * side, 1.18, -0.08))
+		_mi(CraftMeshes.uv_sphere(0.12, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.29 * side, 1.16, -0.06), Vector3(1.15, 1.25, 1.05))
+		_mi(CraftMeshes.uv_sphere(0.08, 7, 9, 0.04, 6.0 + side, 1.0), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.24 * side, 1.08, -0.10), Vector3(1.05, 1.35, 0.95))
 
 	# 目：丸い黒＋白いハイライト
 	for side in [-1.0, 1.0]:
@@ -118,26 +119,26 @@ func _build_visual() -> void:
 	mouth.scale = Vector3(1.1, 0.18, 0.22)
 
 	# 麦わら：柔らかいつば＋背の高い麦色クラウン（織り flock 強め）
-	_mi(CraftMeshes.uv_sphere(0.54, 14, 30, 0.05, 2.0, 0.26), _cm(hat, hat.darkened(0.34), 0.95), Vector3(0, 1.34, -0.02), Vector3(1.08, 0.78, 1.08))
+	_mi(CraftMeshes.uv_sphere(0.56, 14, 30, 0.05, 2.0, 0.24), _cm(hat, hat.darkened(0.34), 0.98), Vector3(0, 1.36, -0.02), Vector3(1.10, 0.72, 1.10))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.23
-	band_m.bottom_radius = 0.23
-	band_m.height = 0.035
+	band_m.top_radius = 0.24
+	band_m.bottom_radius = 0.24
+	band_m.height = 0.038
 	band.mesh = band_m
 	band.material_override = _cm(Color(0.88, 0.32, 0.22), Color(0.52, 0.12, 0.08), 0.40)
-	band.position = Vector3(0, 1.38, -0.02)
+	band.position = Vector3(0, 1.40, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
-	_mi(CraftMeshes.trunk(0.36, 0.22, 0.17, 18), _cm(Color(0.90, 0.72, 0.42), Color(0.58, 0.40, 0.20), 0.92), Vector3(0, 1.44, -0.02))
-	_mi(CraftMeshes.uv_sphere(0.21, 12, 14, 0.03, 2.8, 0.80), _cm(Color(0.92, 0.74, 0.44), Color(0.60, 0.42, 0.22), 0.90), Vector3(0, 1.72, -0.02))
+	_mi(CraftMeshes.trunk(0.40, 0.23, 0.18, 18), _cm(Color(0.90, 0.72, 0.42), Color(0.58, 0.40, 0.20), 0.95), Vector3(0, 1.46, -0.02))
+	_mi(CraftMeshes.uv_sphere(0.22, 12, 14, 0.03, 2.8, 0.80), _cm(Color(0.92, 0.74, 0.44), Color(0.60, 0.42, 0.22), 0.93), Vector3(0, 1.76, -0.02))
 
 	# マフラー：首に太い巻き＋片側の短い端（リボン垂れ禁止）
-	_mi(CraftMeshes.uv_sphere(0.20, 14, 18, 0.035, 6.0, 0.52), _cm(scarf_col, scarf_col.darkened(0.26), 0.62), Vector3(0, 0.90, 0.08), Vector3(1.60, 0.78, 1.40))
-	_mi(CraftMeshes.uv_sphere(0.13, 10, 12, 0.03, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20), 0.55), Vector3(0.16, 0.84, 0.20))
-	_mi(CraftMeshes.uv_sphere(0.095, 8, 10, 0.025, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.52), Vector3(0.20, 0.72, 0.18))
+	_mi(CraftMeshes.uv_sphere(0.22, 14, 18, 0.035, 6.0, 0.50), _cm(scarf_col, scarf_col.darkened(0.26), 0.65), Vector3(0, 0.90, 0.08), Vector3(1.70, 0.82, 1.45))
+	_mi(CraftMeshes.uv_sphere(0.14, 10, 12, 0.03, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20), 0.58), Vector3(0.16, 0.84, 0.22))
+	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.025, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.55), Vector3(0.20, 0.70, 0.20))
 
-	mesh_root.scale = Vector3(1.10, 1.10, 1.10)
+	mesh_root.scale = Vector3(1.06, 1.14, 1.06)
 
 
 func set_move_input(v: Vector2) -> void:
