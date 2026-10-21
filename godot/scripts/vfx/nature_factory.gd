@@ -364,24 +364,28 @@ static func cottage() -> Node3D:
 	door.material_override = VisualKit.bark_shader_material(Color(0.28, 0.18, 0.1))
 	door.position = Vector3(0, 0.95, 1.32)
 	root.add_child(door)
-	# 扉上の二枚小窓（参照）
-	for side in [-1.0, 1.0]:
-		var dw := MeshInstance3D.new()
-		var dwm := BoxMesh.new()
-		dwm.size = Vector3(0.18, 0.18, 0.04)
-		dw.mesh = dwm
-		var dwmat := StandardMaterial3D.new()
-		dwmat.albedo_color = Color(0.85, 0.70, 0.35)
-		dwmat.emission_enabled = true
-		dwmat.emission = Color(0.95, 0.78, 0.40)
-		dwmat.emission_energy_multiplier = 1.6
-		dwmat.roughness = 0.65
-		dw.material_override = dwmat
-		dw.position = Vector3(side * 0.14, 1.28, 1.38)
-		root.add_child(dw)
+	# 扉上の小窓グリッド（参照の多分割）
+	for gx in [-1.0, 0.0, 1.0]:
+		for gy in [0.0, 1.0]:
+			var dw := MeshInstance3D.new()
+			var dwm := BoxMesh.new()
+			dwm.size = Vector3(0.12, 0.12, 0.04)
+			dw.mesh = dwm
+			var dwmat := StandardMaterial3D.new()
+			dwmat.albedo_color = Color(0.90, 0.62, 0.28)
+			dwmat.emission_enabled = true
+			dwmat.emission = Color(1.0, 0.58, 0.20)
+			dwmat.emission_energy_multiplier = 2.0
+			dwmat.roughness = 0.65
+			dw.material_override = dwmat
+			dw.position = Vector3(gx * 0.15, 1.22 + gy * 0.14, 1.38)
+			root.add_child(dw)
 	_beam(root, wood, Vector3(-0.18, 0.95, 1.36), Vector3(0.04, 1.0, 0.02))
 	_beam(root, wood, Vector3(0.18, 0.95, 1.36), Vector3(0.04, 1.0, 0.02))
-	_beam(root, wood, Vector3(0.0, 1.28, 1.39), Vector3(0.03, 0.18, 0.02))
+	_beam(root, wood, Vector3(0.0, 1.22, 1.39), Vector3(0.48, 0.03, 0.02))
+	_beam(root, wood, Vector3(0.0, 1.36, 1.39), Vector3(0.48, 0.03, 0.02))
+	_beam(root, wood, Vector3(-0.075, 1.29, 1.39), Vector3(0.03, 0.28, 0.02))
+	_beam(root, wood, Vector3(0.075, 1.29, 1.39), Vector3(0.03, 0.28, 0.02))
 	var knob := MeshInstance3D.new()
 	knob.mesh = CraftMeshes.uv_sphere(0.040, 5, 6)
 	knob.material_override = VisualKit.character_material(Color(0.22, 0.18, 0.14), Color(0.1, 0.08, 0.06))
