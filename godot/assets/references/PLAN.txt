@@ -35,6 +35,6 @@ Step 4  ワールドへ戻す
     冠: fair_cmp ロック（mean≈146/152/113 rb/g≈0.219 aspect1.42）。
     幹: mean≈157/142/125 aspect1.09（REF156/145/128・1.11）— ほぼロック。
     趾: mean≈118/90/64 p10≈62 aspect2.9 — ロック帯。ground_contact分離。
-    assemble: sheet_warm暖茶・短幹・中庸趾裾。シルエット継続。
-    cottage: 細瓦・斜梁・直方石・暖瓦。traveler: 麦わら織り・腕下ろし。
+    assemble: sheet木部≈97/90/61（REF≈98/94/62）。中庸趾・接地弱・シルエット継続。
+    cottage: 細瓦・斜梁・直方石・暖瓦・漆喰nap。traveler: 麦わら織り・腕下ろし。
   未達: assemble合格→小屋/旅人合格→ワールド。ワールド戻さない
