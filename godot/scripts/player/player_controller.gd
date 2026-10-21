@@ -45,7 +45,7 @@ func _build_visual() -> void:
 	var cloth_d := Color(0.09, 0.24, 0.28)
 	var skin := Color(0.78, 0.56, 0.42)
 	var hat := Color(0.78, 0.60, 0.32)
-	var scarf_col := Color(0.90, 0.40, 0.28)
+	var scarf_col := Color(0.92, 0.42, 0.30)
 	var hair_c := Color(0.16, 0.09, 0.05)
 	var boot_c := Color(0.32, 0.20, 0.12)
 
