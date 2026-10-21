@@ -10,7 +10,7 @@ const HERO_TRUNK_H := 1.35
 ## 幹本体はやや細め。フレア幅は趾ブーストに任せる（太杭＋フィン化を防ぐ）
 const HERO_BASE_R := 0.34
 const HERO_TOP_R := 0.12
-const HERO_CANOPY_R := 1.32
+const HERO_CANOPY_R := 1.28
 const HERO_SEED := 2901
 
 
@@ -69,7 +69,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.15 if hero else 0.028,
+		0.12 if hero else 0.028,
 		true,
 		toe_n
 	)
