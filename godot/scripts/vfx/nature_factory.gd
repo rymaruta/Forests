@@ -404,15 +404,16 @@ static func cottage() -> Node3D:
 	chim.material_override = VisualKit.cobble_material(Color(0.34, 0.34, 0.36))
 	chim.position = Vector3(-1.05, 3.10, 0.15)
 	root.add_child(chim)
-	for ci in 3:
+	for ci in 4:
 		var course := MeshInstance3D.new()
 		var cm := BoxMesh.new()
-		cm.size = Vector3(0.50 + fmod(float(ci) * 0.03, 0.04), 0.22, 0.50)
+		cm.size = Vector3(0.46 + fmod(float(ci) * 0.05, 0.08), 0.18 + fmod(float(ci) * 0.03, 0.05), 0.46 + fmod(float(ci) * 0.04, 0.06))
 		course.mesh = cm
 		course.material_override = VisualKit.cobble_material(
-			Color(0.32, 0.32, 0.34).lerp(Color(0.38, 0.37, 0.36), fmod(float(ci) * 0.37, 1.0))
+			Color(0.30, 0.30, 0.32).lerp(Color(0.40, 0.38, 0.36), fmod(float(ci) * 0.37, 1.0))
 		)
-		course.position = Vector3(-1.05, 2.78 + float(ci) * 0.22, 0.15)
+		course.position = Vector3(-1.05 + fmod(float(ci) * 0.02, 0.03) - 0.015, 2.72 + float(ci) * 0.18, 0.15)
+		course.rotation_degrees.y = fmod(float(ci) * 11.0, 8.0) - 4.0
 		course.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(course)
 	var chim_cap := MeshInstance3D.new()
