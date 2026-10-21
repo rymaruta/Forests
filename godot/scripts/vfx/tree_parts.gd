@@ -13,7 +13,7 @@ const CANOPY_R := 1.10
 const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
-const BARK := Color(0.37, 0.29, 0.21)
+const BARK := Color(0.39, 0.28, 0.18)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
 const LEAF := Color(0.49, 0.50, 0.33)
 const LEAF_DARK := Color(0.25, 0.27, 0.17)
@@ -105,10 +105,10 @@ static func toe_skirt_part() -> Node3D:
 		)
 	toes.material_override = bark_mat
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var baked_h := 0.41
+	var baked_h := 0.48
 	var s := TOE_H / baked_h
 	# ベイクが低いと s が増える。aspect≈3・趾の丸み
-	toes.scale = Vector3(s * 1.35, s * 0.95, s * 1.35)
+	toes.scale = Vector3(s * 1.45, s * 0.95, s * 1.45)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
