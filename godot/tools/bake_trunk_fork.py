@@ -43,35 +43,36 @@ def capsule_sdf_pt(p: np.ndarray, a: np.ndarray, b: np.ndarray, ra: float, rb: f
 
 
 def build_prims():
-    # 滑らかな幹柱＋立ち上がる二枝。股は丸く、枝は読める長さ。
+    # 滑らかな幹柱＋狭い V クレードル＋中幹の細い横枝。
     col_a = np.array([0.02, 0.02, 0.0])
     col_b = np.array([0.03, 1.08, 0.0])
     prims = [
-        (col_a, col_b, 0.245, 0.108),
+        (col_a, col_b, 0.238, 0.105),
     ]
-    # クレードル枝：中庸の太さ・長さ（耳スタブ／長い棒の両極回避）
-    for side, yaw in ((1.0, 0.50), (-1.0, math.pi - 0.50)):
-        root = np.array([0.03 + 0.018 * side, 1.01, 0.0])
+    # クレードル枝：参照寄りの狭い V（aspect≈1.1）
+    for side, yaw in ((1.0, 0.46), (-1.0, math.pi - 0.46)):
+        root = np.array([0.03 + 0.016 * side, 1.02, 0.0])
         mid = np.array(
             [
-                root[0] + math.cos(yaw) * 0.30,
-                root[1] + 0.25,
-                root[2] + math.sin(yaw) * 0.035,
+                root[0] + math.cos(yaw) * 0.26,
+                root[1] + 0.26,
+                root[2] + math.sin(yaw) * 0.030,
             ]
         )
         tip = np.array(
             [
-                root[0] + math.cos(yaw) * 0.50,
-                root[1] + 0.45,
-                root[2] + math.sin(yaw) * 0.055,
+                root[0] + math.cos(yaw) * 0.42,
+                root[1] + 0.46,
+                root[2] + math.sin(yaw) * 0.045,
             ]
         )
-        prims.append((root, mid, 0.115, 0.085))
-        prims.append((mid, tip, 0.085, 0.050))
+        prims.append((root, mid, 0.105, 0.078))
+        prims.append((mid, tip, 0.078, 0.045))
+    # 中幹横枝は参照パーツに無い → assemble_hero 側で付ける
     # 股フィラー（肩ボリューム）
-    crotch_a = np.array([0.03, 0.93, 0.0])
-    crotch_b = np.array([0.03, 1.09, 0.0])
-    prims.append((crotch_a, crotch_b, 0.140, 0.115))
+    crotch_a = np.array([0.03, 0.94, 0.0])
+    crotch_b = np.array([0.03, 1.10, 0.0])
+    prims.append((crotch_a, crotch_b, 0.128, 0.105))
     return prims
 
 

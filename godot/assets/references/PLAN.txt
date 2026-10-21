@@ -34,7 +34,8 @@ Step 4  ワールドへ戻す
   いま: Step1d + Step2 + Step3 並行（2026-10-21）。
     冠: fair_cmp ほぼロック。
     趾: mean≈121 / p10≈60 / aspect≈2.9（REF 118/50/3.0）— ロック帯。
-    幹: mean≈141（REF木部156）。assemble継続。
-    cottage: 漆喰nap強化／テラコッタ瓦／灰石／発光窓。
-    traveler: 麦わらクラウン・下ろした腕・首マフラー・フレアワンピ。織り継続。
+    幹: mean R≈157（REF156）G/B未達・aspect0.87。中幹横枝はassembleのみ。
+    趾: mean≈121/87/57 p10≈57 aspect2.9 — 再接近。
+    cottage: 細瓦／妻斜梁／二段石／手前煙突。
+    traveler: 髪見せ／太い首巻き／麦わら織り／頬縮小。
   未達: assemble合格→小屋/旅人合格→ワールド。ワールド戻さない

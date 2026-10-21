@@ -42,9 +42,11 @@ void fragment() {
 	// フェルト／織り微粒（布と麦わらで読ませる）
 	float flock = _vnoise(v_world * 40.0) * 0.50 + _vnoise(v_world * 88.0 + 2.1) * 0.35 + _vnoise(v_world * 160.0) * 0.15;
 	col *= mix(1.0 - flock_amt * 0.16, 1.0 + flock_amt * 0.14, flock);
-	// 縦糸っぽい筋（ワンピ）
+	// 縦糸っぽい筋（ワンピ）＋麦わら向けの横帯織り
 	float weave = _vnoise(vec3(v_world.x * 28.0, v_world.y * 9.0, v_world.z * 28.0));
+	float straw = _vnoise(vec3(v_world.x * 6.0, v_world.y * 55.0, v_world.z * 6.0));
 	col *= mix(0.96, 1.04, weave);
+	col *= mix(1.0, mix(0.90, 1.08, straw), clamp(flock_amt * 1.15, 0.0, 1.0));
 	float rim = pow(1.0 - clamp(dot(NORMAL, VIEW), 0.0, 1.0), 3.0);
 	col += vec3(1.0, 0.95, 0.85) * rim * rim_strength;
 	ALBEDO = col;
