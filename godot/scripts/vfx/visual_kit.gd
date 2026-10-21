@@ -27,9 +27,9 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
 	m.set_shader_parameter("wind_strength", 0.008)
 	m.set_shader_parameter("roughness_val", 1.0)
-	m.set_shader_parameter("flock_mix", 0.80)
-	m.set_shader_parameter("nap_scale", 12.0)
-	m.set_shader_parameter("nap_strength", 1.15)
+	m.set_shader_parameter("flock_mix", 0.78)
+	m.set_shader_parameter("nap_scale", 11.0)
+	m.set_shader_parameter("nap_strength", 1.10)
 	return m
 
 
@@ -39,7 +39,7 @@ static func flock_shell_material(color: Color, density: float = 0.42) -> Materia
 	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
 	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
 	m.set_shader_parameter("density", density)
-	m.set_shader_parameter("shell_tint", 1.02)
+	m.set_shader_parameter("shell_tint", 1.04)
 	return m
 
 

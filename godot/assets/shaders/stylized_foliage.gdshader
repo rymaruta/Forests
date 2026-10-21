@@ -65,15 +65,16 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 }
 
 	void vertex() {
-	// 短いフェルト毛羽。ギザ輪郭を避ける
-	float fuzz = _hash31(VERTEX * 26.0 + 2.7) * 0.007
-		+ _hash31(VERTEX * 54.0) * 0.004;
+	// 短いフェルト毛羽。連続ノイズで縁をわずかに崩す
+	float fuzz = _vnoise(VERTEX * 16.0 + 1.3) * 0.008
+		+ _vnoise(VERTEX * 32.0 + 4.7) * 0.0045
+		+ _vnoise(VERTEX * 8.0 + 9.1) * 0.003;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
 	v_n = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 	// ベイク頂点色 = 谷AO（無い場合は1）
-	v_ao = clamp(COLOR.r, 0.35, 1.0);
+	v_ao = clamp(COLOR.r, 0.32, 1.0);
 	if (v_ao < 0.01) {
 		v_ao = 1.0;
 	}
@@ -94,10 +95,10 @@ void fragment() {
 	float fiber2 = _vnoise(v_world * 96.0 + 7.4);
 	float flock = pile * 0.20 + fiber * 0.40 + fiber2 * 0.40;
 
-	// ベイクAO＋法線谷。柔らかく深い雲影
+	// ベイクAO＋法線谷。柔らかく深い雲影（p10≈77）
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
-	crevice = pow(crevice, 1.40);
-	float lobe_ao = mix(1.0, 0.44, crevice) * mix(0.64, 1.0, v_ao);
+	crevice = pow(crevice, 1.35);
+	float lobe_ao = mix(1.0, 0.43, crevice) * mix(0.66, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -106,22 +107,27 @@ void fragment() {
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
-	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.06, tex_l), flock_mix * 0.55);
+	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.05, tex_l), flock_mix * 0.55);
 	// 細い均一フェルト。振幅は参照 hp_std≈3.7
-	base *= mix(0.90, 1.12, flock);
+	base *= mix(0.89, 1.13, flock);
 	float grit = _vnoise(v_world * 160.0 + 1.7);
 	float grit2 = _vnoise(v_world * 280.0 + 4.2);
 	float grit3 = _vnoise(v_world * 440.0 + 9.1);
-	base *= mix(0.88, 1.12, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
+	base *= mix(0.87, 1.13, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
-	base *= 1.42;
+	// 露出：mean≈147 / rb/g≈0.22
+	base *= 1.48;
+	base *= vec3(1.005, 0.998, 1.02);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 1.55) * 0.62;
-	base += leaf_color * soft_rim * (0.55 + flock * 0.40);
-	base += vec3(0.03, 0.035, 0.015) * soft_rim;
+	float soft_rim = pow(1.0 - facing, 1.55) * 0.55;
+	// 白ハロー禁止。暖オリーブの薄い縁＋背景へごく薄く溶かす
+	base += leaf_color * soft_rim * (0.48 + flock * 0.25);
+	base += vec3(0.03, 0.028, 0.012) * soft_rim;
+	base = mix(base, vec3(0.92, 0.90, 0.86), soft_rim * 0.14);
 
-	float under = clamp(0.16 - v_obj.y * 0.12, 0.0, 0.12);
+	// 下側の重い帯を抑え、参照の柔らかい裾に
+	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
 	ALBEDO = base;

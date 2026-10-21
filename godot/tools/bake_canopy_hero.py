@@ -14,10 +14,10 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-# 丘の谷が読める重い雲。貼り付け球にしない
-K_BLEND = 0.080
+# 大きな房。溶けすぎず谷が残る帯
+K_BLEND = 0.092
 SEED = 2901
-AO_SAMPLES = 16
+AO_SAMPLES = 18
 
 
 def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
@@ -26,48 +26,41 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 大小の丸丘が密に重なる雲。尖頂禁止。
+    # 参照冠: 少数の大きな丸丘。細かい丘は置かない。
     specs = [
-        ((0.00, 0.38, 0.00), 0.42),
-        ((0.04, 0.54, -0.03), 0.36),
-        ((-0.04, 0.20, 0.03), 0.38),
-        ((0.01, 0.70, 0.00), 0.30),
+        # コア体積
+        ((0.00, 0.36, 0.00), 0.48),
+        ((0.02, 0.58, -0.02), 0.40),
+        ((0.00, 0.18, 0.02), 0.42),
+        # 幅広い頂（尖らせない）
+        ((0.00, 0.72, 0.00), 0.34),
+        ((0.12, 0.62, 0.08), 0.28),
+        ((-0.10, 0.64, -0.06), 0.28),
     ]
-    # 外周の中房（横に広げて参照 aspect≈1.4）
-    for i in range(9):
-        a = i / 9 * math.tau + 0.10
-        y = 0.34 + 0.07 * math.sin(i * 1.7 + 0.3)
-        r = 0.30 if i % 2 == 0 else 0.26
-        rad = 0.54 + 0.05 * math.sin(i * 1.9)
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
-    # 中段の中房
+    # 外周の大〜中房（aspect≈1.4）
     for i in range(7):
-        a = i / 7 * math.tau + 0.40
+        a = i / 7 * math.tau + 0.12
+        y = 0.32 + 0.06 * math.sin(i * 1.9)
+        r = 0.34 if i % 2 == 0 else 0.30
+        rad = 0.52 + 0.04 * math.sin(i * 1.4)
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
+    # 中段の中房（谷を作る程度）
+    for i in range(5):
+        a = i / 5 * math.tau + 0.45
         specs.append(
             (
                 (
-                    math.cos(a) * 0.30,
-                    0.52 + 0.04 * math.cos(i * 1.2),
-                    math.sin(a) * 0.30,
+                    math.cos(a) * 0.28,
+                    0.50 + 0.05 * math.cos(i * 1.3),
+                    math.sin(a) * 0.28,
                 ),
-                0.22,
+                0.24,
             )
         )
-    # 細かい丘（参照の密度）
-    for i in range(14):
-        a = i / 14 * math.tau + 0.08
-        y = 0.34 + 0.16 * ((i * 37) % 10) / 10.0
-        rad = 0.28 + 0.18 * ((i * 19) % 10) / 10.0
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.16 + 0.03 * (i % 3)))
-    for i in range(10):
-        a = i / 10 * math.tau + 0.55
-        y = 0.48 + 0.10 * math.sin(i * 2.1)
-        rad = 0.36 + 0.08 * math.cos(i * 1.3)
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.14))
-    specs.append(((0.02, 0.82, -0.01), 0.26))
-    for i in range(6):
-        a = i / 6 * math.tau + 0.2
-        specs.append(((math.cos(a) * 0.20, 0.08, math.sin(a) * 0.20), 0.20))
+    # 裾の支え（細い丘は禁止）
+    for i in range(5):
+        a = i / 5 * math.tau + 0.25
+        specs.append(((math.cos(a) * 0.22, 0.10, math.sin(a) * 0.22), 0.22))
     return specs
 
 
@@ -121,8 +114,9 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        ao[i] = 1.0 - 0.56 * (dark ** 1.10)
-    return np.clip(ao, 0.44, 1.0)
+        # 谷を深く（p10≈77）
+        ao[i] = 1.0 - 0.66 * (dark ** 0.92)
+    return np.clip(ao, 0.38, 1.0)
 
 
 def main() -> None:

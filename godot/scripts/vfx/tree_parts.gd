@@ -14,9 +14,9 @@ const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
-# 参照冠の暖かいモスオリーブ（冷たいライム禁止）
-const LEAF := Color(0.55, 0.58, 0.36)
-const LEAF_DARK := Color(0.32, 0.36, 0.22)
+# 参照冠の暖かいモスオリーブ（やや低彩度・黄み）
+const LEAF := Color(0.52, 0.55, 0.34)
+const LEAF_DARK := Color(0.29, 0.32, 0.20)
 
 
 static func canopy_part() -> Node3D:
@@ -34,12 +34,12 @@ static func canopy_part() -> Node3D:
 	canopy.material_override = VisualKit.foliage_material(LEAF, LEAF_DARK)
 	var baked_r := 1.30
 	var s := CANOPY_R / baked_r
-	# 参照冠：やや横に重い丸雲。平らな横キノコ禁止
-	canopy.scale = Vector3(s * 1.05, s * 1.02, s * 1.05)
+	# 参照冠：aspect≈1.4
+	canopy.scale = Vector3(s * 1.07, s * 0.95, s * 1.07)
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
-	# ディザ縁殻は参照と乖離するので付けない。毛羽は本体シェーダのみ。
+	# 半透明殻は白ハローになるので付けない。毛羽は本体シェーダのみ。
 	root.set_meta("part", "canopy")
 	root.set_meta("part_height", CANOPY_R * 1.35)
 	return root
