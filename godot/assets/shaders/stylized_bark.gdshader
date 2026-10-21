@@ -98,11 +98,11 @@ void fragment() {
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
 	// 趾裾（低Y）は参照パーツより暗く：接地影を足す（p10≈50・mean≈118）
-	base *= mix(0.70, 1.0, smoothstep(0.02, 0.45, v_y01));
+	base *= mix(0.64, 1.0, smoothstep(0.02, 0.42, v_y01));
 	// 中暗茶：幹中〜上で G/B を上げ REF木部 156/145/128 帯へ
-	// ワールドY勾配：趾 mean≈118、幹 mean≈156（R過露光を避ける）
-	base *= mix(1.72, 1.92, smoothstep(0.10, 0.62, v_y01));
-	base *= mix(vec3(1.02, 1.06, 1.08), vec3(0.93, 1.18, 1.62), smoothstep(0.12, 0.65, v_y01));
+	// ワールドY勾配：趾 mean≈118、幹 mean≈156
+	base *= mix(1.70, 1.98, smoothstep(0.10, 0.62, v_y01));
+	base *= mix(vec3(1.02, 1.06, 1.08), vec3(0.94, 1.20, 1.68), smoothstep(0.12, 0.65, v_y01));
 
 	ALBEDO = base;
 }
