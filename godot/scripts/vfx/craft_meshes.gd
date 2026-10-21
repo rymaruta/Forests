@@ -119,11 +119,11 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var w1 := 0.85 * sin(a1 * 1.3 + t0 * 0.9) + 0.35 * sin(a1 * 2.7 + t0 * 2.0)
 			var w2 := 0.85 * sin(a0 * 1.3 + t1 * 0.9) + 0.35 * sin(a0 * 2.7 + t1 * 2.0)
 			var w3 := 0.85 * sin(a1 * 1.3 + t1 * 0.9) + 0.35 * sin(a1 * 2.7 + t1 * 2.0)
-			# 有機寄り：主溝3本＋弱い副溝（機械ゼブラ禁止）
-			var ripple0 := 1.0 + rip_amt0 * (0.70 * sin(a0 * 2.7 + w0) + 0.22 * sin(a0 * 5.2 + t0 * 1.1 + 0.8) + 0.08 * sin(a0 * 1.3 + t0))
-			var ripple1 := 1.0 + rip_amt0 * (0.70 * sin(a1 * 2.7 + w1) + 0.22 * sin(a1 * 5.2 + t0 * 1.1 + 0.8) + 0.08 * sin(a1 * 1.3 + t0))
-			var ripple2 := 1.0 + rip_amt1 * (0.70 * sin(a0 * 2.7 + w2) + 0.22 * sin(a0 * 5.2 + t1 * 1.1 + 0.8) + 0.08 * sin(a0 * 1.3 + t1))
-			var ripple3 := 1.0 + rip_amt1 * (0.70 * sin(a1 * 2.7 + w3) + 0.22 * sin(a1 * 5.2 + t1 * 1.1 + 0.8) + 0.08 * sin(a1 * 1.3 + t1))
+			# 手彫り寄り：低周波の太い浅い溝（鋭い柱状ゼブラ禁止）
+			var ripple0 := 1.0 + rip_amt0 * (0.78 * sin(a0 * 2.2 + w0 * 0.7) + 0.22 * sin(a0 * 4.0 + t0 * 0.9 + 0.6))
+			var ripple1 := 1.0 + rip_amt0 * (0.78 * sin(a1 * 2.2 + w1 * 0.7) + 0.22 * sin(a1 * 4.0 + t0 * 0.9 + 0.6))
+			var ripple2 := 1.0 + rip_amt1 * (0.78 * sin(a0 * 2.2 + w2 * 0.7) + 0.22 * sin(a0 * 4.0 + t1 * 0.9 + 0.6))
+			var ripple3 := 1.0 + rip_amt1 * (0.78 * sin(a1 * 2.2 + w3 * 0.7) + 0.22 * sin(a1 * 4.0 + t1 * 0.9 + 0.6))
 			# 接地フィレット：最下端だけ少し内へ（平パッド切断面を丸く）
 			var fillet0 := _ground_fillet(t0)
 			var fillet1 := _ground_fillet(t1)
@@ -177,30 +177,29 @@ static func _ground_fillet(t: float) -> float:
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 粘土趾パッド：接地に座り、腹でわずかに膨らむ。フック／星型禁止。
-	if toes <= 0 or t > 0.36:
+	## 粘土趾：重なりローブで丸パッド。フック／星型／板状禁止。
+	if toes <= 0 or t > 0.34:
 		return 1.0
-	var u := clampf(t / 0.36, 0.0, 1.0)
-	# 接地〜すぐ上が最大。上へなだらかに幹へ溶ける
-	var env := exp(-pow((u - 0.12) / 0.30, 2.0))
+	var u := clampf(t / 0.34, 0.0, 1.0)
+	var env := exp(-pow((u - 0.10) / 0.28, 2.0))
 	var best := 0.0
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.38
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.52, 0.0, 1.0)
-		lobe = pow(lobe, 1.50)
+		var lobe: float = clampf(1.0 - d / 0.56, 0.0, 1.0)
+		lobe = pow(lobe, 1.65)
 		best = maxf(best, lobe)
-	return 1.0 + 0.58 * best * env
+	return 1.0 + 0.48 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
 	## 上面をわずかに丸めるだけ（強リフト＝フックになるので禁止）
 	var excess := maxf(boost - 1.0, 0.0)
-	if excess <= 0.001 or t > 0.36:
+	if excess <= 0.001 or t > 0.34:
 		return 0.0
-	var u := clampf(t / 0.36, 0.0, 1.0)
-	var mound := exp(-pow((u - 0.18) / 0.22, 2.0))
-	return excess * 0.35 * mound * height * 0.08
+	var u := clampf(t / 0.34, 0.0, 1.0)
+	var mound := exp(-pow((u - 0.16) / 0.20, 2.0))
+	return excess * 0.28 * mound * height * 0.07
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

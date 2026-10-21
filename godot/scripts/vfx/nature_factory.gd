@@ -63,7 +63,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.062 if hero else 0.028,
+		0.048 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -71,17 +71,16 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# 参照：短い太い枝が1〜2本。丸先端・幹に食い込ませて一体感。
+	# 参照：幹頂の短い V フォーク。横に突き出す棒枝は禁止。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.38 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.055 if hero else 0.022, 14, 0.05)
+		var blen := 0.32 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.11 if hero else 0.06, 0.06 if hero else 0.022, 14, 0.02)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.85 if b == 0 else PI - 0.70) + lean * 1.2
-		var by := h * (0.62 if hero else (0.58 if b == 0 else 0.54))
-		# 幹半径より少し内側から生やして接合を隠す
-		br.position = Vector3(cos(ang) * (base_r * 0.35 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.08 if hero else 0.04))
-		br.rotation = Vector3(1.05 if hero else 0.55, ang, 0.0)
+		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
+		var by := h * (0.78 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.22 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.06 if hero else 0.04))
+		br.rotation = Vector3(0.55 if hero else 0.55, ang, 0.35 if (hero and b == 0) else (-0.35 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
