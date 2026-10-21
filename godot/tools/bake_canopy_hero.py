@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：横広雲。下縁を上げて幹・枝を見せる。"""
+"""Bake canopy_hero.obj — 参照：少数の大房が柔らかい谷でつながる雲。"""
 from __future__ import annotations
 
 import math
@@ -10,10 +10,10 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.28
-RES = 152
-PAD = 0.12
-K_BLEND = 0.095
+BASE_R = 1.30
+RES = 148
+PAD = 0.14
+K_BLEND = 0.13
 SEED = 2901
 
 
@@ -23,25 +23,21 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：ずんぐり卵。中小房を密に重ねて雲の粒を読む。
+    # 参照：大〜中房の少数クラスタ。細粒密集禁止。
     specs = [
-        ((0.0, 0.48, 0.0), 0.40),
-        ((0.0, 0.74, 0.0), 0.36),
-        ((0.0, 0.34, 0.0), 0.32),
-        ((0.0, 0.98, 0.0), 0.30),
-        ((0.0, 1.18, 0.0), 0.24),
+        ((0.0, 0.50, 0.0), 0.50),
+        ((0.0, 0.82, 0.0), 0.42),
+        ((0.0, 0.32, 0.0), 0.38),
+        ((0.0, 1.10, 0.0), 0.32),
     ]
-    for i in range(8):
-        a = i / 8 * math.tau + 0.15
-        y = 0.52 + 0.06 * math.sin(i * 1.6)
-        r = 0.30 if i % 2 == 0 else 0.27
-        specs.append(((math.cos(a) * 0.46, y, math.sin(a) * 0.46), r))
-    for i in range(6):
-        a = i / 6 * math.tau + 0.40
-        specs.append(((math.cos(a) * 0.30, 0.86, math.sin(a) * 0.30), 0.26))
     for i in range(5):
-        a = i / 5 * math.tau + 0.55
-        specs.append(((math.cos(a) * 0.20, 1.08, math.sin(a) * 0.20), 0.22))
+        a = i / 5 * math.tau + 0.22
+        y = 0.55 + 0.05 * math.sin(i * 1.4)
+        r = 0.38 if i % 2 == 0 else 0.34
+        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+    for i in range(4):
+        a = i / 4 * math.tau + 0.55
+        specs.append(((math.cos(a) * 0.28, 0.92, math.sin(a) * 0.28), 0.32))
     return specs
 
 
@@ -102,7 +98,6 @@ def main() -> None:
         ),
     )
     verts = verts + mn
-    # 幹が刺さるよう下端をわずかに上げたローカル原点
     verts[:, 1] -= verts[:, 1].min()
     cent = verts.mean(0)
     new_faces = []
