@@ -45,7 +45,7 @@ float _groove_at(vec3 wpos) {
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float g = _groove_at(v_world);
-	VERTEX += NORMAL * (g - 0.40) * 0.038;
+	VERTEX += NORMAL * (g - 0.40) * 0.026;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 }
 
@@ -53,23 +53,24 @@ void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
 	float groove = _groove_at(v_world);
-	float groove_mask = smoothstep(0.12, 0.40, v_world.y);
-	float tex_g = tex.r * 0.45 + 0.28;
-	groove = mix(tex_g * groove_mask, groove, 0.70);
+	float groove_mask = smoothstep(0.18, 0.48, v_world.y);
+	float tex_g = tex.r * 0.40 + 0.32;
+	groove = mix(tex_g * groove_mask, groove, 0.62);
 
 	vec3 n = NORMAL;
 	vec3 t_ang = normalize(cross(NORMAL, vec3(0.0, 1.0, 0.0)));
 	if (length(t_ang) < 1e-3) {
 		t_ang = vec3(1.0, 0.0, 0.0);
 	}
-	n += t_ang * (groove - 0.5) * 1.05 * groove_mask;
+	// 法線曲げを弱めて金属ハイライト感を消す（マット粘土）
+	n += t_ang * (groove - 0.5) * 0.55 * groove_mask;
 	n = normalize(n);
 	float ndl = clamp(dot(n, normalize(vec3(0.25, 0.95, 0.20))), 0.0, 1.0);
-	ndl = mix(0.72, 1.0, ndl);
-	vec3 base = mix(bark_color * 1.06, bark_dark * 0.72, groove * 1.10);
-	base *= 0.86 + ndl * 0.22;
+	ndl = mix(0.90, 1.0, ndl);
+	vec3 base = mix(bark_color * 1.00, bark_dark * 0.78, groove * 0.95);
+	base *= 0.94 + ndl * 0.08;
 	ALBEDO = base;
-	ROUGHNESS = 0.99;
+	ROUGHNESS = 1.0;
 	SPECULAR = 0.0;
 	METALLIC = 0.0;
 }

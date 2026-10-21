@@ -6,10 +6,10 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.78
-const HERO_BASE_R := 0.38
-const HERO_TOP_R := 0.16
-const HERO_CANOPY_R := 1.35
+const HERO_TRUNK_H := 1.95
+const HERO_BASE_R := 0.30
+const HERO_TOP_R := 0.13
+const HERO_CANOPY_R := 1.32
 const HERO_SEED := 2901
 
 
@@ -46,25 +46,24 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r = (0.14 if not backdrop else 0.2)
 		canopy_r = rng.randf_range(1.35, 1.55) * (1.4 if backdrop else 1.0)
 
-	# 参照画素: 幹≈(107,80,57) 冠≈(90,99,62) — Bench露出で明るく出るので少し暗め
-	# Bench露出後の見た目を参照 mean に寄せる（幹明るめ・冠セージ）
-	var bark_tint := Color(0.31, 0.23, 0.15) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
-	var leaf := Color(0.33, 0.37, 0.26) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	# 参照画素 mean: 幹≈(107,80,57) 冠≈(90,99,62)
+	var bark_tint := Color(0.36, 0.26, 0.18) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	var leaf := Color(0.34, 0.38, 0.27) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
 	var leaf_dark := Color(0.22, 0.28, 0.18)
 
-	# ヒーロー：一本メッシュ幹（連続フレア＋趾丘）。CSG球列／MC白欠けは捨てた。
+	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	var trunk_h := h * (1.05 if hero else 0.92)
 	var bark_mat := VisualKit.bark_shader_material(bark_tint)
-	var toe_n := 5 if hero else (0 if backdrop else 4)
+	var toe_n := 4 if hero else (0 if backdrop else 4)
 	var trunk := MeshInstance3D.new()
 	trunk.name = "HeroTrunk" if hero else "Trunk"
 	trunk.mesh = CraftMeshes.trunk(
 		trunk_h,
 		base_r,
 		top_r,
-		72 if hero else 16,
+		96 if hero else 16,
 		lean,
-		0.12 if hero else 0.028,
+		0.062 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -72,17 +71,17 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# 参照：短い枝が1〜2本。欠けポリ禁止。正面で読める角度。
+	# 参照：短い太い枝が1〜2本。丸先端・幹に食い込ませて一体感。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.48 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.05 if hero else 0.022, 12, 0.04)
+		var blen := 0.38 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.055 if hero else 0.022, 14, 0.05)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
-		var by := h * (0.60 if hero else (0.58 if b == 0 else 0.54))
-		# 幹表面から外へ少し出して食い込み欠けを防ぐ
-		br.position = Vector3(cos(ang) * (base_r * 0.55 if hero else 0.2) + lean * 0.1, by, sin(ang) * 0.04)
-		br.rotation = Vector3(0.75 if hero else 0.55, ang, 0.0)
+		var ang := (0.85 if b == 0 else PI - 0.70) + lean * 1.2
+		var by := h * (0.62 if hero else (0.58 if b == 0 else 0.54))
+		# 幹半径より少し内側から生やして接合を隠す
+		br.position = Vector3(cos(ang) * (base_r * 0.35 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.08 if hero else 0.04))
+		br.rotation = Vector3(1.05 if hero else 0.55, ang, 0.0)
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -97,9 +96,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	canopy.position = Vector3(lean * 0.08, h * 0.90, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
-	# 樹皮溝が正面光で読めるようわずかにヨー
+	# 趾パッドと樹皮溝が正面で読めるヨー
 	if hero:
-		root.rotation.y = 0.55
+		root.rotation.y = 0.72
 
 	root.set_meta("tree_height", h)
 	root.set_meta("hero", hero)

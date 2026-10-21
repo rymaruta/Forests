@@ -38,9 +38,10 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	// 短く密なパイル。長いジャギー禁止
-	float fuzz = _hash31(VERTEX * 48.0 + 2.7) * 0.016
-		+ _hash31(VERTEX * 96.0) * 0.010
-		+ _hash31(VERTEX * 180.0 + 1.1) * 0.005;
+	// 短パイル密度を上げてフェルト毛羽を読む
+	float fuzz = _hash31(VERTEX * 52.0 + 2.7) * 0.020
+		+ _hash31(VERTEX * 110.0) * 0.014
+		+ _hash31(VERTEX * 210.0 + 1.1) * 0.007;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -65,9 +66,10 @@ void fragment() {
 	float fiber2 = _vnoise(v_world * 56.0 + 7.4);
 	float flock = pile * 0.32 + fiber * 0.44 + fiber2 * 0.24;
 
+	// 房の谷は柔らかく（黒穴の球接合に見せない）
 	float crevice = clamp(1.0 - NORMAL.y * 0.98, 0.0, 1.0);
-	crevice = pow(crevice, 1.85);
-	float lobe_ao = mix(1.0, 0.78, crevice);
+	crevice = pow(crevice, 1.7);
+	float lobe_ao = mix(1.0, 0.80, crevice);
 
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
@@ -89,7 +91,7 @@ void fragment() {
 	base = mix(base, leaf_color * (0.92 + tex.g * 0.12), flock_mix * 0.48);
 	base *= mix(0.99, 1.018, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim * 1.45;
+	base += leaf_color * rim * 1.65;
 	base *= mix(0.992, 1.012, fiber2);
 
 	float under = clamp(0.20 - v_obj.y * 0.14, 0.0, 0.14);

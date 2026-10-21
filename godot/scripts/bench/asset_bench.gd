@@ -117,10 +117,10 @@ func _spawn_subject() -> void:
 			rng.seed = 2901  # ヒーロー固定シード
 			var tree := NatureFactory.deciduous_tree_hero(rng)
 			hold.add_child(tree)
-			# 参照シート相当：根〜冠が切れない余白つき正面（近く撮って質感を読む）
-			cam.position = Vector3(0.12, 2.35, 7.2)
-			cam.look_at(Vector3(0.0, 1.65, 0.0), Vector3.UP)
-			cam.fov = 30.0
+			# 参照シート相当：やや俯瞰で根〜冠を同じ比率で読む
+			cam.position = Vector3(0.08, 2.70, 7.8)
+			cam.look_at(Vector3(0.0, 1.70, 0.0), Vector3.UP)
+			cam.fov = 28.0
 		"cottage":
 			var home := NatureFactory.cottage()
 			hold.add_child(home)

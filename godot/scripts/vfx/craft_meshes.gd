@@ -83,16 +83,24 @@ static func clay_root_toe(length: float, base_r: float, tip_r: float, rings: int
 static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 12, lean: float = 0.0, bark_ripple: float = 0.04, cap_top: bool = true, root_toes: int = 0) -> ArrayMesh:
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	# 根付近を密にして厚い粘土裾を作る（ヒーローは溝・趾の解像度を上げる）
-	var rings := 40 if root_toes > 0 else 14
+	# 根付近を密にして粘土趾の曲率を稼ぐ
+	var rings := 56 if root_toes > 0 else 14
 	for i in rings:
-		var t0 := float(i) / float(rings)
-		var t1 := float(i + 1) / float(rings)
+		# 下半分にリングを寄せる（趾解像度）
+		var t0: float
+		var t1: float
+		if root_toes > 0:
+			var u0 := float(i) / float(rings)
+			var u1 := float(i + 1) / float(rings)
+			t0 = u0 * u0 * 0.55 + u0 * 0.45
+			t1 = u1 * u1 * 0.55 + u1 * 0.45
+		else:
+			t0 = float(i) / float(rings)
+			t1 = float(i + 1) / float(rings)
 		var y0 := t0 * height
 		var y1 := t1 * height
 		var r0 := lerpf(bottom_r, top_r, t0 * t0 * 0.35 + t0 * 0.65)
 		var r1 := lerpf(bottom_r, top_r, t1 * t1 * 0.35 + t1 * 0.65)
-		# root flare（参照：丸く厚い裾。スカート薄縁禁止）
 		r0 *= _root_flare_mul(t0)
 		r1 *= _root_flare_mul(t1)
 		var lean0 := lean * t0 * t0
@@ -104,28 +112,32 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 参照級：太い縦彫刻（約6本）。裾・趾は弱め。細密ゼブラ禁止。
-			var rip_amt0 := bark_ripple * lerpf(0.12, 1.0, clampf((t0 - 0.16) / 0.28, 0.0, 1.0))
-			var rip_amt1 := bark_ripple * lerpf(0.12, 1.0, clampf((t1 - 0.16) / 0.28, 0.0, 1.0))
+			# 太い縦彫刻（約6本）。裾は弱め。
+			var rip_amt0 := bark_ripple * lerpf(0.10, 1.0, clampf((t0 - 0.14) / 0.30, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.10, 1.0, clampf((t1 - 0.14) / 0.30, 0.0, 1.0))
 			var w0 := 0.85 * sin(a0 * 1.3 + t0 * 0.9) + 0.35 * sin(a0 * 2.7 + t0 * 2.0)
 			var w1 := 0.85 * sin(a1 * 1.3 + t0 * 0.9) + 0.35 * sin(a1 * 2.7 + t0 * 2.0)
 			var w2 := 0.85 * sin(a0 * 1.3 + t1 * 0.9) + 0.35 * sin(a0 * 2.7 + t1 * 2.0)
 			var w3 := 0.85 * sin(a1 * 1.3 + t1 * 0.9) + 0.35 * sin(a1 * 2.7 + t1 * 2.0)
-			var ripple0 := 1.0 + rip_amt0 * (0.82 * sin(a0 * 3.0 + w0) + 0.18 * sin(a0 * 6.0 + t0 * 1.3 + 0.8))
-			var ripple1 := 1.0 + rip_amt0 * (0.82 * sin(a1 * 3.0 + w1) + 0.18 * sin(a1 * 6.0 + t0 * 1.3 + 0.8))
-			var ripple2 := 1.0 + rip_amt1 * (0.82 * sin(a0 * 3.0 + w2) + 0.18 * sin(a0 * 6.0 + t1 * 1.3 + 0.8))
-			var ripple3 := 1.0 + rip_amt1 * (0.82 * sin(a1 * 3.0 + w3) + 0.18 * sin(a1 * 6.0 + t1 * 1.3 + 0.8))
-			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 + lean0, y0, sin(a0) * r0 * ripple0 * toe0)
-			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 + lean0, y0, sin(a1) * r0 * ripple1 * toe1)
-			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 + lean1, y1, sin(a0) * r1 * ripple2 * toe2)
-			var p11 := Vector3(cos(a1) * r1 * ripple3 * toe3 + lean1, y1, sin(a1) * r1 * ripple3 * toe3)
+			# 有機寄り：主溝3本＋弱い副溝（機械ゼブラ禁止）
+			var ripple0 := 1.0 + rip_amt0 * (0.70 * sin(a0 * 2.7 + w0) + 0.22 * sin(a0 * 5.2 + t0 * 1.1 + 0.8) + 0.08 * sin(a0 * 1.3 + t0))
+			var ripple1 := 1.0 + rip_amt0 * (0.70 * sin(a1 * 2.7 + w1) + 0.22 * sin(a1 * 5.2 + t0 * 1.1 + 0.8) + 0.08 * sin(a1 * 1.3 + t0))
+			var ripple2 := 1.0 + rip_amt1 * (0.70 * sin(a0 * 2.7 + w2) + 0.22 * sin(a0 * 5.2 + t1 * 1.1 + 0.8) + 0.08 * sin(a0 * 1.3 + t1))
+			var ripple3 := 1.0 + rip_amt1 * (0.70 * sin(a1 * 2.7 + w3) + 0.22 * sin(a1 * 5.2 + t1 * 1.1 + 0.8) + 0.08 * sin(a1 * 1.3 + t1))
+			# 接地フィレット：最下端だけ少し内へ（平パッド切断面を丸く）
+			var fillet0 := _ground_fillet(t0)
+			var fillet1 := _ground_fillet(t1)
+			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 * fillet0 + lean0, y0 + _root_toe_lift(toe0, t0, height), sin(a0) * r0 * ripple0 * toe0 * fillet0)
+			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 * fillet0 + lean0, y0 + _root_toe_lift(toe1, t0, height), sin(a1) * r0 * ripple1 * toe1 * fillet0)
+			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 * fillet1 + lean1, y1 + _root_toe_lift(toe2, t1, height), sin(a0) * r1 * ripple2 * toe2 * fillet1)
+			var p11 := Vector3(cos(a1) * r1 * ripple3 * toe3 * fillet1 + lean1, y1 + _root_toe_lift(toe3, t1, height), sin(a1) * r1 * ripple3 * toe3 * fillet1)
 			var u0 := float(j) / float(segments)
 			var u1 := float(j + 1) / float(segments)
 			_tri_uv(st, p00, p10, p01, Vector2(u0, t0), Vector2(u1, t0), Vector2(u0, t1))
 			_tri_uv(st, p10, p11, p01, Vector2(u1, t0), Vector2(u1, t1), Vector2(u0, t1))
-	# 底を閉じて中空見えを防ぐ（toe外形に追従）
+	# 底を閉じて中空見えを防ぐ（フィレット後の外形に追従）
 	var bot_c := Vector3(0, 0.001, 0)
-	var flare0 := _root_flare_mul(0.0)
+	var flare0 := _root_flare_mul(0.0) * _ground_fillet(0.0)
 	for j in segments:
 		var a0 := float(j) / float(segments) * TAU
 		var a1 := float(j + 1) / float(segments) * TAU
@@ -148,29 +160,47 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：太い連続フレア＋趾パッド。
-	if t >= 0.38:
+	## 参照：なだらかな裾。趾に形を任せる（全体スカート禁止）。
+	if t >= 0.46:
 		return 1.0
-	var ft := 1.0 - t / 0.38
+	var ft := 1.0 - t / 0.46
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.48 * ft
+	return 1.0 + 0.20 * ft
+
+
+static func _ground_fillet(t: float) -> float:
+	## 最下端だけ内へ引いて切断面の角を落とす
+	if t >= 0.045:
+		return 1.0
+	var u := 1.0 - t / 0.045
+	return 1.0 - 0.10 * u * u
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## フレア上の丸い趾パッド。星型尖り／ソーセージ禁止。
-	if toes <= 0 or t > 0.24:
+	## 粘土趾パッド：接地に座り、腹でわずかに膨らむ。フック／星型禁止。
+	if toes <= 0 or t > 0.36:
 		return 1.0
-	var fall := 1.0 - t / 0.24
-	fall = fall * fall * (3.0 - 2.0 * fall)
+	var u := clampf(t / 0.36, 0.0, 1.0)
+	# 接地〜すぐ上が最大。上へなだらかに幹へ溶ける
+	var env := exp(-pow((u - 0.12) / 0.30, 2.0))
 	var best := 0.0
 	for i in toes:
-		var center := float(i) / float(toes) * TAU + 0.55
+		var center := float(i) / float(toes) * TAU + 0.38
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		# 広いローブ＋弱い押し出し＝丸いパッド（星型禁止）
-		var lobe: float = clampf(1.0 - d / 0.58, 0.0, 1.0)
-		lobe = pow(lobe, 1.35)
+		var lobe: float = clampf(1.0 - d / 0.52, 0.0, 1.0)
+		lobe = pow(lobe, 1.50)
 		best = maxf(best, lobe)
-	return 1.0 + 0.42 * best * fall
+	return 1.0 + 0.58 * best * env
+
+
+static func _root_toe_lift(boost: float, t: float, height: float) -> float:
+	## 上面をわずかに丸めるだけ（強リフト＝フックになるので禁止）
+	var excess := maxf(boost - 1.0, 0.0)
+	if excess <= 0.001 or t > 0.36:
+		return 0.0
+	var u := clampf(t / 0.36, 0.0, 1.0)
+	var mound := exp(-pow((u - 0.18) / 0.22, 2.0))
+	return excess * 0.35 * mound * height * 0.08
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

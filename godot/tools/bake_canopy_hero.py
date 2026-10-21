@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：大きめ少数の房が柔らかい谷でつながる雲冠。"""
+"""Bake canopy_hero.obj — 参照：中小房が重なる柔らかい雲冠。"""
 from __future__ import annotations
 
 import math
@@ -10,10 +10,10 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.35
-RES = 140
-PAD = 0.16
-K_BLEND = 0.15  # 大房を溶かしつつ谷を残す
+BASE_R = 1.32
+RES = 148
+PAD = 0.14
+K_BLEND = 0.13
 SEED = 2901
 
 
@@ -23,19 +23,27 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：少数の大房だけ。段がある雲。
+    # 参照：小〜中房を多めに重ねて雲。巨大単球禁止。
     specs = [
-        ((0.0, 0.52, 0.0), 0.56),
-        ((0.0, 0.92, 0.0), 0.46),
-        ((0.0, 0.20, 0.0), 0.48),
-        ((0.0, 1.25, 0.0), 0.32),
+        ((0.0, 0.48, 0.0), 0.42),
+        ((0.0, 0.82, 0.0), 0.36),
+        ((0.0, 0.18, 0.0), 0.38),
+        ((0.0, 1.12, 0.0), 0.28),
     ]
+    for i in range(8):
+        a = i / 8 * math.tau + 0.15
+        y = 0.48 + 0.07 * math.sin(i * 1.9)
+        r = 0.34 if i % 2 == 0 else 0.30
+        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+    for i in range(6):
+        a = i / 6 * math.tau + 0.45
+        specs.append(((math.cos(a) * 0.30, 0.92, math.sin(a) * 0.30), 0.28))
+    for i in range(5):
+        a = i / 5 * math.tau + 0.30
+        specs.append(((math.cos(a) * 0.36, 0.24, math.sin(a) * 0.36), 0.26))
     for i in range(4):
-        a = i / 4 * math.tau + 0.25
-        specs.append(((math.cos(a) * 0.42, 0.55, math.sin(a) * 0.42), 0.42))
-    for i in range(3):
-        a = i / 3 * math.tau + 0.6
-        specs.append(((math.cos(a) * 0.26, 1.02, math.sin(a) * 0.26), 0.34))
+        a = i / 4 * math.tau + 0.70
+        specs.append(((math.cos(a) * 0.18, 1.18, math.sin(a) * 0.18), 0.24))
     return specs
 
 
