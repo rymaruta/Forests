@@ -51,7 +51,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照マスク mean: 幹≈(0.49,0.37,0.27) 冠≈(0.46,0.49,0.32)
 	# 参照の暖かい中茶
 	# 参照 bark mean ≈ (0.42, 0.32, 0.23)。縦繊維テクスチャが主で幾何溝は浅い
-	var bark_tint := Color(0.46, 0.33, 0.22) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
+	# 参照幹 mean ≈ (0.42, 0.32, 0.23)
+	var bark_tint := Color(0.44, 0.32, 0.22) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# 参照の暖かいセージ。暗すぎるフォレスト緑を避ける
 	# 参照冠 mean ≈ (0.43, 0.46, 0.30)。微細パイルより房の陰影が主
 	var leaf := Color(0.45, 0.49, 0.33) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())

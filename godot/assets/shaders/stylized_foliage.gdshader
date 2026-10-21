@@ -39,10 +39,9 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	// 短い柔らかい毛羽（ジャギーな殻ディザは使わない）
-	float fuzz = _hash31(VERTEX * 22.0 + 2.7) * 0.022
-		+ _hash31(VERTEX * 44.0) * 0.012
-		+ _hash31(VERTEX * 88.0 + 1.1) * 0.006;
+	// ごく短い柔らかい毛羽（輪郭ジャギーを出さない）
+	float fuzz = _hash31(VERTEX * 18.0 + 2.7) * 0.012
+		+ _hash31(VERTEX * 36.0) * 0.006;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;

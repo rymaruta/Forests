@@ -47,14 +47,14 @@ void fragment() {
 	float groove = soft * y_mask * 0.55;
 
 	float tex_luma = dot(tex, vec3(0.32, 0.50, 0.18));
-	// 刷毛筋はごく弱く。ゼブラ帯・太い波線禁止。
-	float grain = clamp((0.52 - tex_luma) * 1.6, 0.0, 1.0);
-	float g = clamp(grain * 0.28 + groove * 0.12, 0.0, 1.0);
+	// 粘土刷毛筋：弱く縦に。ゼブラ帯禁止。
+	float grain = clamp((0.52 - tex_luma) * 1.9, 0.0, 1.0);
+	float g = clamp(grain * 0.36 + groove * 0.10, 0.0, 1.0);
 
-	vec3 ridge = bark_color * 1.03;
-	vec3 valley = bark_dark * 0.92;
+	vec3 ridge = bark_color * 1.05;
+	vec3 valley = bark_dark * 0.86;
 	vec3 base = mix(ridge, valley, g);
-	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.28);
+	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.34);
 	base *= 0.98 + 0.03 * (1.0 - v_y01);
 	ALBEDO = base;
 }
