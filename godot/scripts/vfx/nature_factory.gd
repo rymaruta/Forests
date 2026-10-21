@@ -200,7 +200,7 @@ static func cottage() -> Node3D:
 
 	var wall := VisualKit.plaster_material()
 	# 小屋梁：暗い暖茶＋シート暖で木目を読ませる
-	var wood := VisualKit.bark_shader_material(Color(0.16, 0.09, 0.05), 0.0, 0.70)
+	var wood := VisualKit.bark_shader_material(Color(0.20, 0.12, 0.07), 0.0, 0.60)
 	var roof := VisualKit.roof_tile_material()
 	var stone := VisualKit.cobble_material(Color(0.34, 0.34, 0.36))
 
