@@ -93,8 +93,8 @@ void fragment() {
 	base *= crease * wrap;
 	base *= 0.94 + 0.08 * (1.0 - v_y01 * 0.45);
 	// 参照木部 mean≈156/145/128
-	base *= 1.44;
-	base *= vec3(0.98, 1.05, 1.12);
+	base *= 1.50;
+	base *= vec3(0.97, 1.06, 1.14);
 
 	ALBEDO = base;
 }
