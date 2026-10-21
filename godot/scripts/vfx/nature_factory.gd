@@ -431,12 +431,20 @@ static func cottage() -> Node3D:
 	var rng := RandomNumberGenerator.new()
 	rng.seed = 88
 	for side in [-1.0, 1.0]:
-		# 花箱は窓の下（窓ガラスと被せない）
+		# 花箱は窓の下（窓ガラスと被せない）＋葉の山で密に
 		_beam(root, wood, Vector3(side * 1.1, 0.92, 1.48), Vector3(0.78, 0.18, 0.34))
-		for j in 7:
+		for k in 5:
+			var bush := MeshInstance3D.new()
+			bush.mesh = CraftMeshes.uv_sphere(0.10 + fmod(float(k) * 0.02, 0.04), 8, 10, 0.06, float(k) * 2.1 + side, 0.75)
+			bush.material_override = VisualKit.character_material(Color(0.28, 0.48, 0.26), Color(0.14, 0.30, 0.14))
+			bush.position = Vector3(side * 1.1 + (float(k) - 2.0) * 0.12, 1.02, 1.55)
+			bush.scale = Vector3(1.2, 0.85, 1.0)
+			bush.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+			root.add_child(bush)
+		for j in 6:
 			var f := flower(rng, ForestsPalette.petals()[j % 6])
-			f.scale = Vector3.ONE * (0.42 + fmod(float(j) * 0.11, 0.14))
-			f.position = Vector3(side * 1.1 + (j - 3.0) * 0.09, 0.98 + fmod(float(j) * 0.07, 0.08), 1.56 + fmod(float(j) * 0.05, 0.06))
+			f.scale = Vector3.ONE * (0.38 + fmod(float(j) * 0.11, 0.12))
+			f.position = Vector3(side * 1.1 + (j - 2.5) * 0.10, 1.05 + fmod(float(j) * 0.07, 0.08), 1.58 + fmod(float(j) * 0.05, 0.06))
 			root.add_child(f)
 
 	return root
