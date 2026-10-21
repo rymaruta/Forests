@@ -100,13 +100,15 @@ void fragment() {
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
 	// 趾だけ接地影（幹は掛けない＝組み立ての二色割れ禁止）
-	float ground = mix(0.58, 1.0, smoothstep(0.02, 0.40, v_y01));
+	float ground = mix(0.70, 1.0, smoothstep(0.02, 0.42, v_y01));
 	base *= mix(1.0, ground, ground_contact);
-	// 幹色：全体を REF木部 156/145/128 帯へ（高さで極端に割らない）
-	base *= 1.88;
-	base *= vec3(0.96, 1.16, 1.52);
+	// 幹：クール木部 156/145/128。趾：やや暖寄りで mean≈118
+	base *= mix(1.90, 1.78, ground_contact);
+	vec3 cool = vec3(0.95, 1.18, 1.58);
+	vec3 warm = vec3(1.08, 1.02, 0.94);
+	base *= mix(cool, warm, ground_contact * 0.72);
 	// ごく弱い高さグラデ（組み立てでも滑らか）
-	base *= mix(0.94, 1.04, smoothstep(0.05, 0.75, v_y01));
+	base *= mix(0.96, 1.03, smoothstep(0.05, 0.75, v_y01));
 
 	ALBEDO = base;
 }
