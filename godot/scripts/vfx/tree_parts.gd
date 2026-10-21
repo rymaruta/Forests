@@ -15,8 +15,8 @@ const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 const BARK := Color(0.44, 0.32, 0.22)
 # 参照冠の落ち着いたモスオリーブ
-const LEAF := Color(0.47, 0.51, 0.33)
-const LEAF_DARK := Color(0.24, 0.28, 0.16)
+const LEAF := Color(0.46, 0.50, 0.32)
+const LEAF_DARK := Color(0.23, 0.27, 0.15)
 
 
 static func canopy_part() -> Node3D:
@@ -39,7 +39,7 @@ static func canopy_part() -> Node3D:
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
-	# 半透明殻は縁ハローになるので付けない。毛羽は本体シェーダのみ。
+	# 半透明殻は白縁ハローになるので付けない。柔縁は本体シェーダのみ。
 	root.set_meta("part", "canopy")
 	root.set_meta("part_height", CANOPY_R * 1.35)
 	return root

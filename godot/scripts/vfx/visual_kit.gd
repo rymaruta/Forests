@@ -39,7 +39,8 @@ static func flock_shell_material(color: Color, density: float = 0.42) -> Materia
 	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
 	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
 	m.set_shader_parameter("density", density)
-	m.set_shader_parameter("shell_tint", 1.04)
+	# 白縁防止：本体よりわずかに暗い葉色のみ
+	m.set_shader_parameter("shell_tint", 0.92)
 	return m
 
 

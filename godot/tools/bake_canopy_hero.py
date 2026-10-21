@@ -13,8 +13,8 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.28
 RES = 176
 PAD = 0.15
-# 中房を残しつつ密に溶かす
-K_BLEND = 0.048
+# 中房を残しつつ密に溶かす（体積はAOで）
+K_BLEND = 0.055
 SEED = 3204
 AO_SAMPLES = 20
 
@@ -116,7 +116,7 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        ao[i] = 1.0 - 0.60 * (dark ** 0.90)
+        ao[i] = 1.0 - 0.64 * (dark ** 0.88)
     return np.clip(ao, 0.40, 1.0)
 
 
