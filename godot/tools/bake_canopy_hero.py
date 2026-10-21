@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 部品「冠」専用。丸い雲房＋頂点AO。"""
+"""Bake canopy_hero.obj — 部品「冠」専用。細かい丸丘の重い雲＋頂点AO。"""
 from __future__ import annotations
 
 import math
@@ -13,9 +13,8 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 168
 PAD = 0.14
-# 丘は読めるが貼り付け球にしない。谷の柔らかさ用に少し広め
-# 重い雲に溶かす。丘は残す
-K_BLEND = 0.095
+# 小房が消えないよう抑えめ。貼り付け球にしない範囲で
+K_BLEND = 0.078
 SEED = 2901
 AO_SAMPLES = 16
 
@@ -26,48 +25,48 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 横に重い丸丘の山。尖った三角冠・縦キノコ禁止。
+    # 参照冠: 大小の丸丘が密に重なる雲。尖頂禁止。
     specs = [
-        ((0.00, 0.36, 0.00), 0.50),
-        ((0.06, 0.52, -0.04), 0.42),
-        ((-0.05, 0.18, 0.04), 0.44),
-        ((0.02, 0.68, 0.01), 0.36),
-        ((0.14, 0.40, 0.10), 0.34),
-        ((-0.16, 0.44, -0.08), 0.33),
-        ((0.10, 0.24, -0.12), 0.32),
-        ((-0.10, 0.28, 0.14), 0.32),
-        ((0.08, 0.58, 0.08), 0.30),
-        ((-0.08, 0.56, -0.09), 0.29),
+        ((0.00, 0.38, 0.00), 0.42),
+        ((0.04, 0.54, -0.03), 0.36),
+        ((-0.04, 0.20, 0.03), 0.38),
+        ((0.01, 0.70, 0.00), 0.30),
     ]
-    for i in range(8):
-        a = i / 8 * math.tau + 0.12
-        y = 0.36 + 0.07 * math.sin(i * 1.5 + 0.2)
-        r = 0.34 if i % 2 == 0 else 0.30
-        rad = 0.54 + 0.05 * math.sin(i * 1.8)
+    # 外周の中房
+    for i in range(9):
+        a = i / 9 * math.tau + 0.10
+        y = 0.36 + 0.08 * math.sin(i * 1.7 + 0.3)
+        r = 0.28 if i % 2 == 0 else 0.24
+        rad = 0.48 + 0.04 * math.sin(i * 1.9)
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
-    for i in range(6):
-        a = i / 6 * math.tau + 0.45
+    # 中段の中房
+    for i in range(7):
+        a = i / 7 * math.tau + 0.40
         specs.append(
             (
                 (
-                    math.cos(a) * 0.34,
-                    0.50 + 0.03 * math.cos(i * 1.1),
-                    math.sin(a) * 0.34,
+                    math.cos(a) * 0.30,
+                    0.52 + 0.04 * math.cos(i * 1.2),
+                    math.sin(a) * 0.30,
                 ),
-                0.28,
+                0.22,
             )
         )
-    # てっぺんは大きな1房（尖らせない）
-    specs.append(((0.02, 0.78, -0.01), 0.30))
-    # 中小房を足して参照の「細かい丘」密度へ
+    # 細かい丘（参照の密度）
+    for i in range(14):
+        a = i / 14 * math.tau + 0.08
+        y = 0.34 + 0.16 * ((i * 37) % 10) / 10.0
+        rad = 0.28 + 0.18 * ((i * 19) % 10) / 10.0
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.16 + 0.03 * (i % 3)))
     for i in range(10):
-        a = i / 10 * math.tau + 0.07
-        y = 0.42 + 0.12 * math.sin(i * 2.3 + 0.5)
-        rad = 0.38 + 0.08 * math.cos(i * 1.4)
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.20))
-    for i in range(5):
-        a = i / 5 * math.tau + 0.18
-        specs.append(((math.cos(a) * 0.22, 0.08, math.sin(a) * 0.22), 0.24))
+        a = i / 10 * math.tau + 0.55
+        y = 0.48 + 0.10 * math.sin(i * 2.1)
+        rad = 0.36 + 0.08 * math.cos(i * 1.3)
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.14))
+    specs.append(((0.02, 0.82, -0.01), 0.26))
+    for i in range(6):
+        a = i / 6 * math.tau + 0.2
+        specs.append(((math.cos(a) * 0.20, 0.08, math.sin(a) * 0.20), 0.20))
     return specs
 
 
@@ -106,7 +105,6 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
         if nn < 1e-8:
             continue
         n = n / nn
-        # local frame
         up = np.array([0.0, 1.0, 0.0]) if abs(n[1]) < 0.9 else np.array([1.0, 0.0, 0.0])
         t = np.cross(up, n)
         t /= max(1e-8, np.linalg.norm(t))
@@ -114,7 +112,6 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
         hit = 0.0
         for d in dirs:
             w = t * d[0] + n * d[1] + b * d[2]
-            # two steps along ray into soft volume
             occ = 0.0
             for s in (0.08, 0.18, 0.32):
                 q = p + w * (s * radius)
@@ -122,7 +119,6 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
                     occ = 1.0
                     break
             hit += occ
-        # soft darken in valleys; keep lit crowns bright
         dark = hit / AO_SAMPLES
         ao[i] = 1.0 - 0.56 * (dark ** 1.10)
     return np.clip(ao, 0.44, 1.0)
@@ -169,7 +165,7 @@ def main() -> None:
         d = np.sqrt((X - cx) ** 2 + (Y - cy) ** 2 + (Z - cz) ** 2) - r
         field = d if field is None else soft_min(field, d, K_BLEND)
 
-    verts, faces, normals, _ = marching_cubes(
+    verts, faces, _, _ = marching_cubes(
         field,
         level=0.0,
         spacing=(
@@ -192,7 +188,6 @@ def main() -> None:
             new_faces.append(list(f))
     faces = np.array(new_faces)
 
-    # recompute face-averaged normals for AO
     vnorm = np.zeros_like(verts)
     for f in faces:
         a, b, c = verts[f[0]], verts[f[1]], verts[f[2]]
@@ -207,9 +202,8 @@ def main() -> None:
     ao = bake_ao(verts, vnorm, centers, radii, rng)
 
     with OUT.open("w") as fo:
-        fo.write("# part canopy lobes=%d k=%.3f round-cloud+ao\n" % (len(centers), K_BLEND))
+        fo.write("# part canopy lobes=%d k=%.3f dense-mounds+ao\n" % (len(centers), K_BLEND))
         for i, v in enumerate(verts):
-            # Godot OBJ vertex color: v x y z r g b
             g = float(ao[i])
             fo.write("v %.6f %.6f %.6f %.4f %.4f %.4f\n" % (v[0], v[1], v[2], g, g, g))
         for f in faces:
@@ -219,6 +213,8 @@ def main() -> None:
         OUT,
         "verts",
         len(verts),
+        "lobes",
+        len(centers),
         "h",
         float(verts[:, 1].max()),
         "ao",
