@@ -27,9 +27,9 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
 	m.set_shader_parameter("wind_strength", 0.008)
 	m.set_shader_parameter("roughness_val", 1.0)
-	m.set_shader_parameter("flock_mix", 0.82)
-	m.set_shader_parameter("nap_scale", 9.5)
-	m.set_shader_parameter("nap_strength", 1.05)
+	m.set_shader_parameter("flock_mix", 0.84)
+	m.set_shader_parameter("nap_scale", 14.0)
+	m.set_shader_parameter("nap_strength", 1.00)
 	return m
 
 

@@ -116,8 +116,8 @@ void fragment() {
 	base *= mix(0.86, 1.14, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.38;
-	base *= vec3(0.98, 1.0, 1.03);
+	base *= 1.40;
+	base *= vec3(0.97, 1.0, 1.04);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	float soft_rim = pow(1.0 - facing, 1.35) * 0.70;
