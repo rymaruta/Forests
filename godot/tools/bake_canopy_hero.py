@@ -10,10 +10,10 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.18
-RES = 148
+BASE_R = 1.28
+RES = 152
 PAD = 0.12
-K_BLEND = 0.10
+K_BLEND = 0.095
 SEED = 2901
 
 
@@ -23,25 +23,25 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：縦長の卵型雲。小房を縦に重ねる。
+    # 参照：ずんぐり卵。中小房を密に重ねて雲の粒を読む。
     specs = [
-        ((0.0, 0.50, 0.0), 0.44),
-        ((0.0, 0.78, 0.0), 0.40),
-        ((0.0, 0.36, 0.0), 0.34),
-        ((0.0, 1.05, 0.0), 0.32),
-        ((0.0, 1.28, 0.0), 0.26),
+        ((0.0, 0.48, 0.0), 0.40),
+        ((0.0, 0.74, 0.0), 0.36),
+        ((0.0, 0.34, 0.0), 0.32),
+        ((0.0, 0.98, 0.0), 0.30),
+        ((0.0, 1.18, 0.0), 0.24),
     ]
+    for i in range(8):
+        a = i / 8 * math.tau + 0.15
+        y = 0.52 + 0.06 * math.sin(i * 1.6)
+        r = 0.30 if i % 2 == 0 else 0.27
+        specs.append(((math.cos(a) * 0.46, y, math.sin(a) * 0.46), r))
     for i in range(6):
-        a = i / 6 * math.tau + 0.20
-        y = 0.55 + 0.05 * math.sin(i * 1.3)
-        r = 0.34 if i % 2 == 0 else 0.30
-        specs.append(((math.cos(a) * 0.42, y, math.sin(a) * 0.42), r))
+        a = i / 6 * math.tau + 0.40
+        specs.append(((math.cos(a) * 0.30, 0.86, math.sin(a) * 0.30), 0.26))
     for i in range(5):
-        a = i / 5 * math.tau + 0.45
-        specs.append(((math.cos(a) * 0.28, 0.92, math.sin(a) * 0.28), 0.28))
-    for i in range(4):
-        a = i / 4 * math.tau + 0.60
-        specs.append(((math.cos(a) * 0.18, 1.18, math.sin(a) * 0.18), 0.24))
+        a = i / 5 * math.tau + 0.55
+        specs.append(((math.cos(a) * 0.20, 1.08, math.sin(a) * 0.20), 0.22))
     return specs
 
 

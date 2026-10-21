@@ -6,10 +6,10 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 2.10
-const HERO_BASE_R := 0.34
-const HERO_TOP_R := 0.145
-const HERO_CANOPY_R := 1.18
+const HERO_TRUNK_H := 1.72
+const HERO_BASE_R := 0.36
+const HERO_TOP_R := 0.15
+const HERO_CANOPY_R := 1.28
 const HERO_SEED := 2901
 
 
@@ -97,7 +97,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	canopy.position = Vector3(lean * 0.08, h * 0.92, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
-		var baked_r := 1.18
+		var baked_r := 1.28
 		var s := canopy_r / baked_r
 		canopy.scale = Vector3(s, s, s)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
