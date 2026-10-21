@@ -14,7 +14,7 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-K_BLEND = 0.070
+K_BLEND = 0.082
 SEED = 2901
 AO_SAMPLES = 16
 
@@ -32,12 +32,12 @@ def lobe_specs():
         ((-0.04, 0.20, 0.03), 0.38),
         ((0.01, 0.70, 0.00), 0.30),
     ]
-    # 外周の中房
+    # 外周の中房（横に広げて参照 aspect≈1.4）
     for i in range(9):
         a = i / 9 * math.tau + 0.10
-        y = 0.36 + 0.08 * math.sin(i * 1.7 + 0.3)
-        r = 0.28 if i % 2 == 0 else 0.24
-        rad = 0.48 + 0.04 * math.sin(i * 1.9)
+        y = 0.34 + 0.07 * math.sin(i * 1.7 + 0.3)
+        r = 0.30 if i % 2 == 0 else 0.26
+        rad = 0.54 + 0.05 * math.sin(i * 1.9)
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
     # 中段の中房
     for i in range(7):

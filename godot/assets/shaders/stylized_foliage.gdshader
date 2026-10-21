@@ -117,8 +117,9 @@ void fragment() {
 	base *= 1.34;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 1.85) * 0.55;
-	base += leaf_color * soft_rim * (0.50 + flock * 0.40);
+	float soft_rim = pow(1.0 - facing, 1.70) * 0.68;
+	base += leaf_color * soft_rim * (0.58 + flock * 0.42);
+	base += vec3(0.04, 0.045, 0.02) * soft_rim;
 
 	float under = clamp(0.16 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
