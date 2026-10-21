@@ -71,7 +71,7 @@ func _build_stage() -> void:
 	$WorldEnvironment.environment = env
 
 	var key: DirectionalLight3D = $KeyLight
-	key.light_color = Color(1.0, 0.985, 0.94)
+	key.light_color = Color(1.0, 0.97, 0.90)
 	# 参照：左上キーで房の丘と谷を読む
 	key.light_energy = 0.68
 	key.light_specular = 0.0
