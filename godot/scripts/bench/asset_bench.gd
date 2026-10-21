@@ -170,10 +170,10 @@ func _spawn_subject() -> void:
 			var mr := p.get_node_or_null("MeshRoot")
 			if mr:
 				mr.rotation.y = 0.0
-			# 参照寄りの寄り：全身が画面を埋める（遠い豆粒禁止）
-			cam.position = Vector3(0.0, 0.95, 3.6)
-			cam.look_at(Vector3(0.0, 0.85, 0.0), Vector3.UP)
-			cam.fov = 26.0
+			# 参照寄りの寄り：麦クラウン〜ブーツまで画面に（遠い豆粒禁止）
+			cam.position = Vector3(0.0, 1.05, 3.45)
+			cam.look_at(Vector3(0.0, 0.95, 0.0), Vector3.UP)
+			cam.fov = 25.0
 		_:
 			push_warning("AssetBench: unknown subject '%s'" % subject)
 
