@@ -54,13 +54,30 @@ func _build_visual() -> void:
 	# 一体フレアワンピ
 	_mi(CraftMeshes.trunk(0.68, 0.32, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.28, 0))
 
-	# 袖＋手元：肩→肘→手を一本の線でつなぐ
+	# 袖＋手元：腕ルートに手をぶら下げて隙間を消す
 	for side in [-1.0, 1.0]:
-		var upper := _mi(CraftMeshes.trunk(0.28, 0.075, 0.06, 12), _cm(cloth, cloth_d), Vector3(0.22 * side, 0.72, 0.04))
-		upper.rotation_degrees.z = 38.0 * side
-		var lower := _mi(CraftMeshes.trunk(0.24, 0.058, 0.048, 10), _cm(cloth, cloth_d), Vector3(0.36 * side, 0.52, 0.08))
-		lower.rotation_degrees.z = 18.0 * side
-		_mi(CraftMeshes.uv_sphere(0.062, 7, 8), _cm(skin, skin.darkened(0.22)), Vector3(0.44 * side, 0.38, 0.12))
+		var arm_root := Node3D.new()
+		arm_root.position = Vector3(0.20 * side, 0.78, 0.04)
+		arm_root.rotation_degrees.z = 42.0 * side
+		mesh_root.add_child(arm_root)
+		var upper := MeshInstance3D.new()
+		upper.mesh = CraftMeshes.trunk(0.30, 0.078, 0.058, 12)
+		upper.material_override = _cm(cloth, cloth_d)
+		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(upper)
+		var lower := MeshInstance3D.new()
+		lower.mesh = CraftMeshes.trunk(0.22, 0.055, 0.045, 10)
+		lower.material_override = _cm(cloth, cloth_d)
+		lower.position = Vector3(0.0, 0.28, 0.02)
+		lower.rotation_degrees.z = -12.0 * side
+		lower.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(lower)
+		var hand := MeshInstance3D.new()
+		hand.mesh = CraftMeshes.uv_sphere(0.06, 7, 8)
+		hand.material_override = _cm(skin, skin.darkened(0.22))
+		hand.position = Vector3(0.0, 0.48, 0.03)
+		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(hand)
 
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.20)), Vector3(0, 1.18, 0))
