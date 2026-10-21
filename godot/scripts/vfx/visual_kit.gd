@@ -127,7 +127,7 @@ static func bark_material(tint: Color = ForestsPalette.BARK_WARM) -> StandardMat
 	return m
 
 
-static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM, ground_contact: float = 0.0) -> Material:
+static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM, ground_contact: float = 0.0, sheet_warm: float = 0.0) -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_bark.gdshader")
 	m.set_shader_parameter("bark_tex", load("res://assets/textures/bark.png"))
@@ -141,6 +141,7 @@ static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM, ground_
 	m.set_shader_parameter("flock_mix", 0.80)
 	m.set_shader_parameter("nap_scale", 3.6)
 	m.set_shader_parameter("ground_contact", ground_contact)
+	m.set_shader_parameter("sheet_warm", sheet_warm)
 	return m
 
 
