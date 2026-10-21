@@ -105,10 +105,10 @@ static func toe_skirt_part() -> Node3D:
 		)
 	toes.material_override = bark_mat
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var baked_h := 0.54
+	var baked_h := 0.41
 	var s := TOE_H / baked_h
 	# 参照：横広＋趾の丸い高さ（平たい餅禁止）
-	toes.scale = Vector3(s * 2.20, s * 1.00, s * 2.20)
+	toes.scale = Vector3(s * 2.40, s * 0.92, s * 2.40)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
