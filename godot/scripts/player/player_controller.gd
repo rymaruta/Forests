@@ -43,10 +43,10 @@ func _build_visual() -> void:
 	# Benchクリーム背景でも溶ける白肌禁止
 	var cloth := Color(0.26, 0.46, 0.50)
 	var cloth_d := Color(0.14, 0.30, 0.34)
-	var skin := Color(0.72, 0.52, 0.40)
+	var skin := Color(0.68, 0.48, 0.36)
 	var hat := Color(0.74, 0.56, 0.30)
 	var scarf_col := Color(0.90, 0.40, 0.28)
-	var hair_c := Color(0.20, 0.11, 0.07)
+	var hair_c := Color(0.18, 0.10, 0.06)
 	var boot_c := Color(0.40, 0.28, 0.18)
 
 	# --- 下半身（レギンス＋ブーツを裾から出す） ---
@@ -59,33 +59,32 @@ func _build_visual() -> void:
 	# 一体フレアワンピ（裾を少し上げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.62, 0.34, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.48), Vector3(0, 0.32, 0))
 
-	# 袖＋手元：少し前に出して正面で読ませる（胴に埋もれ禁止）
+	# 袖＋手元：参照どおり体側に下ろす
 	for side in [-1.0, 1.0]:
 		var arm_root := Node3D.new()
-		arm_root.position = Vector3(0.26 * side, 0.82, 0.08)
-		arm_root.rotation_degrees.x = 162.0
-		arm_root.rotation_degrees.z = 18.0 * side
+		arm_root.position = Vector3(0.24 * side, 0.84, 0.04)
+		arm_root.rotation_degrees.x = 172.0
+		arm_root.rotation_degrees.z = 8.0 * side
 		mesh_root.add_child(arm_root)
 		var upper := MeshInstance3D.new()
-		upper.mesh = CraftMeshes.trunk(0.36, 0.075, 0.055, 14)
+		upper.mesh = CraftMeshes.trunk(0.38, 0.072, 0.052, 14)
 		upper.material_override = _cm(cloth, cloth_d, 0.45)
 		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.062, 8, 9)
+		hand.mesh = CraftMeshes.uv_sphere(0.060, 8, 9)
 		hand.material_override = _cm(skin, skin.darkened(0.22))
-		hand.position = Vector3(0.0, 0.38, 0.0)
+		hand.position = Vector3(0.0, 0.40, 0.0)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
 
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.20)), Vector3(0, 1.18, 0))
 
-	# 髪：後ろ＋横＋つば下に少し見せる（二重顔は出さない）
-	_mi(CraftMeshes.uv_sphere(0.28, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.26, -0.14), Vector3(1.28, 1.08, 0.98))
+	# 髪：後ろ＋横のみ（顔に被る涙滴ヘア禁止）
+	_mi(CraftMeshes.uv_sphere(0.28, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.28, -0.16), Vector3(1.30, 1.10, 0.95))
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.06, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.26 * side, 1.16, -0.04))
-		_mi(CraftMeshes.uv_sphere(0.07, 7, 8, 0.04, 6.2 + side, 1.1), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.20 * side, 1.08, 0.10))
+		_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.27 * side, 1.18, -0.08))
 
 	# 目：丸い黒＋白いハイライト
 	for side in [-1.0, 1.0]:

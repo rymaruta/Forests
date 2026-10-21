@@ -126,9 +126,11 @@ static func assemble_hero() -> Node3D:
 	var toes := toe_skirt_part()
 	toes.name = "ToeSkirt"
 	# 結合時のみ：縦趾を立て、餅裾を抑える（部品Benchスケールは維持）
-	var toe_mesh := toes.get_node_or_null("ToeSkirt") as Node3D
+	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
 		toe_mesh.scale *= Vector3(0.70, 1.32, 0.70)
+		# 組み立てでは幹と同色材（ground_contact=0）。部品Benchの接地影は維持。
+		toe_mesh.material_override = VisualKit.bark_shader_material(BARK, 0.0)
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
