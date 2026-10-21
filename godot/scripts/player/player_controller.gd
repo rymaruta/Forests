@@ -37,91 +37,88 @@ func _build_visual() -> void:
 	for c in mesh_root.get_children():
 		c.queue_free()
 
-	# Benchクリーム背景でも溶ける白肌禁止：参照寄りの暖オークル
-	var cloth := Color(0.28, 0.48, 0.50)
-	var cloth_d := Color(0.16, 0.32, 0.34)
-	var skin := Color(0.88, 0.72, 0.58)
-	var hat := Color(0.78, 0.60, 0.34)
-	var scarf_col := Color(0.88, 0.42, 0.30)
-	var hair_c := Color(0.22, 0.12, 0.08)
-	var boot_c := Color(0.36, 0.24, 0.16)
+	# Benchクリーム背景でも溶ける白肌禁止
+	var cloth := Color(0.26, 0.46, 0.50)
+	var cloth_d := Color(0.14, 0.30, 0.34)
+	var skin := Color(0.78, 0.58, 0.46)
+	var hat := Color(0.74, 0.56, 0.30)
+	var scarf_col := Color(0.90, 0.40, 0.28)
+	var hair_c := Color(0.20, 0.11, 0.07)
+	var boot_c := Color(0.40, 0.28, 0.18)
 
-	# --- 下半身 ---
+	# --- 下半身（ブーツを裾から出す） ---
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.05, side + 2.0, 0.75), _cm(boot_c, boot_c.darkened(0.3)), Vector3(0.11 * side, 0.09, 0.05), Vector3(1.3, 0.85, 1.55))
-		_mi(CraftMeshes.trunk(0.20, 0.07, 0.058, 10), _cm(boot_c.lightened(0.05), boot_c.darkened(0.2)), Vector3(0.10 * side, 0.12, 0))
+		_mi(CraftMeshes.uv_sphere(0.12, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.3)), Vector3(0.12 * side, 0.10, 0.06), Vector3(1.35, 0.9, 1.6))
+		_mi(CraftMeshes.trunk(0.22, 0.075, 0.06, 10), _cm(boot_c.lightened(0.05), boot_c.darkened(0.2)), Vector3(0.11 * side, 0.14, 0.02))
 
-	# 一体フレアワンピ（裾を広げて参照の鐘形）
-	_mi(CraftMeshes.trunk(0.72, 0.30, 0.16, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.22, 0))
+	# 一体フレアワンピ
+	_mi(CraftMeshes.trunk(0.68, 0.32, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.28, 0))
 
-	# 袖：外側にはっきり出す
+	# 袖
 	for side in [-1.0, 1.0]:
-		var arm := _mi(CraftMeshes.trunk(0.44, 0.06, 0.045, 10), _cm(cloth, cloth_d), Vector3(0.30 * side, 0.40, 0.05))
-		arm.rotation_degrees.z = 20.0 * side
-		_mi(CraftMeshes.uv_sphere(0.055, 6, 7), _cm(skin, skin.darkened(0.22)), Vector3(0.36 * side, 0.38, 0.1))
+		var arm := _mi(CraftMeshes.trunk(0.40, 0.062, 0.048, 10), _cm(cloth, cloth_d), Vector3(0.28 * side, 0.52, 0.04))
+		arm.rotation_degrees.z = 22.0 * side
+		_mi(CraftMeshes.uv_sphere(0.055, 6, 7), _cm(skin, skin.darkened(0.22)), Vector3(0.38 * side, 0.42, 0.08))
 
 	# --- 頭 ---
-	_mi(CraftMeshes.uv_sphere(0.32, 18, 22, 0.012, 3.0, 1.05), _cm(skin, skin.darkened(0.18)), Vector3(0, 1.14, 0))
+	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.20)), Vector3(0, 1.18, 0))
 
-	# 髪：後ろ＋横＋前髪で参照の短髪ボリューム
-	_mi(CraftMeshes.uv_sphere(0.28, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.22, -0.20), Vector3(1.25, 1.08, 0.95))
+	# 髪：後ろ＋横のみ（前髪で二重顔にしない）
+	_mi(CraftMeshes.uv_sphere(0.27, 12, 16, 0.07, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.24, -0.18), Vector3(1.22, 1.05, 0.92))
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.06, 5.0 + side, 1.1), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.26 * side, 1.10, -0.16))
-		_mi(CraftMeshes.uv_sphere(0.07, 7, 9, 0.05, 6.0 + side, 1.0), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.20 * side, 1.24, 0.06))
-	var bang := _mi(CraftMeshes.uv_sphere(0.07, 8, 10, 0.05, 4.0, 0.45), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0, 1.32, 0.14))
-	bang.scale = Vector3(1.55, 0.28, 0.55)
+		_mi(CraftMeshes.uv_sphere(0.095, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.24 * side, 1.14, -0.12))
 
-	# 目：大きめ・正面にしっかり
+	# 目
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.055, 8, 10), _cm(Color(0.16, 0.09, 0.06), Color(0.04, 0.02, 0.02)), Vector3(0.085 * side, 1.12, 0.255))
+		_mi(CraftMeshes.uv_sphere(0.058, 8, 10), _cm(Color(0.14, 0.08, 0.05), Color(0.04, 0.02, 0.02)), Vector3(0.09 * side, 1.18, 0.26))
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.014, 4, 5)
+		shine.mesh = CraftMeshes.uv_sphere(0.015, 4, 5)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
 		sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 		sm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 		shine.material_override = sm
-		shine.position = Vector3(0.095 * side, 1.135, 0.29)
+		shine.position = Vector3(0.10 * side, 1.195, 0.295)
 		shine.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh_root.add_child(shine)
 
 	# 頬紅
 	for side in [-1.0, 1.0]:
 		var cheek := MeshInstance3D.new()
-		cheek.mesh = CraftMeshes.uv_sphere(0.02, 6, 7)
+		cheek.mesh = CraftMeshes.uv_sphere(0.022, 6, 7)
 		var chm := StandardMaterial3D.new()
-		chm.albedo_color = Color(0.98, 0.74, 0.72)
+		chm.albedo_color = Color(0.92, 0.62, 0.58)
 		chm.roughness = 1.0
 		chm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 		cheek.material_override = chm
-		cheek.position = Vector3(0.15 * side, 1.04, 0.24)
+		cheek.position = Vector3(0.16 * side, 1.08, 0.24)
 		cheek.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh_root.add_child(cheek)
 
-	var mouth := _mi(CraftMeshes.uv_sphere(0.014, 5, 6, 0.0, 1.0, 0.12), _cm(Color(0.48, 0.28, 0.3), Color(0.3, 0.15, 0.16)), Vector3(0, 0.99, 0.275))
-	mouth.scale = Vector3(1.05, 0.16, 0.22)
+	var mouth := _mi(CraftMeshes.uv_sphere(0.016, 5, 6, 0.0, 1.0, 0.14), _cm(Color(0.50, 0.28, 0.30), Color(0.30, 0.14, 0.16)), Vector3(0, 1.02, 0.275))
+	mouth.scale = Vector3(1.1, 0.18, 0.22)
 
-	# 麦わら帽子：厚いつば＋クラウン（薄い円盤禁止）
-	_mi(CraftMeshes.uv_sphere(0.42, 10, 28, 0.03, 2.0, 0.16), _cm(hat, hat.darkened(0.28)), Vector3(0, 1.36, -0.02))
-	_mi(CraftMeshes.trunk(0.18, 0.17, 0.14, 16), _cm(hat.lightened(0.04), hat.darkened(0.22)), Vector3(0, 1.40, -0.02))
+	# 麦わら：つばを厚く・クラウンをはっきり
+	_mi(CraftMeshes.uv_sphere(0.40, 12, 28, 0.025, 2.0, 0.22), _cm(hat, hat.darkened(0.30)), Vector3(0, 1.40, -0.02))
+	_mi(CraftMeshes.trunk(0.20, 0.18, 0.15, 16), _cm(hat.lightened(0.05), hat.darkened(0.24)), Vector3(0, 1.46, -0.02))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.175
-	band_m.bottom_radius = 0.175
-	band_m.height = 0.045
+	band_m.top_radius = 0.185
+	band_m.bottom_radius = 0.185
+	band_m.height = 0.05
 	band.mesh = band_m
-	band.material_override = _cm(Color(0.82, 0.28, 0.22), Color(0.48, 0.10, 0.08))
-	band.position = Vector3(0, 1.42, -0.02)
+	band.material_override = _cm(Color(0.86, 0.30, 0.22), Color(0.50, 0.12, 0.08))
+	band.position = Vector3(0, 1.48, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
-	# マフラー：頭と胴をつなぐ（浮き頭を防ぐ）・ボリュームを残す
-	_mi(CraftMeshes.uv_sphere(0.17, 12, 16, 0.03, 6.0, 0.80), _cm(scarf_col, scarf_col.darkened(0.24)), Vector3(0, 0.90, 0.02), Vector3(1.55, 0.78, 1.35))
-	_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.03, 7.0, 0.90), _cm(scarf_col, scarf_col.darkened(0.18)), Vector3(0.10, 0.88, 0.12))
-	var tail := _mi(CraftMeshes.trunk(0.34, 0.06, 0.03, 8, 0.04), _cm(scarf_col, scarf_col.darkened(0.2)), Vector3(0.14, 0.66, 0.16))
-	tail.rotation_degrees = Vector3(18, 10, 24)
+	# マフラー：首を巻く環＋短い垂れ（棒パイプ禁止）
+	_mi(CraftMeshes.uv_sphere(0.16, 12, 16, 0.025, 6.0, 0.72), _cm(scarf_col, scarf_col.darkened(0.24)), Vector3(0, 0.92, 0.0), Vector3(1.45, 0.65, 1.25))
+	_mi(CraftMeshes.uv_sphere(0.09, 8, 10, 0.02, 7.0, 0.9), _cm(scarf_col, scarf_col.darkened(0.18)), Vector3(0.12, 0.86, 0.10))
+	var tail := _mi(CraftMeshes.trunk(0.22, 0.055, 0.03, 8, 0.02), _cm(scarf_col, scarf_col.darkened(0.2)), Vector3(0.16, 0.72, 0.12))
+	tail.rotation_degrees = Vector3(8, 5, 12)
 
-	mesh_root.scale = Vector3(1.12, 1.12, 1.12)
+	mesh_root.scale = Vector3(1.10, 1.10, 1.10)
 
 
 func set_move_input(v: Vector2) -> void:
