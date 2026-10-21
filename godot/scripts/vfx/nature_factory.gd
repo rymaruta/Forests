@@ -387,7 +387,7 @@ static func cottage() -> Node3D:
 	_beam(root, wood, Vector3(-0.075, 1.29, 1.39), Vector3(0.03, 0.28, 0.02))
 	_beam(root, wood, Vector3(0.075, 1.29, 1.39), Vector3(0.03, 0.28, 0.02))
 	var knob := MeshInstance3D.new()
-	knob.mesh = CraftMeshes.uv_sphere(0.040, 5, 6)
+	knob.mesh = CraftMeshes.uv_sphere(0.048, 6, 7)
 	knob.material_override = VisualKit.character_material(Color(0.22, 0.18, 0.14), Color(0.1, 0.08, 0.06))
 	knob.position = Vector3(0.26, 0.88, 1.38)
 	root.add_child(knob)
