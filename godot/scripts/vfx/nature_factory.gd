@@ -52,9 +52,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照マスク mean 寄り（暗すぎ黒帯を避ける）
 	var bark_tint := Color(0.46, 0.34, 0.24) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
-	# 参照の暖かいモス。灰みすぎ／ミント化を避ける
-	var leaf := Color(0.56, 0.58, 0.42) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.36, 0.40, 0.26)
+	# 参照マスク mean ≈0.62/0.64/0.56。Lambert＋露出で白飛びするので抑える
+	var leaf := Color(0.48, 0.52, 0.40) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.30, 0.36, 0.24)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	var trunk_h := h * (1.0 if hero else 0.92)
@@ -81,13 +81,14 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 別体趾は床フィン・貼り付け感で捨てた。趾は一本メッシュのみ。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.48 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.055 if hero else 0.022, 18, 0.08)
+		# 冠に深く食い込ませ、幹接合の黒い三角割れを隠す
+		var blen := 0.36 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.06 if hero else 0.022, 18, 0.04)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.40 if b == 0 else PI - 0.40) + lean * 1.2
-		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (base_r * 0.22 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.08 if hero else 0.04))
-		br.rotation = Vector3(0.35 if hero else 0.55, ang, 0.48 if (hero and b == 0) else (-0.48 if hero else 0.0))
+		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
+		var by := h * (0.88 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.12 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.04 if hero else 0.04))
+		br.rotation = Vector3(0.55 if hero else 0.55, ang, 0.55 if (hero and b == 0) else (-0.55 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -99,8 +100,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 枝の V フォークが冠下から読める高さ
-	# Vフォークが冠下から少し読める高さ
-	canopy.position = Vector3(lean * 0.08, h * 0.90, 0.0)
+	# 枝を冠に埋め、幹首の割れを隠す
+	canopy.position = Vector3(lean * 0.08, h * 0.84, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
 		var baked_r := 1.30
