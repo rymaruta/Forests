@@ -159,12 +159,12 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：なだらかな粘土裾。趾は別ブーストで丘にする
-	if t >= 0.42:
+	## 参照：なだらかな粘土裾。途中で水平シームが出ないよう長く溶かす
+	if t >= 0.62:
 		return 1.0
-	var ft := 1.0 - t / 0.42
+	var ft := 1.0 - t / 0.62
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.18 * ft
+	return 1.0 + 0.16 * ft
 
 
 static func _ground_fillet(t: float) -> float:
