@@ -35,7 +35,7 @@ static func canopy_part() -> Node3D:
 	var baked_r := 1.30
 	var s := CANOPY_R / baked_r
 	# 参照冠：やや横に重い丸雲。平らな横キノコ禁止
-	canopy.scale = Vector3(s * 1.08, s, s * 1.08)
+	canopy.scale = Vector3(s * 1.05, s * 1.02, s * 1.05)
 	canopy.position = Vector3(0.0, 0.0, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
