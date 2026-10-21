@@ -143,10 +143,10 @@ func _spawn_subject() -> void:
 		"tree_toes":
 			var toes := NatureFactory.deciduous_part_toes()
 			hold.add_child(toes)
-			# 参照パーツ：趾裾を画面に埋める寄り
-			cam.position = Vector3(0.08, 0.38, 1.75)
-			cam.look_at(Vector3(0.0, 0.12, 0.0), Vector3.UP)
-			cam.fov = 30.0
+			# 参照パーツ：趾裾全体がフレームに入る距離（クリップ禁止）
+			cam.position = Vector3(0.08, 0.48, 2.60)
+			cam.look_at(Vector3(0.0, 0.10, 0.0), Vector3.UP)
+			cam.fov = 32.0
 		"cottage":
 			var home := NatureFactory.cottage()
 			hold.add_child(home)

@@ -107,8 +107,8 @@ static func toe_skirt_part() -> Node3D:
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var baked_h := 0.41
 	var s := TOE_H / baked_h
-	# ベイクが低いと s が増えるので Y を抑えて aspect≈3
-	toes.scale = Vector3(s * 2.10, s * 0.50, s * 2.10)
+	# ベイクが低いと s が増える。横幅はカメラ距離と合わせて aspect≈3
+	toes.scale = Vector3(s * 1.70, s * 0.55, s * 1.70)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
