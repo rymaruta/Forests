@@ -129,43 +129,43 @@ static func assemble_hero() -> Node3D:
 
 	var toes := toe_skirt_part()
 	toes.name = "ToeSkirt"
-	# 結合時のみ：裾幅と縦趾の中庸（部品Benchスケールは維持）
+	# 結合時のみ：裾は短く広く（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.62, 1.18, 0.62)
+		toe_mesh.scale *= Vector3(0.78, 0.88, 0.78)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	trunk.position.y = TOE_H * 0.40
-	# 結合時のみ：やや細長く（部品Benchは維持）
+	trunk.position.y = TOE_H * 0.28
+	# 結合時のみ：幹を少し太く短く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(1.08, 0.90, 1.08)
+		trunk_mesh.scale *= Vector3(1.12, 0.86, 1.12)
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹の中幹横枝：左右各1本の短い球連鎖
+	# 参照全体樹の中幹横枝：冠直下に寄せる
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.30
+		var base_y := trunk.position.y + TRUNK_H * 0.42
 		for k in 2:
 			var stub := MeshInstance3D.new()
-			var rr := 0.042 - float(k) * 0.010
+			var rr := 0.040 - float(k) * 0.009
 			stub.mesh = CraftMeshes.uv_sphere(rr, 8, 10, 0.02, float(k) + side, 1.05)
 			stub.material_override = bark_mat
-			stub.position = Vector3((0.15 + float(k) * 0.08) * side, base_y + float(k) * 0.02, 0.02)
-			stub.scale = Vector3(1.50, 0.75, 1.0)
+			stub.position = Vector3((0.16 + float(k) * 0.07) * side, base_y + float(k) * 0.025, 0.02)
+			stub.scale = Vector3(1.45, 0.70, 1.0)
 			stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(stub)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
-	# 結合時のみ：参照全体樹の丸い中房へ（部品Benchは維持）
+	# 結合時のみ：参照全体樹の縦長中房へ（部品Benchは維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as Node3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.94, 1.12, 0.94)
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.62, 0.0)
+		canopy_mesh.scale *= Vector3(0.90, 1.18, 0.90)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.55, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)
