@@ -112,17 +112,17 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 幾何溝はごく浅く（硬い稜線ハイライト防止）。彫りはシェーダ色差へ。
-			var rip_amt0 := bark_ripple * lerpf(0.08, 1.0, clampf((t0 - 0.16) / 0.28, 0.0, 1.0))
-			var rip_amt1 := bark_ripple * lerpf(0.08, 1.0, clampf((t1 - 0.16) / 0.28, 0.0, 1.0))
-			var w0 := 0.70 * sin(a0 * 1.1 + t0 * 0.7) + 0.30 * sin(a0 * 2.3 + t0 * 1.4)
-			var w1 := 0.70 * sin(a1 * 1.1 + t0 * 0.7) + 0.30 * sin(a1 * 2.3 + t0 * 1.4)
-			var w2 := 0.70 * sin(a0 * 1.1 + t1 * 0.7) + 0.30 * sin(a0 * 2.3 + t1 * 1.4)
-			var w3 := 0.70 * sin(a1 * 1.1 + t1 * 0.7) + 0.30 * sin(a1 * 2.3 + t1 * 1.4)
-			var ripple0 := 1.0 + rip_amt0 * (0.85 * sin(a0 * 2.0 + w0 * 0.55) + 0.15 * sin(a0 * 3.4 + t0 * 0.7))
-			var ripple1 := 1.0 + rip_amt0 * (0.85 * sin(a1 * 2.0 + w1 * 0.55) + 0.15 * sin(a1 * 3.4 + t0 * 0.7))
-			var ripple2 := 1.0 + rip_amt1 * (0.85 * sin(a0 * 2.0 + w2 * 0.55) + 0.15 * sin(a0 * 3.4 + t1 * 0.7))
-			var ripple3 := 1.0 + rip_amt1 * (0.85 * sin(a1 * 2.0 + w3 * 0.55) + 0.15 * sin(a1 * 3.4 + t1 * 0.7))
+			# 幾何溝は参照級の浅い刷毛筋のみ。深いフルートはテクスチャ縦繊維へ。
+			var rip_amt0 := bark_ripple * lerpf(0.20, 1.0, clampf((t0 - 0.10) / 0.22, 0.0, 1.0))
+			var rip_amt1 := bark_ripple * lerpf(0.20, 1.0, clampf((t1 - 0.10) / 0.22, 0.0, 1.0))
+			var w0 := 0.55 * sin(a0 * 1.3 + t0 * 0.6) + 0.45 * sin(a0 * 2.7 + t0 * 1.1)
+			var w1 := 0.55 * sin(a1 * 1.3 + t0 * 0.6) + 0.45 * sin(a1 * 2.7 + t0 * 1.1)
+			var w2 := 0.55 * sin(a0 * 1.3 + t1 * 0.6) + 0.45 * sin(a0 * 2.7 + t1 * 1.1)
+			var w3 := 0.55 * sin(a1 * 1.3 + t1 * 0.6) + 0.45 * sin(a1 * 2.7 + t1 * 1.1)
+			var ripple0 := 1.0 + rip_amt0 * (0.70 * sin(a0 * 5.0 + w0 * 0.40) + 0.30 * sin(a0 * 9.0 + t0 * 0.5))
+			var ripple1 := 1.0 + rip_amt0 * (0.70 * sin(a1 * 5.0 + w1 * 0.40) + 0.30 * sin(a1 * 9.0 + t0 * 0.5))
+			var ripple2 := 1.0 + rip_amt1 * (0.70 * sin(a0 * 5.0 + w2 * 0.40) + 0.30 * sin(a0 * 9.0 + t1 * 0.5))
+			var ripple3 := 1.0 + rip_amt1 * (0.70 * sin(a1 * 5.0 + w3 * 0.40) + 0.30 * sin(a1 * 9.0 + t1 * 0.5))
 			# 接地フィレット：最下端だけ少し内へ（平パッド切断面を丸く）
 			var fillet0 := _ground_fillet(t0)
 			var fillet1 := _ground_fillet(t1)
@@ -164,15 +164,15 @@ static func _root_flare_mul(t: float) -> float:
 		return 1.0
 	var ft := 1.0 - t / 0.48
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.09 * ft
+	return 1.0 + 0.11 * ft
 
 
 static func _ground_fillet(t: float) -> float:
-	## 最下端だけ内へ引いて切断面の角を落とす
-	if t >= 0.045:
+	## 接地を丸く：尖った趾先端を粘土丘に見せる
+	if t >= 0.08:
 		return 1.0
-	var u := 1.0 - t / 0.045
-	return 1.0 - 0.07 * u * u
+	var u := 1.0 - t / 0.08
+	return 1.0 - 0.12 * u * u * u
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
@@ -189,11 +189,12 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 	for i in toes:
 		# わずかに不等間隔・不等幅で機械対称を崩す
 		var center := float(i) / float(toes) * TAU + 0.28 + 0.07 * sin(float(i) * 2.1)
-		var half_w := 0.50 + 0.04 * cos(float(i) * 1.7)
+		# 丸い粘土丘：狭すぎると幾何、広すぎると溶けパッド
+		var half_w := 0.46 + 0.04 * cos(float(i) * 1.7)
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
 		var lobe: float = clampf(1.0 - d / half_w, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
-		var amp := 0.95 + 0.12 * sin(float(i) * 1.3 + 0.4)
+		var amp := 0.98 + 0.12 * sin(float(i) * 1.3 + 0.4)
 		best = maxf(best, lobe * amp)
 	return 1.0 + best * env
 

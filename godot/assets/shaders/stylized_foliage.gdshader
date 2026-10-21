@@ -1,5 +1,6 @@
 shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled;
+// フェルト雲：unshadedでパイル粒を潰さない。立体は包み込み＋谷AOで読む。
+render_mode blend_mix, depth_draw_opaque, cull_back, unshaded;
 
 uniform sampler2D leaf_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform vec3 leaf_color : source_color = vec3(0.36, 0.44, 0.30);
@@ -11,6 +12,7 @@ uniform float flock_mix : hint_range(0.0, 1.0) = 0.55;
 
 varying vec3 v_world;
 varying vec3 v_obj;
+varying vec3 v_n;
 
 float _hash31(vec3 p) {
 	p = fract(p * 0.1031);
@@ -37,13 +39,13 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	// 短く密なパイル。長いジャギー禁止。輪郭に薄い毛羽を足す
-	float fuzz = _hash31(VERTEX * 32.0 + 2.7) * 0.026
-		+ _hash31(VERTEX * 64.0) * 0.014
-		+ _hash31(VERTEX * 120.0 + 1.1) * 0.007;
+	float fuzz = _hash31(VERTEX * 28.0 + 2.7) * 0.034
+		+ _hash31(VERTEX * 56.0) * 0.018
+		+ _hash31(VERTEX * 110.0 + 1.1) * 0.010;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
+	v_n = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 	float h = max(VERTEX.y, 0.0);
 	float t = TIME * wind_speed;
 	float mask = clamp(h * 0.04, 0.0, 0.22);
@@ -52,54 +54,40 @@ void vertex() {
 }
 
 void fragment() {
-	// フェルト：密な短パイル＋弱いリム。砂粒ノイズ禁止。
-	vec3 tex_a = texture(leaf_tex, v_world.xz * 2.4).rgb;
-	vec3 tex_b = texture(leaf_tex, v_world.xy * 2.4).rgb;
-	vec3 tex_c = texture(leaf_tex, v_world.zy * 2.4).rgb;
-	vec3 wn = abs(NORMAL);
+	// 遠目でもパイル塊が残るスケール（細かすぎる砂粒禁止）
+	vec3 tex_a = texture(leaf_tex, v_world.xz * 2.6).rgb;
+	vec3 tex_b = texture(leaf_tex, v_world.xy * 2.6).rgb;
+	vec3 tex_c = texture(leaf_tex, v_world.zy * 2.6).rgb;
+	vec3 wn = abs(v_n);
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 
-	// 低周波パイル優先。高周波砂粒ノイズを抑えてフェルト塊へ
-	float pile = _vnoise(v_world * 9.0 + 0.4);
-	float fiber = _vnoise(v_world * 22.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 40.0 + 7.4);
-	float flock = pile * 0.42 + fiber * 0.40 + fiber2 * 0.18;
+	float pile = _vnoise(v_world * 8.0 + 0.4);
+	float fiber = _vnoise(v_world * 20.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 38.0 + 7.4);
+	float flock = pile * 0.40 + fiber * 0.42 + fiber2 * 0.18;
 
-	// 房の谷：柔らかい雲影（黒穴の球接合に見せない）
-	float crevice = clamp(1.0 - NORMAL.y * 0.98, 0.0, 1.0);
-	crevice = pow(crevice, 1.85);
-	float lobe_ao = mix(1.0, 0.58, crevice);
+	// 房の谷：柔らかい雲影（黒穴禁止）
+	float crevice = clamp(1.0 - v_n.y * 0.95, 0.0, 1.0);
+	crevice = pow(crevice, 1.65);
+	float lobe_ao = mix(1.0, 0.64, crevice);
 
-	vec3 n = NORMAL;
-	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
-	vec3 t2 = normalize(cross(NORMAL, t1));
-	n += (fiber - 0.5) * 0.50 * t1;
-	n += (fiber2 - 0.5) * 0.32 * t2;
-	n += (pile - 0.5) * 0.26 * t1;
-	n = normalize(n);
+	// 固定キー方向の弱い包み込み（円柱ハイライト級にはしない）
+	vec3 L = normalize(vec3(0.22, 0.94, 0.20));
+	float ndl = clamp(dot(v_n, L) * 0.5 + 0.5, 0.0, 1.0);
+	float wrap = mix(0.90, 1.08, ndl);
+	float up = clamp(v_n.y * 0.18 + 0.86, 0.82, 1.06);
 
-	// Lambert で房の立体を残しつつ、マット＋フェルト変調
-	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
-	ndl = clamp(ndl * 0.28 + 0.72, 0.0, 1.0);
-	float up = clamp(n.y * 0.16 + 0.84, 0.80, 1.0);
-	float fiber_catch = mix(0.90, 1.12, flock) * ndl;
+	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
+	vec3 base = mix(leaf_dark, leaf_color, 0.38 + flock * 0.32 + up * 0.12);
+	// フェルト塊をアルベドに強く焼く（平坦塗りつぶし禁止）
+	base = mix(base, mix(leaf_dark * 0.90, leaf_color * 1.12, tex_l), flock_mix * 0.92);
+	base *= mix(0.90, 1.10, flock);
+	base *= lobe_ao * wrap;
+	base *= mix(0.97, 1.03, fiber2);
 
-	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 1.55) * 0.90;
-
-	vec3 base = mix(leaf_dark, leaf_color, 0.40 + fiber_catch * 0.30 + up * 0.14);
-	base = mix(base, leaf_color * (0.90 + tex.g * 0.12), flock_mix * 0.48);
-	base *= mix(0.985, 1.020, flock);
-	base *= lobe_ao;
-	base += leaf_color * rim * 1.25;
-	base *= mix(0.990, 1.012, fiber2);
-
-	float under = clamp(0.20 - v_obj.y * 0.14, 0.0, 0.14);
+	float under = clamp(0.18 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
 
 	ALBEDO = base;
-	ROUGHNESS = max(roughness_val, 0.99);
-	SPECULAR = 0.0;
-	METALLIC = 0.0;
 }

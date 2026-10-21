@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：大きな丸い雲房。尖った三角冠を避ける。"""
+"""Bake canopy_hero.obj — 参照：横に広がる丸い雲房（尖った三角冠を避ける）。"""
 from __future__ import annotations
 
 import math
@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 150
 PAD = 0.13
-K_BLEND = 0.09
+K_BLEND = 0.11
 SEED = 2901
 
 
@@ -23,25 +23,25 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：縦長卵型の雲。横に広がるキノコ冠を避ける
+    # 参照：低い横広がり雲。頂点を尖らせない
     specs = [
-        ((0.0, 0.38, 0.0), 0.36),
-        ((0.0, 0.68, 0.0), 0.34),
-        ((0.0, 0.14, 0.0), 0.30),
-        ((0.0, 0.96, 0.0), 0.30),
-        ((0.0, 1.20, 0.0), 0.22),
+        ((0.0, 0.28, 0.0), 0.42),
+        ((0.0, 0.46, 0.0), 0.38),
+        ((0.0, 0.12, 0.0), 0.36),
+        ((0.0, 0.60, 0.0), 0.32),
     ]
-    for i in range(7):
-        a = i / 7 * math.tau + 0.14
-        y = 0.52 + 0.08 * math.sin(i * 1.6)
-        r = 0.28 if i % 2 == 0 else 0.24
-        specs.append(((math.cos(a) * 0.42, y, math.sin(a) * 0.42), r))
+    # 外周の大きな房（横幅を稼ぐ）
+    for i in range(8):
+        a = i / 8 * math.tau + 0.10
+        y = 0.30 + 0.05 * math.sin(i * 1.7)
+        r = 0.32 if i % 2 == 0 else 0.28
+        specs.append(((math.cos(a) * 0.55, y, math.sin(a) * 0.55), r))
+    # 中段リング
     for i in range(6):
-        a = i / 6 * math.tau + 0.42
-        specs.append(((math.cos(a) * 0.26, 0.86, math.sin(a) * 0.26), 0.22))
-    for i in range(4):
-        a = i / 4 * math.tau + 0.66
-        specs.append(((math.cos(a) * 0.14, 1.12, math.sin(a) * 0.14), 0.18))
+        a = i / 6 * math.tau + 0.38
+        specs.append(((math.cos(a) * 0.32, 0.48, math.sin(a) * 0.32), 0.26))
+    # てっぺんは大きな1房だけ（三角冠禁止）
+    specs.append(((0.0, 0.68, 0.0), 0.24))
     return specs
 
 
@@ -116,12 +116,13 @@ def main() -> None:
     faces = np.array(new_faces)
 
     with OUT.open("w") as fo:
-        fo.write("# soft cloud canopy lobes=%d k=%.2f\n" % (len(centers), K_BLEND))
+        fo.write("# soft cloud canopy lobes=%d k=%.2f mound\n" % (len(centers), K_BLEND))
         for v in verts:
-            fo.write("v %.5f %.5f %.5f\n" % tuple(v))
+            fo.write("v %.6f %.6f %.6f\n" % (v[0], v[1], v[2]))
         for f in faces:
             fo.write("f %d %d %d\n" % (f[0] + 1, f[1] + 1, f[2] + 1))
-    print("wrote", OUT, "verts", len(verts), "faces", len(faces), "lobes", len(centers), "k", K_BLEND)
+    print("wrote", OUT, "verts", len(verts), "faces", len(faces))
+    print("bbox", verts.min(0), verts.max(0), "height", verts[:, 1].max())
 
 
 if __name__ == "__main__":

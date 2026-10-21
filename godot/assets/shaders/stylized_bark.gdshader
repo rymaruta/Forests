@@ -1,5 +1,5 @@
 shader_type spatial;
-// マット粘土樹皮：エンジンLambertの円柱ハイライトを避け、溝はアルベドで読む
+// マット粘土樹皮：縦繊維はテクスチャ、溝はアルベド差のみ。円柱ハイライト禁止。
 render_mode blend_mix, depth_draw_opaque, cull_back, unshaded;
 
 uniform sampler2D bark_tex : source_color, filter_linear_mipmap, repeat_enable;
@@ -9,7 +9,7 @@ uniform float uv_scale_x = 1.05;
 uniform float uv_scale_y = 2.1;
 
 varying vec3 v_world;
-varying vec3 v_normal;
+varying float v_y01;
 
 float _hash21(vec2 p) {
 	p = fract(p * vec2(123.34, 456.21));
@@ -27,56 +27,42 @@ float _n2(vec2 p) {
 	return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
 }
 
-float _groove_at(vec3 wpos) {
-	float ang = atan(wpos.z, wpos.x);
-	float y = wpos.y;
-	// 裾〜幹中腹まで溝を読ませる（趾上面は弱め）
-	float groove_mask = smoothstep(0.05, 0.22, y) * (1.0 - smoothstep(1.55, 1.75, y));
-	float warp = _n2(vec2(ang * 0.50, y * 0.30)) * 1.5
-		+ _n2(vec2(ang * 1.2 + 1.8, y * 0.7)) * 0.65;
-	float a01 = ang / 6.2831853 + warp * 0.14;
-	// 約3本の太い有機溝
-	float gA = 0.5 + 0.5 * sin((a01 * 3.0 + warp * 0.5) * 6.2831853);
-	float gB = 0.5 + 0.5 * sin((a01 * 5.5 + warp * 0.9 + 0.35) * 6.2831853);
-	float gN = _n2(vec2(a01 * 3.2 + warp, y * 0.65));
-	float groove = gA * 0.58 + gB * 0.22 + gN * 0.20;
-	groove = smoothstep(0.22, 0.78, groove) * groove_mask;
-	float grain = _n2(vec2(ang * 2.4, y * 1.6));
-	groove = mix(groove, groove * (0.80 + grain * 0.38), 0.30);
-	return groove;
-}
-
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	float g = _groove_at(v_world);
-	VERTEX += NORMAL * (g - 0.30) * 0.028;
+	// ごく浅い幾何押し（遠目の溝はテクスチャ任せ）
+	float ang = atan(VERTEX.z, VERTEX.x);
+	float y = VERTEX.y;
+	float warp = _n2(vec2(ang * 0.8, y * 0.35)) * 0.9;
+	float g = 0.5 + 0.5 * sin((ang / 6.2831853 * 5.0 + warp) * 6.2831853);
+	g = smoothstep(0.35, 0.75, g) * smoothstep(0.04, 0.18, y);
+	VERTEX += NORMAL * (g - 0.45) * 0.012;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	v_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
+	v_y01 = clamp(VERTEX.y / 1.55, 0.0, 1.0);
 }
 
 void fragment() {
 	vec2 uv = vec2(UV.x * uv_scale_x, UV.y * uv_scale_y);
 	vec3 tex = texture(bark_tex, uv).rgb;
-	float groove = _groove_at(v_world);
-	float tex_g = tex.r * 0.34 + 0.28;
-	float y_mask = smoothstep(0.05, 0.22, v_world.y);
-	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
+	// 縦繊維を強く読む（テクスチャが主、プロシージャルは補助）
+	float ang = atan(v_world.z, v_world.x);
+	float warp = _n2(vec2(ang * 0.55, v_world.y * 0.28)) * 1.2;
+	float a01 = ang / 6.2831853 + warp * 0.10;
+	float gA = 0.5 + 0.5 * sin((a01 * 5.0 + warp * 0.35) * 6.2831853);
+	float gB = 0.5 + 0.5 * sin((a01 * 9.0 + 0.4) * 6.2831853);
+	float soft = smoothstep(0.30, 0.72, gA * 0.7 + gB * 0.3);
+	float y_mask = smoothstep(0.03, 0.16, v_world.y) * (1.0 - smoothstep(1.50, 1.72, v_world.y));
+	float groove = soft * y_mask * 0.55;
 
-	// アルベド溝＋溝法線のごく弱い包み込み（円柱ハイライトは出さない）
-	float g = clamp(groove * 1.10, 0.0, 1.0);
-	vec3 ridge = bark_color * 1.12;
-	vec3 valley = bark_dark * 0.58;
+	float tex_luma = dot(tex, vec3(0.32, 0.50, 0.18));
+	// 刷毛筋はごく弱く。ゼブラ帯禁止。
+	float grain = clamp((0.55 - tex_luma) * 2.2, 0.0, 1.0);
+	float g = clamp(grain * 0.40 + groove * 0.18, 0.0, 1.0);
+
+	vec3 ridge = bark_color * 1.04;
+	vec3 valley = bark_dark * 0.88;
 	vec3 base = mix(ridge, valley, g);
-	base *= 0.99 + tex.g * 0.03;
-
-	vec3 n = normalize(v_normal);
-	vec3 t_ang = normalize(cross(n, vec3(0.0, 1.0, 0.0)));
-	if (length(t_ang) < 1e-3) {
-		t_ang = vec3(1.0, 0.0, 0.0);
-	}
-	n = normalize(n + t_ang * (g - 0.45) * 1.05);
-	vec3 L = normalize(vec3(0.20, 0.94, 0.24));
-	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.95, 1.04, ndl);
-	ALBEDO = base * wrap;
+	// テクスチャを薄く乗せて粘土の微かな縦筋だけ残す
+	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.38);
+	base *= 0.98 + 0.03 * (1.0 - v_y01);
+	ALBEDO = base;
 }
