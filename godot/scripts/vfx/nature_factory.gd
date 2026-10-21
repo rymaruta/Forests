@@ -70,7 +70,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.12 if hero else 0.028,
+		0.16 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -102,7 +102,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 枝の V フォークが冠下から読める高さ
 	# 幹頂を冠に深く食い込ませ、黒い水平割れを消す
-	canopy.position = Vector3(lean * 0.08, h * 0.78, 0.0)
+	canopy.position = Vector3(lean * 0.08, h * 0.82, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
 		var baked_r := 1.30

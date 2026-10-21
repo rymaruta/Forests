@@ -49,7 +49,7 @@ float _groove_at(vec3 wpos) {
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float g = _groove_at(v_world);
-	VERTEX += NORMAL * (g - 0.32) * 0.022;
+	VERTEX += NORMAL * (g - 0.30) * 0.028;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
