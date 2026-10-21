@@ -5,7 +5,7 @@ uniform vec3 base_color : source_color = vec3(0.3, 0.55, 0.5);
 uniform vec3 shadow_color : source_color = vec3(0.16, 0.32, 0.28);
 uniform float roughness_val : hint_range(0.0, 1.0) = 0.95;
 uniform float rim_strength = 0.04;
-uniform float flock_amt : hint_range(0.0, 1.0) = 0.22;
+uniform float flock_amt : hint_range(0.0, 1.0) = 0.38;
 
 varying vec3 v_world;
 

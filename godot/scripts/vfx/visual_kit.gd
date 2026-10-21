@@ -150,6 +150,8 @@ static func character_material(base: Color, shadow: Color = Color.BLACK) -> Mate
 	if shadow == Color.BLACK:
 		shadow = base.darkened(0.4)
 	m.set_shader_parameter("shadow_color", Vector3(shadow.r, shadow.g, shadow.b))
+	m.set_shader_parameter("flock_amt", 0.42)
+	m.set_shader_parameter("rim_strength", 0.06)
 	return m
 
 
