@@ -97,7 +97,7 @@ void fragment() {
 	// ベイクAO＋法線谷。柔らかく深い雲影
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
 	crevice = pow(crevice, 1.40);
-	float lobe_ao = mix(1.0, 0.46, crevice) * mix(0.64, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.40, crevice) * mix(0.56, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -117,9 +117,8 @@ void fragment() {
 	base *= 1.28;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 1.70) * 0.68;
-	base += leaf_color * soft_rim * (0.58 + flock * 0.42);
-	base += vec3(0.04, 0.045, 0.02) * soft_rim;
+	float soft_rim = pow(1.0 - facing, 1.80) * 0.52;
+	base += leaf_color * soft_rim * (0.48 + flock * 0.40);
 
 	float under = clamp(0.16 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
