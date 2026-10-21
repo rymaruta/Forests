@@ -49,25 +49,25 @@ def build_prims():
     prims = [
         (col_a, col_b, 0.238, 0.105),
     ]
-    # クレードル枝：参照寄りの狭い V（aspect≈1.1）
-    for side, yaw in ((1.0, 0.46), (-1.0, math.pi - 0.46)):
-        root = np.array([0.03 + 0.016 * side, 1.02, 0.0])
+    # クレードル枝：参照 aspect≈1.1 の V（横に張り過ぎない）
+    for side, yaw in ((1.0, 0.48), (-1.0, math.pi - 0.48)):
+        root = np.array([0.03 + 0.016 * side, 1.01, 0.0])
         mid = np.array(
             [
-                root[0] + math.cos(yaw) * 0.26,
-                root[1] + 0.26,
-                root[2] + math.sin(yaw) * 0.030,
+                root[0] + math.cos(yaw) * 0.30,
+                root[1] + 0.24,
+                root[2] + math.sin(yaw) * 0.032,
             ]
         )
         tip = np.array(
             [
-                root[0] + math.cos(yaw) * 0.42,
-                root[1] + 0.46,
-                root[2] + math.sin(yaw) * 0.045,
+                root[0] + math.cos(yaw) * 0.48,
+                root[1] + 0.44,
+                root[2] + math.sin(yaw) * 0.048,
             ]
         )
-        prims.append((root, mid, 0.105, 0.078))
-        prims.append((mid, tip, 0.078, 0.045))
+        prims.append((root, mid, 0.108, 0.080))
+        prims.append((mid, tip, 0.080, 0.046))
     # 中幹横枝は参照パーツに無い → assemble_hero 側で付ける
     # 股フィラー（肩ボリューム）
     crotch_a = np.array([0.03, 0.94, 0.0])
