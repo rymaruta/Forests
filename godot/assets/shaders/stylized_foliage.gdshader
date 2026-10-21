@@ -91,7 +91,7 @@ void fragment() {
 	base = mix(base, leaf_color * (0.92 + tex.g * 0.12), flock_mix * 0.48);
 	base *= mix(0.99, 1.018, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim * 1.65;
+	base += leaf_color * rim * 1.15;
 	base *= mix(0.992, 1.012, fiber2);
 
 	float under = clamp(0.20 - v_obj.y * 0.14, 0.0, 0.14);
