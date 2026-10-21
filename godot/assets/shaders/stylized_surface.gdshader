@@ -50,7 +50,8 @@ vec3 _triplanar_col(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 }
 
 void vertex() {
-	float fuzz = _vnoise(VERTEX * 22.0 + 1.3) * 0.004;
+	float fuzz = _vnoise(VERTEX * 22.0 + 1.3) * 0.006
+		+ _vnoise(VERTEX * 48.0 + 4.2) * 0.003;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_n = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
