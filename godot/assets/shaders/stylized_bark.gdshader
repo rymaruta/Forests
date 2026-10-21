@@ -97,8 +97,8 @@ void fragment() {
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
 	// 中暗茶：部品 mean≈140–155 帯（ベージュ飛ばし・黒チョコ禁止）
-	base *= 1.55;
-	base *= vec3(1.02, 0.99, 0.94);
+	base *= 1.68;
+	base *= vec3(1.03, 1.00, 0.95);
 
 	ALBEDO = base;
 }

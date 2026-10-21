@@ -107,10 +107,10 @@ static func toe_skirt_part() -> Node3D:
 		)
 	toes.material_override = bark_mat
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var baked_h := 0.50
+	var baked_h := 0.52
 	var s := TOE_H / baked_h
-	# aspect≈3：水平を主に、わずかに縦を足す
-	toes.scale = Vector3(s * 1.48, s * 1.12, s * 1.48)
+	# 水平で aspect≈3、縦カプセル趾は残す
+	toes.scale = Vector3(s * 1.62, s * 1.10, s * 1.62)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
@@ -125,18 +125,22 @@ static func assemble_hero() -> Node3D:
 
 	var toes := toe_skirt_part()
 	toes.name = "ToeSkirt"
+	# 結合時のみ：水平餅裾を抑え、縦趾を残す（部品Benchスケールは維持）
+	var toe_mesh := toes.get_node_or_null("ToeSkirt") as Node3D
+	if toe_mesh:
+		toe_mesh.scale *= Vector3(0.86, 1.18, 0.86)
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	# 趾上面に食い込ませて水平割れを消す
-	trunk.position.y = TOE_H * 0.55
+	# 趾の立ち上がりを残しつつ水平割れを消す（食い込み過ぎで餅裾にしない）
+	trunk.position.y = TOE_H * 0.48
 	root.add_child(trunk)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
 	# 幹頂〜クレードルの上に冠を被せる
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.86, 0.0)
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.88, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)

@@ -46,27 +46,29 @@ def sphere_sdf(p: np.ndarray, c: np.ndarray, r: float) -> np.ndarray:
 
 
 def build_prims():
-    # 短い幹立ち上がり＋丸い趾丘。aspect≈3 を保ちつつわずかに縦へ。
+    # 短い幹立ち上がり＋縦カプセル趾（餅裾禁止）。XZ 広がりで aspect≈3。
     prims_cap = [
-        (np.array([0.0, 0.02, 0.0]), np.array([0.0, 0.30, 0.0]), 0.32, 0.21),
+        (np.array([0.0, 0.02, 0.0]), np.array([0.0, 0.32, 0.0]), 0.31, 0.20),
     ]
+    # 趾もカプセル：地面→幹へ立ち上がる
+    toe_caps = []
     spheres = [
-        (np.array([0.0, 0.12, 0.0]), 0.27),
+        (np.array([0.0, 0.12, 0.0]), 0.26),
     ]
     n = 5
     for i in range(n):
         a = i / n * math.tau + 0.22
-        rad = 0.33 + 0.04 * math.sin(i * 1.4)
-        c = np.array([math.cos(a) * rad, 0.17 + 0.025 * (i % 2), math.sin(a) * rad * 0.90])
-        spheres.append((c, 0.170 if i % 2 == 0 else 0.150))
-        # 幹に沿う薄い立ち上がり（餅化しない程度）
-        up = c * 0.50 + np.array([0.0, 0.12, 0.0])
-        spheres.append((up, 0.118))
-        tip = c + np.array([math.cos(a) * 0.12, 0.0, math.sin(a) * 0.10])
-        spheres.append((tip, 0.115 if i % 2 == 0 else 0.100))
-        root = c * 0.55 + np.array([0.0, 0.07, 0.0])
-        spheres.append((root, 0.130))
-    return prims_cap, spheres
+        rad = 0.34 + 0.035 * math.sin(i * 1.4)
+        base = np.array([math.cos(a) * rad, 0.06, math.sin(a) * rad * 0.90])
+        top = np.array([math.cos(a) * rad * 0.55, 0.28 + 0.02 * (i % 2), math.sin(a) * rad * 0.50])
+        ra = 0.155 if i % 2 == 0 else 0.140
+        rb = 0.105 if i % 2 == 0 else 0.095
+        toe_caps.append((base, top, ra, rb))
+        tip = base + np.array([math.cos(a) * 0.11, 0.0, math.sin(a) * 0.09])
+        spheres.append((tip, 0.110 if i % 2 == 0 else 0.098))
+        root = base * 0.45 + np.array([0.0, 0.10, 0.0])
+        spheres.append((root, 0.125))
+    return prims_cap + toe_caps, spheres
 
 
 def field_at(p: np.ndarray, caps, spheres) -> np.ndarray:
