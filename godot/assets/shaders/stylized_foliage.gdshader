@@ -103,7 +103,7 @@ void fragment() {
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
 	// 大房の谷は広く深く（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.50, pow(crevice, 1.20)) * mix(0.70, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.46, pow(crevice, 1.12)) * mix(0.64, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -122,8 +122,8 @@ void fragment() {
 	base *= mix(0.89, 1.11, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.94;
-	base *= vec3(0.965, 1.01, 0.995);
+	base *= 1.88;
+	base *= vec3(0.96, 1.015, 0.995);
 
 	// 真のフレネル（0=正面, 1=縁）— 発光リム禁止、細い柔縁のみ
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
