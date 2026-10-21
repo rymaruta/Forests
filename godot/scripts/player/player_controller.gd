@@ -52,11 +52,11 @@ func _build_visual() -> void:
 	# --- 下半身（暗いレギンス＋チャンキーブーツ） ---
 	var leg_c := Color(0.16, 0.10, 0.07)
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.trunk(0.20, 0.048, 0.042, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.11 * side, 0.30, 0.02))
-		# 靴：左右分離のふくらはぎ筒＋丸つま先（床でくっつかない）
-		_mi(CraftMeshes.trunk(0.26, 0.088, 0.078, 12, 0.0, 0.01), _cm(boot_c, boot_c.darkened(0.26), 0.55), Vector3(0.12 * side, 0.10, 0.05))
-		_mi(CraftMeshes.uv_sphere(0.12, 12, 14, 0.02, side + 2.0, 0.30), _cm(boot_c.lightened(0.03), boot_c.darkened(0.22), 0.50), Vector3(0.12 * side, 0.09, 0.15), Vector3(1.35, 1.20, 1.50))
-		_mi(CraftMeshes.uv_sphere(0.10, 10, 12, 0.015, side + 3.0, 0.35), _cm(boot_c, boot_c.darkened(0.20), 0.48), Vector3(0.12 * side, 0.28, 0.03), Vector3(1.20, 1.15, 1.15))
+		_mi(CraftMeshes.trunk(0.18, 0.046, 0.040, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.12 * side, 0.34, 0.02))
+		# 靴：ふくらはぎ筒を太く・短くつまさき球で正面から体積を読ませる
+		_mi(CraftMeshes.trunk(0.30, 0.105, 0.092, 12, 0.0, 0.012), _cm(boot_c, boot_c.darkened(0.26), 0.52), Vector3(0.13 * side, 0.12, 0.06))
+		_mi(CraftMeshes.uv_sphere(0.135, 12, 14, 0.02, side + 2.0, 0.28), _cm(boot_c.lightened(0.03), boot_c.darkened(0.22), 0.48), Vector3(0.13 * side, 0.10, 0.16), Vector3(1.40, 1.30, 1.55))
+		_mi(CraftMeshes.uv_sphere(0.11, 10, 12, 0.015, side + 3.0, 0.32), _cm(boot_c, boot_c.darkened(0.20), 0.45), Vector3(0.13 * side, 0.32, 0.04), Vector3(1.25, 1.20, 1.20))
 
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
@@ -84,10 +84,11 @@ func _build_visual() -> void:
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.18)), Vector3(0, 1.18, 0))
 
-	# 髪：後ろボリューム＋耳後ろのみ（目下に影線が出ないよう前へ出さない）
+	# 髪：後ろボリューム＋耳後ろ＋頬横の短いもみあげ（目下線禁止）
 	_mi(CraftMeshes.uv_sphere(0.30, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.34, -0.26), Vector3(1.32, 1.12, 1.05))
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.095, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.26 * side, 1.22, -0.28), Vector3(1.0, 1.10, 0.90))
+		_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.27 * side, 1.18, -0.24), Vector3(1.05, 1.25, 0.95))
+		_mi(CraftMeshes.uv_sphere(0.07, 7, 8, 0.03, 5.5 + side, 0.90), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.24 * side, 1.08, -0.10), Vector3(0.95, 1.15, 0.85))
 
 	# 目：横に広い丸。頭表面に軽く載せる（沈み込み影線禁止）
 	for side in [-1.0, 1.0]:
