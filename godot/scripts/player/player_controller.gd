@@ -106,18 +106,21 @@ func _build_visual() -> void:
 	var mouth := _mi(CraftMeshes.uv_sphere(0.014, 5, 6, 0.0, 1.0, 0.12), _cm(Color(0.55, 0.32, 0.34), Color(0.32, 0.16, 0.18)), Vector3(0, 1.04, 0.278))
 	mouth.scale = Vector3(1.05, 0.16, 0.20)
 
-	# 麦わら：広いつば＋背の高い麦色クラウン。赤帯はクラウン裾の細いリングのみ。
-	_mi(CraftMeshes.uv_sphere(0.58, 14, 30, 0.05, 2.0, 0.20), _cm(hat, hat.darkened(0.34), 0.98), Vector3(0, 1.33, -0.02), Vector3(1.14, 0.62, 1.14))
-	_mi(CraftMeshes.trunk(0.55, 0.255, 0.20, 20), _cm(Color(0.90, 0.72, 0.42), Color(0.58, 0.40, 0.20), 0.97), Vector3(0, 1.40, -0.02))
-	_mi(CraftMeshes.uv_sphere(0.24, 12, 14, 0.03, 2.8, 0.75), _cm(Color(0.92, 0.74, 0.44), Color(0.60, 0.42, 0.22), 0.95), Vector3(0, 1.82, -0.02))
+	# 麦わら：広いつば＋背の高い麦色クラウン（赤帯は裾の細いリングだけ）
+	var straw := Color(0.88, 0.70, 0.38)
+	var straw_d := Color(0.55, 0.38, 0.18)
+	_mi(CraftMeshes.uv_sphere(0.58, 14, 30, 0.04, 2.0, 0.18), _cm(hat, hat.darkened(0.30), 0.90), Vector3(0, 1.32, -0.02), Vector3(1.14, 0.58, 1.14))
+	_mi(CraftMeshes.trunk(0.62, 0.26, 0.21, 20), _cm(straw, straw_d, 0.85), Vector3(0, 1.38, -0.02))
+	_mi(CraftMeshes.uv_sphere(0.25, 12, 14, 0.025, 2.8, 0.72), _cm(straw.lightened(0.04), straw_d, 0.82), Vector3(0, 1.88, -0.02))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.255
-	band_m.bottom_radius = 0.255
-	band_m.height = 0.022
+	band_m.top_radius = 0.262
+	band_m.bottom_radius = 0.262
+	band_m.height = 0.018
 	band.mesh = band_m
-	band.material_override = _cm(Color(0.88, 0.32, 0.22), Color(0.52, 0.12, 0.08), 0.30)
-	band.position = Vector3(0, 1.36, -0.02)
+	# 帯は flock 弱め＝赤が麦色に濁らない
+	band.material_override = _cm(Color(0.86, 0.28, 0.18), Color(0.48, 0.10, 0.06), 0.15)
+	band.position = Vector3(0, 1.35, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
