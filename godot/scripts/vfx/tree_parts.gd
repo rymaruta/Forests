@@ -146,18 +146,16 @@ static func assemble_hero() -> Node3D:
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹の中幹横枝：冠直下に寄せる
+	# 参照全体樹の中幹横枝：冠直下の短い丸いナブ
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.42
-		for k in 2:
-			var stub := MeshInstance3D.new()
-			var rr := 0.040 - float(k) * 0.009
-			stub.mesh = CraftMeshes.uv_sphere(rr, 8, 10, 0.02, float(k) + side, 1.05)
-			stub.material_override = bark_mat
-			stub.position = Vector3((0.16 + float(k) * 0.07) * side, base_y + float(k) * 0.025, 0.02)
-			stub.scale = Vector3(1.45, 0.70, 1.0)
-			stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-			root.add_child(stub)
+		var base_y := trunk.position.y + TRUNK_H * 0.48
+		var stub := MeshInstance3D.new()
+		stub.mesh = CraftMeshes.uv_sphere(0.055, 10, 12, 0.03, side, 1.1)
+		stub.material_override = bark_mat
+		stub.position = Vector3(0.20 * side, base_y, 0.03)
+		stub.scale = Vector3(1.6, 0.85, 1.15)
+		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(stub)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
