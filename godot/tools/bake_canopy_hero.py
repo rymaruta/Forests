@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 部品「冠」専用。細かい丸丘の重い雲＋頂点AO。"""
+"""Bake canopy_hero.obj — 部品「冠」専用。大きな丸丘の積雲＋頂点AO。"""
 from __future__ import annotations
 
 import math
@@ -10,14 +10,13 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.30
-RES = 168
-PAD = 0.14
-# 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-# 中密度の丸丘。参照の溶けた雲へ中庸
-K_BLEND = 0.075
-SEED = 2901
-AO_SAMPLES = 18
+BASE_R = 1.28
+RES = 172
+PAD = 0.16
+# 房は残しつつ少し溶かす（粘土球に見えない）
+K_BLEND = 0.052
+SEED = 3117
+AO_SAMPLES = 20
 
 
 def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
@@ -26,43 +25,37 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 縦に積んだ中房の密雲。横に広げすぎない。r≥0.18。
+    # 参照冠: 大きめの球房が縦に重なる積雲。細粒ポップコーン禁止。
     specs = [
-        ((0.00, 0.34, 0.00), 0.38),
-        ((0.02, 0.54, -0.02), 0.32),
-        ((-0.02, 0.16, 0.02), 0.34),
-        ((0.00, 0.72, 0.00), 0.26),
-        ((0.08, 0.62, 0.06), 0.22),
-        ((-0.08, 0.64, -0.05), 0.22),
-        ((0.05, 0.44, -0.08), 0.24),
-        ((-0.06, 0.42, 0.08), 0.24),
+        # 芯柱（下→上）
+        ((0.00, 0.28, 0.00), 0.46),
+        ((0.02, 0.52, -0.02), 0.40),
+        ((-0.02, 0.72, 0.02), 0.34),
+        ((0.00, 0.90, 0.00), 0.26),
+        # 外周の大房（中段・参照の横張り）
+        ((0.38, 0.36, 0.10), 0.36),
+        ((-0.36, 0.38, -0.08), 0.35),
+        ((0.12, 0.34, 0.36), 0.34),
+        ((-0.10, 0.32, -0.36), 0.33),
+        ((0.30, 0.48, -0.26), 0.30),
+        ((-0.28, 0.50, 0.24), 0.30),
+        # 上段の丸丘
+        ((0.22, 0.66, 0.14), 0.26),
+        ((-0.20, 0.68, -0.12), 0.26),
+        ((0.06, 0.70, -0.22), 0.24),
+        ((-0.08, 0.64, 0.22), 0.24),
+        # 裾の張り（下縁の丸み）
+        ((0.24, 0.16, 0.18), 0.28),
+        ((-0.22, 0.14, -0.16), 0.28),
+        ((0.06, 0.12, -0.26), 0.26),
+        ((-0.04, 0.13, 0.28), 0.26),
     ]
-    for i in range(7):
-        a = i / 7 * math.tau + 0.12
-        y = 0.30 + 0.08 * math.sin(i * 1.8)
-        r = 0.26 if i % 2 == 0 else 0.22
-        rad = 0.42 + 0.03 * math.sin(i * 1.5)
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
+    # 隙間を埋める中房（少数）
     for i in range(6):
-        a = i / 6 * math.tau + 0.42
-        specs.append(
-            (
-                (
-                    math.cos(a) * 0.24,
-                    0.50 + 0.05 * math.cos(i * 1.2),
-                    math.sin(a) * 0.24,
-                ),
-                0.20,
-            )
-        )
-    for i in range(8):
-        a = i / 8 * math.tau + 0.20
-        y = 0.38 + 0.16 * ((i * 37) % 10) / 10.0
-        rad = 0.22 + 0.12 * ((i * 19) % 10) / 10.0
-        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.18 + 0.02 * (i % 3)))
-    for i in range(4):
-        a = i / 4 * math.tau + 0.25
-        specs.append(((math.cos(a) * 0.16, 0.10, math.sin(a) * 0.16), 0.20))
+        a = i / 6 * math.tau + 0.35
+        y = 0.42 + 0.10 * math.sin(i * 1.7)
+        rad = 0.30 + 0.04 * math.cos(i * 1.3)
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.22))
     return specs
 
 
@@ -116,9 +109,9 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
                     break
             hit += occ
         dark = hit / AO_SAMPLES
-        # 谷を深く（見た目の体積）。p10 は露出で戻す
-        ao[i] = 1.0 - 0.68 * (dark ** 0.90)
-    return np.clip(ao, 0.38, 1.0)
+        # 谷は柔らかい影（真っ黒禁止）
+        ao[i] = 1.0 - 0.58 * (dark ** 0.92)
+    return np.clip(ao, 0.42, 1.0)
 
 
 def main() -> None:
@@ -128,12 +121,12 @@ def main() -> None:
     for c, r in lobe_specs():
         centers.append(
             (
-                c[0] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
-                c[1] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
-                c[2] * BASE_R + rng.uniform(-0.003, 0.003) * BASE_R,
+                c[0] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
+                c[1] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
+                c[2] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
             )
         )
-        radii.append(r * BASE_R * rng.uniform(0.998, 1.002))
+        radii.append(r * BASE_R * rng.uniform(0.999, 1.001))
 
     xs = [p[0] for p in centers]
     ys = [p[1] for p in centers]
@@ -198,13 +191,17 @@ def main() -> None:
 
     ao = bake_ao(verts, vnorm, centers, radii, rng)
 
-    with OUT.open("w") as fo:
-        fo.write("# part canopy lobes=%d k=%.3f dense-mounds+ao\n" % (len(centers), K_BLEND))
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    with OUT.open("w", encoding="utf-8") as f:
+        f.write(f"# part canopy lobes={len(centers)} k={K_BLEND} cumulus-balls+ao\n")
         for i, v in enumerate(verts):
-            g = float(ao[i])
-            fo.write("v %.6f %.6f %.6f %.4f %.4f %.4f\n" % (v[0], v[1], v[2], g, g, g))
-        for f in faces:
-            fo.write("f %d %d %d\n" % (f[0] + 1, f[1] + 1, f[2] + 1))
+            c = ao[i]
+            f.write(f"v {v[0]:.6f} {v[1]:.6f} {v[2]:.6f} {c:.4f} {c:.4f} {c:.4f}\n")
+        for n in vnorm:
+            f.write(f"vn {n[0]:.6f} {n[1]:.6f} {n[2]:.6f}\n")
+        for face in faces:
+            a, b, c = face[0] + 1, face[1] + 1, face[2] + 1
+            f.write(f"f {a}//{a} {b}//{b} {c}//{c}\n")
     print(
         "wrote",
         OUT,

@@ -66,9 +66,9 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 
 	void vertex() {
 	// 短いフェルト毛羽。連続ノイズで縁を崩す（参照の柔毛）
-	float fuzz = _vnoise(VERTEX * 14.0 + 1.3) * 0.011
-		+ _vnoise(VERTEX * 28.0 + 4.7) * 0.006
-		+ _vnoise(VERTEX * 7.0 + 9.1) * 0.004;
+	float fuzz = _vnoise(VERTEX * 22.0 + 1.3) * 0.016
+		+ _vnoise(VERTEX * 44.0 + 4.7) * 0.009
+		+ _vnoise(VERTEX * 11.0 + 9.1) * 0.005;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -89,17 +89,17 @@ void fragment() {
 	vec3 tex = _triplanar_col(leaf_tex, v_world, v_n, nap_scale);
 	vec3 n = _triplanar_nrm(leaf_n_tex, v_world, v_n, nap_scale * 1.10);
 
-	// 超高周波のみ。中周波モトル（斑）禁止
-	float pile = _vnoise(v_world * 22.0 + 0.4);
-	float fiber = _vnoise(v_world * 48.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 96.0 + 7.4);
-	float flock = pile * 0.20 + fiber * 0.40 + fiber2 * 0.40;
+	// 超高周波のみ。中周波モトル（斑）禁止 — 細かいフェルト粒
+	float pile = _vnoise(v_world * 28.0 + 0.4);
+	float fiber = _vnoise(v_world * 64.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 120.0 + 7.4);
+	float flock = pile * 0.18 + fiber * 0.42 + fiber2 * 0.40;
 
-	// ベイクAO＋法線谷。柔らかく深い雲影（p10≈77）
-	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
-	crevice = pow(crevice, 1.35);
-	// 谷は広く柔らかく、深く（p10≈77）
-	float lobe_ao = mix(1.0, 0.40, pow(crevice, 0.90)) * mix(0.62, 1.0, v_ao);
+	// ベイクAO＋法線谷。房間の深い柔らかい影（p10≈77）
+	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
+	crevice = pow(crevice, 1.25);
+	// 谷だけ深く（p10≈77）、高台は明るく保つ
+	float lobe_ao = mix(1.0, 0.44, pow(crevice, 1.05)) * mix(0.66, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -109,23 +109,24 @@ void fragment() {
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
 	base = mix(base, mix(leaf_dark * 0.96, leaf_color * 1.05, tex_l), flock_mix * 0.55);
-	// 細い均一フェルト。振幅は参照 hp_std≈3.7
-	base *= mix(0.88, 1.13, flock);
-	float grit = _vnoise(v_world * 160.0 + 1.7);
-	float grit2 = _vnoise(v_world * 280.0 + 4.2);
-	float grit3 = _vnoise(v_world * 440.0 + 9.1);
-	base *= mix(0.86, 1.14, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
+	// 細い均一フェルト。振幅は参照 hp_std≈3.7（対比控えめ）
+	base *= mix(0.89, 1.11, flock);
+	float grit = _vnoise(v_world * 200.0 + 1.7);
+	float grit2 = _vnoise(v_world * 340.0 + 4.2);
+	float grit3 = _vnoise(v_world * 520.0 + 9.1);
+	base *= mix(0.89, 1.11, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
-	// 露出：mean≈147 / rb/g≈0.22（黄み過多を抑える）
-	base *= 1.48;
-	base *= vec3(0.96, 1.02, 0.98);
+	// 露出：mean≈147 / rb/g≈0.22
+	base *= 1.94;
+	base *= vec3(0.995, 1.0, 1.005);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 1.55) * 0.48;
-	// 白ハロー禁止。葉色縁＋背景へ薄く溶かす（本体を洗わない）
-	base += leaf_color * soft_rim * (0.42 + flock * 0.20);
-	base += vec3(0.02, 0.022, 0.014) * soft_rim;
-	float edge_fuzz = soft_rim * (0.18 + _vnoise(v_world * 55.0) * 0.14);
+	// 縁だけフェルト溶かし。本体は洗わない
+	float soft_rim = pow(1.0 - facing, 1.55) * 0.68;
+	float rim_mask = smoothstep(0.35, 0.95, soft_rim);
+	base += leaf_color * soft_rim * (0.40 + flock * 0.22) * rim_mask;
+	base += vec3(0.022, 0.024, 0.016) * soft_rim * rim_mask;
+	float edge_fuzz = rim_mask * (0.30 + _vnoise(v_world * 80.0) * 0.22);
 	base = mix(base, vec3(0.92, 0.90, 0.86), edge_fuzz);
 
 	// 下側の重い帯を抑え、参照の柔らかい裾に
