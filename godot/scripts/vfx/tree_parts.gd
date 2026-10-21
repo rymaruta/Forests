@@ -109,8 +109,8 @@ static func toe_skirt_part() -> Node3D:
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	var baked_h := 0.52
 	var s := TOE_H / baked_h
-	# 水平で aspect≈3、縦カプセル趾は残す
-	toes.scale = Vector3(s * 2.05, s * 0.96, s * 2.05)
+	# 水平で aspect≈3、縦カプセル趾を読ませる
+	toes.scale = Vector3(s * 1.95, s * 1.08, s * 1.95)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
@@ -124,7 +124,7 @@ static func assemble_hero() -> Node3D:
 	root.name = "HeroTreeAssembled"
 
 	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
-	var bark_sheet := Color(0.38, 0.26, 0.15)
+	var bark_sheet := Color(0.32, 0.22, 0.14)
 	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
 
 	var toes := toe_skirt_part()
