@@ -125,7 +125,7 @@ static func assemble_hero() -> Node3D:
 
 	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
 	# 幹・趾は同一マテリアル（ground_contact分離＝二色割れ禁止）
-	var bark_sheet := Color(0.28, 0.21, 0.13)
+	var bark_sheet := Color(0.29, 0.225, 0.135)
 	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
 
 	var toes := toe_skirt_part()
@@ -165,8 +165,8 @@ static func assemble_hero() -> Node3D:
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
 		canopy_mesh.scale *= Vector3(0.88, 1.22, 0.88)
-		var sheet_leaf := Color(0.42, 0.48, 0.28)
-		var sheet_dark := Color(0.20, 0.24, 0.14)
+		var sheet_leaf := Color(0.38, 0.46, 0.26)
+		var sheet_dark := Color(0.18, 0.22, 0.12)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
 	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.56, 0.0)
 	root.add_child(canopy)
