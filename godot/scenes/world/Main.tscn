@@ -7,14 +7,14 @@
 [ext_resource type="Script" path="res://scripts/player/camera_orbit.gd" id="5"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
-sky_top_color = Color(0.42, 0.68, 0.9, 1)
-sky_horizon_color = Color(0.98, 0.88, 0.7, 1)
-ground_bottom_color = Color(0.3, 0.44, 0.28, 1)
-ground_horizon_color = Color(0.78, 0.84, 0.55, 1)
-sun_angle_max = 16.0
-sky_curve = 0.05
-sky_energy_multiplier = 1.45
-ground_energy_multiplier = 0.92
+sky_top_color = Color(0.56, 0.73, 0.9, 1)
+sky_horizon_color = Color(0.97, 0.92, 0.8, 1)
+ground_bottom_color = Color(0.38, 0.44, 0.3, 1)
+ground_horizon_color = Color(0.78, 0.8, 0.62, 1)
+sun_angle_max = 22.0
+sky_curve = 0.06
+sky_energy_multiplier = 1.15
+ground_energy_multiplier = 0.8
 
 [sub_resource type="Sky" id="Sky_1"]
 sky_material = SubResource("ProceduralSkyMaterial_1")
@@ -23,39 +23,39 @@ sky_material = SubResource("ProceduralSkyMaterial_1")
 background_mode = 2
 sky = SubResource("Sky_1")
 ambient_light_source = 3
-ambient_light_color = Color(0.66, 0.8, 0.6, 1)
+ambient_light_color = Color(0.72, 0.8, 0.68, 1)
 ambient_light_sky_contribution = 0.9
-ambient_light_energy = 1.15
+ambient_light_energy = 0.88
 tonemap_mode = 3
-tonemap_exposure = 1.1
-tonemap_white = 5.0
+tonemap_exposure = 0.98
+tonemap_white = 6.0
 glow_enabled = false
 fog_enabled = true
-fog_light_color = Color(0.9, 0.92, 0.82, 1)
-fog_sun_scatter = 0.7
+fog_light_color = Color(0.9, 0.92, 0.84, 1)
+fog_sun_scatter = 0.6
 fog_density = 0.0012
-fog_aerial_perspective = 0.3
-fog_sky_affect = 0.4
+fog_aerial_perspective = 0.4
+fog_sky_affect = 0.35
 adjustment_enabled = true
-adjustment_brightness = 1.05
-adjustment_contrast = 1.06
-adjustment_saturation = 1.15
+adjustment_brightness = 1.0
+adjustment_contrast = 1.04
+adjustment_saturation = 0.9
 
 [node name="Main" type="Node3D"]
 script = ExtResource("1")
 
 [node name="Sun" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.82, -0.38, 0.42, 0.0, 0.74, 0.67, -0.57, -0.55, 0.61, 10, 22, 12)
-light_color = Color(1, 0.96, 0.88, 1)
-light_energy = 1.2
-light_indirect_energy = 1.9
-light_specular = 0.22
+transform = Transform3D(0.8, -0.4, 0.42, 0.0, 0.72, 0.69, -0.58, -0.55, 0.59, 10, 22, 12)
+light_color = Color(1, 0.94, 0.82, 1)
+light_energy = 1.15
+light_indirect_energy = 1.4
+light_specular = 0.08
 shadow_enabled = true
-shadow_blur = 4.5
-shadow_opacity = 0.22
-shadow_bias = 0.045
+shadow_blur = 3.0
+shadow_opacity = 0.16
+shadow_bias = 0.04
 directional_shadow_mode = 1
-directional_shadow_max_distance = 70.0
+directional_shadow_max_distance = 65.0
 
 [node name="Sky" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_1")

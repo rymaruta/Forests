@@ -12,7 +12,8 @@ static func terrain_material() -> Material:
 	m.shader = load_shader("res://assets/shaders/stylized_terrain.gdshader")
 	m.set_shader_parameter("grass_tex", load("res://assets/textures/grass.png"))
 	m.set_shader_parameter("dirt_tex", load("res://assets/textures/dirt.png"))
-	m.set_shader_parameter("tint", Vector3(ForestsPalette.GRASS_B.r, ForestsPalette.GRASS_B.g, ForestsPalette.GRASS_B.b))
+	# さらに落ち着いた緑（ネオンを殺す）
+	m.set_shader_parameter("tint", Vector3(0.55, 0.62, 0.4))
 	return m
 
 
@@ -20,31 +21,100 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_foliage.gdshader")
 	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
+	m.set_shader_parameter("leaf_n_tex", load("res://assets/textures/leaf_n.png"))
 	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
 	var dcol := dark if (dark.a > 0.01 and dark != Color.BLACK) else color.darkened(0.38)
 	m.set_shader_parameter("leaf_dark", Vector3(dcol.r, dcol.g, dcol.b))
-	m.set_shader_parameter("wind_strength", 0.15)
-	m.set_shader_parameter("roughness_val", 0.62)
+	m.set_shader_parameter("wind_strength", 0.008)
+	m.set_shader_parameter("roughness_val", 1.0)
+	m.set_shader_parameter("flock_mix", 0.99)
+	m.set_shader_parameter("nap_scale", 42.0)
+	m.set_shader_parameter("nap_strength", 1.55)
+	# 縁アルファ柔縁を確実にブレンド
+	m.render_priority = 1
+	return m
+
+
+static func flock_shell_material(color: Color, density: float = 0.42) -> Material:
+	var m := ShaderMaterial.new()
+	m.shader = load_shader("res://assets/shaders/stylized_flock_shell.gdshader")
+	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
+	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
+	m.set_shader_parameter("density", density)
+	# 白縁防止：本体よりわずかに暗い葉色のみ
+	m.set_shader_parameter("shell_tint", 0.92)
 	return m
 
 
 static func water_material() -> Material:
-	# 半透明は環境によって白飛びするので、まずは不透明の澄んだ水色
+	# 半透明は環境によって白飛びするので、不透明の澄んだ青緑
 	var m := StandardMaterial3D.new()
-	m.albedo_color = Color(0.22, 0.58, 0.62, 1.0)
-	m.roughness = 0.25
-	m.metallic = 0.08
+	m.albedo_color = Color(0.2, 0.52, 0.56, 1.0)
+	m.roughness = 0.22
+	m.metallic = 0.1
 	m.emission_enabled = true
-	m.emission = Color(0.1, 0.35, 0.4)
-	m.emission_energy_multiplier = 0.12
+	m.emission = Color(0.08, 0.32, 0.38)
+	m.emission_energy_multiplier = 0.14
 	return m
 
 
 static func grass_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_grass.gdshader")
-	m.set_shader_parameter("tip_color", Vector3(0.58, 0.76, 0.36))
-	m.set_shader_parameter("root_color", Vector3(0.22, 0.42, 0.22))
+	m.set_shader_parameter("tip_color", Vector3(0.5, 0.64, 0.34))
+	m.set_shader_parameter("root_color", Vector3(0.28, 0.4, 0.24))
+	return m
+
+
+static func stone_material(tint: Color = ForestsPalette.STONE) -> Material:
+	return character_material(tint, tint.darkened(0.28).lerp(ForestsPalette.STONE_MOSS, 0.35))
+
+
+static func plaster_material() -> Material:
+	## 参照小屋：暖色パーチメント漆喰。Benchクリーム背景に溶けないよう一段落とす。
+	var m := ShaderMaterial.new()
+	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
+	m.set_shader_parameter("albedo_tex", load("res://assets/textures/plaster.png"))
+	m.set_shader_parameter("base_color", Vector3(0.66, 0.63, 0.54))
+	m.set_shader_parameter("shadow_color", Vector3(0.38, 0.35, 0.28))
+	m.set_shader_parameter("uv_scale", 3.8)
+	m.set_shader_parameter("nap_scale", 120.0)
+	m.set_shader_parameter("flock_mix", 1.0)
+	m.set_shader_parameter("tex_mix", 0.94)
+	m.set_shader_parameter("exposure", 0.78)
+	m.set_shader_parameter("warm_bias", Vector3(0.98, 0.96, 0.93))
+	return m
+
+
+static func roof_tile_material() -> Material:
+	## 参照小屋：濃い赤茶テラコッタ瓦
+	var m := ShaderMaterial.new()
+	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
+	m.set_shader_parameter("albedo_tex", load("res://assets/textures/roof_tile.png"))
+	m.set_shader_parameter("base_color", Vector3(0.30, 0.09, 0.05))
+	m.set_shader_parameter("shadow_color", Vector3(0.10, 0.035, 0.02))
+	m.set_shader_parameter("uv_scale", 2.4)
+	m.set_shader_parameter("nap_scale", 18.0)
+	m.set_shader_parameter("flock_mix", 0.40)
+	m.set_shader_parameter("tex_mix", 0.62)
+	m.set_shader_parameter("exposure", 0.62)
+	m.set_shader_parameter("warm_bias", Vector3(1.15, 0.75, 0.62))
+	return m
+
+
+static func cobble_material(tint: Color = Color(0.50, 0.50, 0.50)) -> Material:
+	## 不透明のニュートラル灰石（茶テクスチャ禁止・クリーム溶け禁止）
+	var m := StandardMaterial3D.new()
+	m.transparency = BaseMaterial3D.TRANSPARENCY_DISABLED
+	m.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
+	m.albedo_color = tint
+	m.albedo_texture = null
+	m.roughness = 1.0
+	m.metallic = 0.0
+	m.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
+	m.cull_mode = BaseMaterial3D.CULL_BACK
+	# 頂点色で薄くならないよう無効化
+	m.vertex_color_use_as_albedo = false
 	return m
 
 
@@ -57,13 +127,21 @@ static func bark_material(tint: Color = ForestsPalette.BARK_WARM) -> StandardMat
 	return m
 
 
-static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM) -> Material:
+static func bark_shader_material(tint: Color = ForestsPalette.BARK_WARM, ground_contact: float = 0.0, sheet_warm: float = 0.0) -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_bark.gdshader")
 	m.set_shader_parameter("bark_tex", load("res://assets/textures/bark.png"))
 	m.set_shader_parameter("bark_color", Vector3(tint.r, tint.g, tint.b))
-	var bd := tint.darkened(0.45)
+	# 溝が読めるよう暗部をしっかり落とす（ただしゼブラ帯にはしない）
+	var bd := tint.darkened(0.44)
 	m.set_shader_parameter("bark_dark", Vector3(bd.r, bd.g, bd.b))
+	# 刷毛筋は細かく、コントラストはシェーダ側で抑える
+	m.set_shader_parameter("uv_scale_x", 1.10)
+	m.set_shader_parameter("uv_scale_y", 1.85)
+	m.set_shader_parameter("flock_mix", 0.80)
+	m.set_shader_parameter("nap_scale", 3.6)
+	m.set_shader_parameter("ground_contact", ground_contact)
+	m.set_shader_parameter("sheet_warm", sheet_warm)
 	return m
 
 
@@ -74,6 +152,8 @@ static func character_material(base: Color, shadow: Color = Color.BLACK) -> Mate
 	if shadow == Color.BLACK:
 		shadow = base.darkened(0.4)
 	m.set_shader_parameter("shadow_color", Vector3(shadow.r, shadow.g, shadow.b))
+	m.set_shader_parameter("flock_amt", 0.42)
+	m.set_shader_parameter("rim_strength", 0.06)
 	return m
 
 

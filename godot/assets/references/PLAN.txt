@@ -1,0 +1,42 @@
+Forests — 直し方（手順を変えないと治らない）
+
+■ 何が壊れているか（症状ではなく原因）
+1. 比較方法が間違っている
+   - 参照＝スタジオ照明・灰背景・1アセット正面
+   - ゲーム＝ワールド全体・HUD・変な角度
+2. 問題を混ぜている（形・質感・見せ方を同時いじり）
+3. 一体物のまま全部直そうとして部品の理想形が決まらない
+
+■ 何をどうするか（これ以外やらない）
+Step 0  比較台（AssetBench）
+Step 1  樹を部品に分解 → 各部品を理想形 → 結合
+  1a  冠（canopy）だけ参照 parts/ref-canopy.png に合わせる
+  1b  幹＋クレードル枝（trunk_fork）だけ parts/ref-trunk.png に合わせる
+  1c  趾＋裾（toe_skirt）だけ parts/ref-toes.png に合わせる
+  1d  合格部品を TreeParts.assemble_hero() で結合 → 全体Bench
+Step 2  小屋正面
+Step 3  旅人正面
+Step 4  ワールドへ戻す
+
+■ 禁止
+- 参照なしの「なんか良くする」
+- 部品を混ぜて同時に直す
+- 部品不合格のまま結合を合格扱いにする
+- HUD付きワールド写真だけで判断
+
+■ 進行メモ
+- Step 0 完了
+- Step 1 製法変更（2026-10-21）:
+  TreeParts: canopy / trunk_fork / toe_skirt → assemble_hero
+  Bench subjects: tree_canopy / tree_trunk / tree_toes / tree
+  参照パーツ: assets/references/parts/ref-{canopy,trunk,toes}.png
+  撮影: screenshot_bench_tree_part.gd と screenshot_bench_tree.gd
+  いま: Step1d + Step2 + Step3 並行（2026-10-21）。
+    冠: fair_cmp ロック（mean≈146/152/113 rb/g≈0.219 aspect1.42）。
+    幹: mean≈157/142/125 aspect1.09（REF156/145/128・1.11）— ほぼロック。
+    趾: mean≈118/90/65 p10≈61 aspect2.86 — ロック帯。ground_contactは部品のみ。
+    assemble: 幹趾同一シート材。木部≈103/93/58。趾0.45×1.06・幹0.88×1.12・座0.59・太スタブ・丸め冠。
+    cottage: 密瓦・直方煙突・2段丸石・3×2扉窓・橙窓・太柱/ポーチ柱・風化段・花箱密・稜梁。
+    traveler: 厚い麦つば・ボタン鼻・長フレア・袖カフ・マフラー尾・腕下ろし。
+  未達: assemble合格→小屋/旅人合格→ワールド。ワールド戻さない
+

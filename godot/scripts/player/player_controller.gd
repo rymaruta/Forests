@@ -1,6 +1,6 @@
 extends CharacterBody3D
 class_name PlayerController
-## Forests 旅人。0から手組み。読みやすさと優しさを優先。
+## 参照: ref-traveler.jpg — ちび・大きな頭・フレア緑ワンピ・麦わら・珊瑚マフラー
 
 const SPEED := 4.2
 const ACCEL := 12.0
@@ -18,215 +18,135 @@ func _ready() -> void:
 	floor_snap_length = 0.25
 
 
-func _cm(base: Color, shadow: Color = Color.BLACK) -> ShaderMaterial:
-	return VisualKit.character_material(base, shadow)
+func _cm(base: Color, shadow: Color = Color.BLACK, flock: float = -1.0) -> ShaderMaterial:
+	var m: ShaderMaterial = VisualKit.character_material(base, shadow)
+	if flock >= 0.0:
+		m.set_shader_parameter("flock_amt", flock)
+	return m
+
+
+func _mi(mesh: Mesh, mat: Material, pos: Vector3, scale := Vector3.ONE) -> MeshInstance3D:
+	var n := MeshInstance3D.new()
+	n.mesh = mesh
+	n.material_override = mat
+	n.position = pos
+	n.scale = scale
+	n.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	mesh_root.add_child(n)
+	return n
 
 
 func _build_visual() -> void:
 	for c in mesh_root.get_children():
 		c.queue_free()
 
-	# 靴
+	# Benchクリーム背景でも溶ける白肌禁止
+	var cloth := Color(0.16, 0.42, 0.46)
+	var cloth_d := Color(0.08, 0.26, 0.30)
+	var skin := Color(0.78, 0.56, 0.42)
+	var hat := Color(0.78, 0.60, 0.32)
+	var scarf_col := Color(0.92, 0.42, 0.30)
+	var hair_c := Color(0.16, 0.09, 0.05)
+	var boot_c := Color(0.32, 0.20, 0.12)
+
+	# --- 下半身（暗いレギンス＋チャンキーブーツ） ---
+	var leg_c := Color(0.16, 0.10, 0.07)
 	for side in [-1.0, 1.0]:
-		var boot := MeshInstance3D.new()
-		boot.mesh = CraftMeshes.uv_sphere(0.1, 7, 9, 0.1, side + 2.0, 0.68)
-		boot.material_override = _cm(ForestsPalette.BOOT, ForestsPalette.BOOT.darkened(0.35))
-		boot.position = Vector3(0.105 * side, 0.07, 0.055)
-		boot.scale = Vector3(1.2, 0.72, 1.45)
-		mesh_root.add_child(boot)
+		_mi(CraftMeshes.trunk(0.18, 0.046, 0.040, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.12 * side, 0.34, 0.02))
+		# 靴：ふくらはぎ筒を太く・短くつまさき球で正面から体積を読ませる
+		_mi(CraftMeshes.trunk(0.30, 0.105, 0.092, 12, 0.0, 0.012), _cm(boot_c, boot_c.darkened(0.26), 0.52), Vector3(0.13 * side, 0.12, 0.06))
+		_mi(CraftMeshes.uv_sphere(0.135, 12, 14, 0.02, side + 2.0, 0.28), _cm(boot_c.lightened(0.03), boot_c.darkened(0.22), 0.48), Vector3(0.13 * side, 0.10, 0.16), Vector3(1.40, 1.30, 1.55))
+		_mi(CraftMeshes.uv_sphere(0.11, 10, 12, 0.015, side + 3.0, 0.32), _cm(boot_c, boot_c.darkened(0.20), 0.45), Vector3(0.13 * side, 0.32, 0.04), Vector3(1.25, 1.20, 1.20))
 
-	# 脚（短め）
+	# 一体フレアワンピ（裾を広げて脚を見せる）
+	_mi(CraftMeshes.trunk(0.70, 0.38, 0.150, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.72), Vector3(0, 0.26, 0))
+
+	# 袖＋手元：参照どおり体側に自然に下ろす。手先は太い丸い拳
 	for side in [-1.0, 1.0]:
-		var leg := MeshInstance3D.new()
-		leg.mesh = CraftMeshes.trunk(0.24, 0.078, 0.068, 9)
-		leg.material_override = _cm(ForestsPalette.CLOTH_DARK, ForestsPalette.CLOTH_DARK.darkened(0.25))
-		leg.position = Vector3(0.1 * side, 0.08, 0)
-		mesh_root.add_child(leg)
-
-	# 胴
-	var torso := MeshInstance3D.new()
-	torso.mesh = CraftMeshes.trunk(0.5, 0.21, 0.18, 14)
-	torso.material_override = _cm(ForestsPalette.CLOTH, ForestsPalette.CLOTH_DARK)
-	torso.position.y = 0.3
-	mesh_root.add_child(torso)
-
-	# 襟
-	var collar := MeshInstance3D.new()
-	var cm := CylinderMesh.new()
-	cm.top_radius = 0.17
-	cm.bottom_radius = 0.2
-	cm.height = 0.08
-	collar.mesh = cm
-	collar.material_override = _cm(ForestsPalette.CLOTH.lightened(0.08), ForestsPalette.CLOTH_DARK)
-	collar.position.y = 0.78
-	mesh_root.add_child(collar)
-
-	# ベルト＋バックル
-	var belt := MeshInstance3D.new()
-	var belt_m := CylinderMesh.new()
-	belt_m.top_radius = 0.2
-	belt_m.bottom_radius = 0.2
-	belt_m.height = 0.045
-	belt.mesh = belt_m
-	belt.material_override = _cm(Color(0.42, 0.26, 0.14), Color(0.25, 0.14, 0.08))
-	belt.position.y = 0.34
-	mesh_root.add_child(belt)
-	var buckle := MeshInstance3D.new()
-	var bkm := BoxMesh.new()
-	bkm.size = Vector3(0.1, 0.08, 0.04)
-	buckle.mesh = bkm
-	buckle.material_override = _cm(Color(0.85, 0.72, 0.35), Color(0.55, 0.42, 0.18))
-	buckle.position = Vector3(0, 0.34, 0.2)
-	mesh_root.add_child(buckle)
-
-	# マント
-	var cloak := MeshInstance3D.new()
-	cloak.mesh = CraftMeshes.cloak_mesh(0.5, 0.62)
-	cloak.material_override = _cm(ForestsPalette.CLOTH_DARK, ForestsPalette.CLOTH_DARK.darkened(0.2))
-	cloak.position = Vector3(0, 0.8, -0.02)
-	mesh_root.add_child(cloak)
-
-	# 腕＋手
-	for side in [-1.0, 1.0]:
-		var arm := MeshInstance3D.new()
-		arm.mesh = CraftMeshes.trunk(0.3, 0.058, 0.046, 9, 0.015 * side)
-		arm.material_override = _cm(ForestsPalette.CLOTH, ForestsPalette.CLOTH_DARK)
-		arm.position = Vector3(0.24 * side, 0.7, 0)
-		arm.rotation_degrees.z = -24.0 * side
-		mesh_root.add_child(arm)
+		var arm_root := Node3D.new()
+		arm_root.position = Vector3(0.34 * side, 0.86, 0.02)
+		arm_root.rotation_degrees.x = 175.0
+		arm_root.rotation_degrees.z = 8.0 * side
+		mesh_root.add_child(arm_root)
+		var upper := MeshInstance3D.new()
+		upper.mesh = CraftMeshes.trunk(0.42, 0.078, 0.062, 14)
+		upper.material_override = _cm(cloth, cloth_d, 0.58)
+		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.058, 6, 7)
-		hand.material_override = _cm(ForestsPalette.SKIN, ForestsPalette.SKIN.darkened(0.25))
-		hand.position = Vector3(0.36 * side, 0.42, 0.02)
-		mesh_root.add_child(hand)
+		hand.mesh = CraftMeshes.uv_sphere(0.065, 10, 12)
+		hand.material_override = _cm(skin, skin.darkened(0.16))
+		hand.position = Vector3(0.0, 0.42, 0.0)
+		hand.scale = Vector3(1.25, 1.10, 1.20)
+		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(hand)
+		var cuff := MeshInstance3D.new()
+		var cuff_m := CylinderMesh.new()
+		cuff_m.top_radius = 0.058
+		cuff_m.bottom_radius = 0.062
+		cuff_m.height = 0.04
+		cuff.mesh = cuff_m
+		cuff.material_override = _cm(cloth.darkened(0.08), cloth_d, 0.55)
+		cuff.position = Vector3(0.0, 0.34, 0.0)
+		cuff.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(cuff)
 
-	# 頭（大きめ）
-	var head := MeshInstance3D.new()
-	head.mesh = CraftMeshes.uv_sphere(0.23, 10, 14, 0.035, 3.0, 1.06)
-	head.material_override = _cm(ForestsPalette.SKIN, ForestsPalette.SKIN.darkened(0.22))
-	head.position.y = 1.02
-	mesh_root.add_child(head)
+	# --- 頭 ---
+	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.18)), Vector3(0, 1.18, 0))
 
-	# 髪
-	var hair := MeshInstance3D.new()
-	hair.mesh = CraftMeshes.uv_sphere(0.245, 9, 12, 0.18, 8.0, 0.76)
-	hair.material_override = _cm(ForestsPalette.HAIR, ForestsPalette.HAIR.darkened(0.25))
-	hair.position = Vector3(0, 1.1, -0.035)
-	mesh_root.add_child(hair)
-
-	var bang := MeshInstance3D.new()
-	bang.mesh = CraftMeshes.uv_sphere(0.125, 7, 9, 0.22, 4.0, 0.52)
-	bang.material_override = _cm(ForestsPalette.HAIR, ForestsPalette.HAIR.darkened(0.2))
-	bang.position = Vector3(0, 1.1, 0.15)
-	bang.scale = Vector3(1.45, 0.68, 0.55)
-	mesh_root.add_child(bang)
-
-	# 目
+	# 髪：後ろボリューム＋耳後ろ＋頬横の短いもみあげ（目下線禁止）
+	_mi(CraftMeshes.uv_sphere(0.30, 12, 16, 0.08, 8.0, 0.95), _cm(hair_c, hair_c.darkened(0.22)), Vector3(0, 1.34, -0.26), Vector3(1.32, 1.12, 1.05))
 	for side in [-1.0, 1.0]:
-		var white := MeshInstance3D.new()
-		white.mesh = CraftMeshes.uv_sphere(0.048, 6, 7, 0.0, 1.0, 0.82)
-		white.material_override = _cm(Color(0.98, 0.98, 0.96), Color(0.85, 0.85, 0.88))
-		white.position = Vector3(0.075 * side, 1.02, 0.19)
-		mesh_root.add_child(white)
-		var iris := MeshInstance3D.new()
-		iris.mesh = CraftMeshes.uv_sphere(0.03, 5, 6)
-		iris.material_override = _cm(Color(0.22, 0.36, 0.3), Color(0.1, 0.18, 0.14))
-		iris.position = Vector3(0.075 * side, 1.015, 0.22)
-		mesh_root.add_child(iris)
+		_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.05, 5.0 + side, 1.05), _cm(hair_c, hair_c.darkened(0.2)), Vector3(0.27 * side, 1.18, -0.24), Vector3(1.05, 1.25, 0.95))
+		_mi(CraftMeshes.uv_sphere(0.07, 7, 8, 0.03, 5.5 + side, 0.90), _cm(hair_c, hair_c.darkened(0.18)), Vector3(0.24 * side, 1.08, -0.10), Vector3(0.95, 1.15, 0.85))
+
+	# 目：横に広い丸。頭表面に軽く載せる（沈み込み影線禁止）
+	for side in [-1.0, 1.0]:
+		_mi(CraftMeshes.uv_sphere(0.048, 10, 12), _cm(Color(0.10, 0.06, 0.04), Color(0.02, 0.01, 0.01), 0.08), Vector3(0.095 * side, 1.22, 0.288), Vector3(1.20, 0.95, 0.70))
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.011, 4, 5)
+		shine.mesh = CraftMeshes.uv_sphere(0.019, 5, 6)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
-		sm.emission_enabled = true
-		sm.emission = Color(1, 1, 1)
-		sm.emission_energy_multiplier = 0.5
+		sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		sm.specular_mode = BaseMaterial3D.SPECULAR_DISABLED
 		shine.material_override = sm
-		shine.position = Vector3(0.085 * side, 1.03, 0.235)
+		shine.position = Vector3(0.105 * side, 1.232, 0.325)
+		shine.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		mesh_root.add_child(shine)
 
-	# 眉
-	for side in [-1.0, 1.0]:
-		var brow := MeshInstance3D.new()
-		brow.mesh = CraftMeshes.uv_sphere(0.022, 4, 5, 0.0, 1.0, 0.35)
-		brow.material_override = _cm(ForestsPalette.HAIR, ForestsPalette.HAIR.darkened(0.2))
-		brow.position = Vector3(0.075 * side, 1.08, 0.2)
-		brow.scale = Vector3(1.6, 0.5, 0.6)
-		brow.rotation_degrees.z = -8.0 * side
-		mesh_root.add_child(brow)
+	# 頬紅は省略（薄い球が傷跡ラインに読まれるため）
+	# 小さな鼻（参照の控えめ鼻）
+	_mi(CraftMeshes.uv_sphere(0.026, 6, 7), _cm(skin.darkened(0.04), skin.darkened(0.16), 0.20), Vector3(0, 1.13, 0.300), Vector3(0.95, 0.80, 1.10))
 
-	# ほっぺ
-	for side in [-1.0, 1.0]:
-		var cheek := MeshInstance3D.new()
-		cheek.mesh = CraftMeshes.uv_sphere(0.032, 5, 6, 0.0, 1.0, 0.65)
-		var chm := StandardMaterial3D.new()
-		chm.albedo_color = Color(0.98, 0.7, 0.68)
-		chm.emission_enabled = true
-		chm.emission = Color(0.95, 0.55, 0.5)
-		chm.emission_energy_multiplier = 0.18
-		chm.roughness = 0.6
-		cheek.material_override = chm
-		cheek.position = Vector3(0.15 * side, 0.95, 0.155)
-		mesh_root.add_child(cheek)
+	var mouth := _mi(CraftMeshes.uv_sphere(0.018, 6, 7, 0.0, 1.0, 0.15), _cm(Color(0.58, 0.34, 0.36), Color(0.34, 0.16, 0.18), 0.12), Vector3(0, 1.06, 0.292))
+	mouth.scale = Vector3(1.25, 0.22, 0.28)
 
-	# 口
-	var mouth := MeshInstance3D.new()
-	mouth.mesh = CraftMeshes.uv_sphere(0.02, 4, 5, 0.0, 1.0, 0.35)
-	mouth.material_override = _cm(Color(0.78, 0.42, 0.44), Color(0.55, 0.25, 0.28))
-	mouth.position = Vector3(0, 0.91, 0.21)
-	mouth.scale = Vector3(1.5, 0.4, 0.55)
-	mesh_root.add_child(mouth)
-
-	# 帽子（少し柔らかく傾ける）
-	var brim := MeshInstance3D.new()
-	var brim_m := CylinderMesh.new()
-	brim_m.top_radius = 0.38
-	brim_m.bottom_radius = 0.38
-	brim_m.height = 0.028
-	brim_m.radial_segments = 28
-	brim.mesh = brim_m
-	brim.material_override = _cm(ForestsPalette.HAT, ForestsPalette.HAT.darkened(0.3))
-	brim.position = Vector3(0.02, 1.17, 0)
-	brim.rotation_degrees.z = -6
-	mesh_root.add_child(brim)
-
-	var crown := MeshInstance3D.new()
-	crown.mesh = CraftMeshes.trunk(0.22, 0.185, 0.095, 14)
-	crown.material_override = _cm(ForestsPalette.HAT.lightened(0.05), ForestsPalette.HAT.darkened(0.28))
-	crown.position = Vector3(0.02, 1.19, 0)
-	crown.rotation_degrees.z = -6
-	mesh_root.add_child(crown)
-
+	# 麦わら：広いつば＋丸い麦色クラウン＋太い赤帯
+	var straw := Color(0.88, 0.70, 0.38)
+	var straw_d := Color(0.55, 0.38, 0.18)
+	# つばは参照幅に寄せる＋低い丸ドームクラウン（織り感は flock）
+	_mi(CraftMeshes.uv_sphere(0.44, 16, 28, 0.04, 2.0, 0.55), _cm(hat, hat.darkened(0.28), 0.95), Vector3(0, 1.28, -0.02), Vector3(1.12, 1.22, 1.12))
+	_mi(CraftMeshes.uv_sphere(0.27, 16, 18, 0.02, 2.6, 0.58), _cm(straw, straw_d, 0.92), Vector3(0, 1.48, -0.02), Vector3(1.08, 1.00, 1.08))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.195
-	band_m.bottom_radius = 0.195
+	band_m.top_radius = 0.248
+	band_m.bottom_radius = 0.255
 	band_m.height = 0.038
 	band.mesh = band_m
-	band.material_override = _cm(Color(0.55, 0.28, 0.18), Color(0.35, 0.16, 0.1))
-	band.position.y = 1.22
+	# 帯は flock 弱め＝赤が麦色に濁らない（参照の布帯）
+	band.material_override = _cm(Color(0.90, 0.32, 0.16), Color(0.52, 0.12, 0.05), 0.08)
+	band.position = Vector3(0, 1.32, -0.02)
+	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
-	# マフラー
-	var scarf := MeshInstance3D.new()
-	var torus := TorusMesh.new()
-	torus.inner_radius = 0.095
-	torus.outer_radius = 0.175
-	torus.rings = 18
-	torus.ring_segments = 12
-	scarf.mesh = torus
-	scarf.material_override = _cm(ForestsPalette.SCARF, ForestsPalette.SCARF.darkened(0.3))
-	scarf.position.y = 0.84
-	scarf.rotation_degrees.x = 90
-	mesh_root.add_child(scarf)
+	# マフラー：太い巻き＋不揃い山＋片側端（リング一枚禁止）
+	_mi(CraftMeshes.uv_sphere(0.24, 14, 18, 0.025, 6.0, 0.55), _cm(scarf_col, scarf_col.darkened(0.28), 0.72), Vector3(0, 0.90, 0.06), Vector3(1.80, 0.95, 1.50))
+	_mi(CraftMeshes.uv_sphere(0.14, 10, 12, 0.02, 6.5, 0.70), _cm(scarf_col.lightened(0.04), scarf_col.darkened(0.20), 0.65), Vector3(-0.14, 0.92, 0.12))
+	_mi(CraftMeshes.uv_sphere(0.13, 10, 12, 0.015, 7.0, 0.88), _cm(scarf_col, scarf_col.darkened(0.22), 0.62), Vector3(0.18, 0.82, -0.08))
+	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.012, 7.5, 0.92), _cm(scarf_col, scarf_col.darkened(0.18), 0.58), Vector3(0.24, 0.58, -0.18))
+	_mi(CraftMeshes.uv_sphere(0.08, 7, 8, 0.01, 8.0, 0.9), _cm(scarf_col.darkened(0.05), scarf_col.darkened(0.22), 0.55), Vector3(0.26, 0.48, -0.22))
 
-	var tail := MeshInstance3D.new()
-	tail.mesh = CraftMeshes.trunk(0.34, 0.058, 0.028, 7, 0.07)
-	tail.material_override = _cm(ForestsPalette.SCARF, ForestsPalette.SCARF.darkened(0.28))
-	tail.position = Vector3(0.15, 0.62, 0.1)
-	tail.rotation_degrees.z = 30
-	mesh_root.add_child(tail)
-
-	mesh_root.scale = Vector3(1.08, 1.08, 1.08)
+	mesh_root.scale = Vector3(1.04, 1.10, 1.04)
 
 
 func set_move_input(v: Vector2) -> void:

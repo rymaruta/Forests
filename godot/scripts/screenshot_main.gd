@@ -1,4 +1,5 @@
 extends SceneTree
+## 参照シートと並べて検証する撮影
 
 func _initialize() -> void:
 	call_deferred("_run")
@@ -11,8 +12,8 @@ func _run() -> void:
 	var packed: PackedScene = load("res://scenes/world/Main.tscn")
 	var main := packed.instantiate()
 	root.add_child(main)
-	await create_timer(1.5).timeout
-	for i in 12:
+	await create_timer(1.8).timeout
+	for i in 16:
 		await process_frame
 	var tut := main.get_node_or_null("HUD/Tutorial")
 	if tut:
@@ -25,50 +26,77 @@ func _run() -> void:
 
 	var pivot := main.get_node_or_null("CameraPivot")
 	var player := main.get_node_or_null("Player")
-	if player:
-		player.global_position = Vector3(0.0, 0.5, 3.0)
 
-	# 1) スポーン全景
+	# 1) 樹のシルエット（参照ツリーと比較用）
+	if player:
+		player.global_position = Vector3(5.5, 0.5, 2.0)
+		if player.has_method("set_facing_yaw"):
+			player.set_facing_yaw(0.5)
 	if pivot and pivot.has_method("snap_to_target"):
-		pivot.distance = 7.5
-		pivot.height = 3.2
-		pivot.yaw = 0.35
-		pivot.pitch = -0.35
+		pivot.distance = 5.5
+		pivot.height = 2.4
+		pivot.yaw = -0.4
+		pivot.pitch = -0.15
 		pivot.snap_to_target()
 	await process_frame
 	await process_frame
 	await process_frame
 	var img: Image = root.get_viewport().get_texture().get_image()
-	img.save_png("/opt/cursor/artifacts/screenshots/70-checkpoint-spawn.png")
-	print("SHOT_SAVED spawn")
+	img.save_png("/opt/cursor/artifacts/screenshots/90-vs-ref-tree.png")
+	print("SHOT_SAVED tree")
 
-	# 2) 小屋方向
-	if pivot:
-		pivot.yaw = 2.5
-		pivot.pitch = -0.3
-		pivot.distance = 8.0
-		pivot.snap_to_target()
+	# 2) 小屋正面（参照コテージと比較）
 	if player:
-		player.global_position = Vector3(-2.5, 0.5, 3.5)
+		player.global_position = Vector3(-3.0, 0.5, 3.5)
+		if player.has_method("set_facing_yaw"):
+			player.set_facing_yaw(-0.5)
+	if pivot:
+		pivot.yaw = 0.2
+		pivot.pitch = -0.18
+		pivot.distance = 6.5
+		pivot.height = 2.5
+		pivot.snap_to_target()
 	await process_frame
 	await process_frame
 	await process_frame
 	img = root.get_viewport().get_texture().get_image()
-	img.save_png("/opt/cursor/artifacts/screenshots/71-checkpoint-cottage.png")
+	img.save_png("/opt/cursor/artifacts/screenshots/91-vs-ref-cottage.png")
 	print("SHOT_SAVED cottage")
 
-	# 3) 池・木立
-	if pivot:
-		pivot.yaw = -0.6
-		pivot.pitch = -0.32
-		pivot.distance = 8.5
-		pivot.snap_to_target()
+	# 3) 旅人正面（参照キャラと比較）
+	# カメラは yaw=0 で +Z 側。顔はローカル +Z なので facing=0 で正面。
 	if player:
-		player.global_position = Vector3(3.0, 0.5, 0.5)
+		player.global_position = Vector3(0.0, 0.5, 3.0)
+		if player.has_method("set_facing_yaw"):
+			player.set_facing_yaw(0.0)
+	if pivot:
+		pivot.yaw = 0.0
+		pivot.pitch = -0.08
+		pivot.distance = 3.4
+		pivot.height = 1.65
+		pivot.snap_to_target()
 	await process_frame
 	await process_frame
 	await process_frame
 	img = root.get_viewport().get_texture().get_image()
-	img.save_png("/opt/cursor/artifacts/screenshots/72-checkpoint-trees.png")
-	print("SHOT_SAVED trees")
+	img.save_png("/opt/cursor/artifacts/screenshots/92-vs-ref-traveler.png")
+	print("SHOT_SAVED traveler")
+
+	# 4) 場面全体
+	if player:
+		player.global_position = Vector3(0.0, 0.5, 3.0)
+		if player.has_method("set_facing_yaw"):
+			player.set_facing_yaw(0.3)
+	if pivot:
+		pivot.yaw = 0.45
+		pivot.pitch = -0.3
+		pivot.distance = 8.0
+		pivot.height = 3.2
+		pivot.snap_to_target()
+	await process_frame
+	await process_frame
+	await process_frame
+	img = root.get_viewport().get_texture().get_image()
+	img.save_png("/opt/cursor/artifacts/screenshots/93-vs-ref-scene.png")
+	print("SHOT_SAVED scene")
 	quit(0)

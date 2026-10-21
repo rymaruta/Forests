@@ -1,0 +1,23 @@
+Forests visual targets — DO NOT invent blindly. Match these sheets.
+
+TREE (ref-tree-deciduous.jpg)
+- Thick trunk, toe-like root flare, two short side branches
+- Soft felt/moss canopy: merged cloud lobes (not hard grape spheres)
+- Sage-olive leaf color, matte (no plastic specular)
+
+COTTAGE (ref-cottage.jpg)
+- Cream plaster texture + thick dark timber lattice on front
+- Terracotta tile roof with overhang, stone cobble foundation
+- Porch posts, recessed door, glowing windows, flower boxes
+
+TRAVELER (ref-traveler.jpg)
+- Chibi: big head, flared teal tunic, chunky boots
+- Soft straw hat + red band, coral scarf
+- Large brown eyes, blush; arms down at sides
+
+SCENE (ref-scene-mood.jpg)
+- Muted moss grass, soft morning light
+- Grey-brown stepping stones; pond with stone shore
+- Trees cleared away from cottage
+
+Method: change one target at a time → screenshot → compare to sheet → keep or revert.

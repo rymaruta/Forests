@@ -1,0 +1,179 @@
+extends RefCounted
+class_name TreeParts
+## ヒーロー樹を部品に分けて理想形を作り、あとで結合する。
+## 部品: canopy / trunk_fork / toe_skirt
+## 各部品は単独Benchで参照パーツ写真に合わせる。混ぜて直さない。
+
+
+const SEED := 2901
+const TRUNK_H := 1.40
+const BASE_R := 0.26
+const TOP_R := 0.10
+const CANOPY_R := 1.10
+const TOE_H := 0.42
+const TOE_BOTTOM_R := 0.34
+const LEAN := 0.02
+# 参照樹：幹と趾は同じ中暗ニュートラル茶（二色割れ・オレンジ粘土禁止）
+const BARK := Color(0.34, 0.24, 0.15)
+const BARK_TOE := Color(0.34, 0.24, 0.15)
+# 参照冠の深いモスオリーブ（rb/g≈0.22）
+const LEAF := Color(0.49, 0.50, 0.33)
+const LEAF_DARK := Color(0.25, 0.27, 0.17)
+
+
+static func canopy_part() -> Node3D:
+	## 部品1: フェルト雲冠だけ。床は触らない。
+	var root := Node3D.new()
+	root.name = "PartCanopy"
+	var canopy := MeshInstance3D.new()
+	canopy.name = "Canopy"
+	if ResourceLoader.exists("res://assets/meshes/canopy_hero.obj"):
+		canopy.mesh = load("res://assets/meshes/canopy_hero.obj") as Mesh
+	if canopy.mesh == null:
+		var rng := RandomNumberGenerator.new()
+		rng.seed = SEED
+		canopy.mesh = CraftMeshes.canopy_soft_union(rng, CANOPY_R)
+	canopy.material_override = VisualKit.foliage_material(LEAF, LEAF_DARK)
+	var baked_r := 1.28
+	var s := CANOPY_R / baked_r
+	# 参照冠：中房積雲 aspect≈1.4
+	canopy.scale = Vector3(s * 1.175, s * 0.955, s * 1.175)
+	canopy.position = Vector3(0.0, 0.0, 0.0)
+	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	root.add_child(canopy)
+	# 半透明殻は白縁ハローになるので付けない。柔縁は本体シェーダのみ。
+	root.set_meta("part", "canopy")
+	root.set_meta("part_height", CANOPY_R * 1.35)
+	return root
+
+
+static func trunk_fork_part() -> Node3D:
+	## 部品2: 滑らかな幹柱＋短い U クレードル枝。趾なし。
+	var root := Node3D.new()
+	root.name = "PartTrunkFork"
+	var bark_mat := VisualKit.bark_shader_material(BARK)
+
+	var col := MeshInstance3D.new()
+	col.name = "TrunkFork"
+	if ResourceLoader.exists("res://assets/meshes/trunk_fork.obj"):
+		col.mesh = load("res://assets/meshes/trunk_fork.obj") as Mesh
+	if col.mesh == null:
+		# フォールバック：旧円錐＋枝（ベイク前）
+		col.mesh = CraftMeshes.trunk(
+			TRUNK_H,
+			BASE_R,
+			TOP_R,
+			96,
+			LEAN,
+			0.0,
+			true,
+			0
+		)
+	col.material_override = bark_mat
+	col.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	# ベイク高さ≈1.65 → TRUNK_H
+	var baked_h := 1.80
+	var s := TRUNK_H / baked_h
+	col.scale = Vector3(s * 1.12, s, s * 1.12)
+	root.add_child(col)
+
+	# 参照パーツと同じくクレードル正面
+	root.rotation.y = 0.0
+	root.set_meta("part", "trunk_fork")
+	root.set_meta("part_height", TRUNK_H)
+	return root
+
+
+static func toe_skirt_part() -> Node3D:
+	## 部品3: 粘土趾＋裾だけ。短い丘メッシュ。
+	var root := Node3D.new()
+	root.name = "PartToeSkirt"
+	# 趾は幹と同系色＋接地影のみ（幹マテリアルは ground_contact=0）
+	var bark_mat := VisualKit.bark_shader_material(BARK_TOE, 1.0)
+	var toes := MeshInstance3D.new()
+	toes.name = "ToeSkirt"
+	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):
+		toes.mesh = load("res://assets/meshes/toe_skirt.obj") as Mesh
+	if toes.mesh == null:
+		toes.mesh = CraftMeshes.trunk(
+			TOE_H,
+			TOE_BOTTOM_R,
+			BASE_R,
+			96,
+			0.0,
+			0.0,
+			true,
+			5
+		)
+	toes.material_override = bark_mat
+	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	var baked_h := 0.52
+	var s := TOE_H / baked_h
+	# 水平で aspect≈3、縦カプセル趾を読ませる
+	toes.scale = Vector3(s * 2.20, s * 1.05, s * 2.20)
+	root.add_child(toes)
+	root.rotation.y = 0.0
+	root.set_meta("part", "toe_skirt")
+	root.set_meta("part_height", TOE_H)
+	return root
+
+
+static func assemble_hero() -> Node3D:
+	## 合格部品をソケットで結合。結合後に比率だけ微調整。
+	var root := Node3D.new()
+	root.name = "HeroTreeAssembled"
+
+	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
+	# 幹・趾は同一マテリアル（ground_contact分離＝二色割れ禁止）
+	# シート木部ターゲット ≈98/94/62（暖赤茶・カーキ禁止）
+	var bark_sheet := Color(0.254, 0.217, 0.132)
+	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
+
+	var toes := toe_skirt_part()
+	toes.name = "ToeSkirt"
+	# 結合時のみ：参照の趾フレア（部品Benchスケールは維持）
+	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
+	if toe_mesh:
+		toe_mesh.scale *= Vector3(0.45, 1.06, 0.45)
+		toe_mesh.material_override = bark_mat
+	root.add_child(toes)
+
+	var trunk := trunk_fork_part()
+	trunk.name = "TrunkFork"
+	trunk.position.y = TOE_H * 0.34
+	# 結合時のみ：幹は参照の中庸太さ（部品Benchは維持）
+	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
+	if trunk_mesh:
+		trunk_mesh.scale *= Vector3(0.88, 1.12, 0.88)
+		trunk_mesh.material_override = bark_mat
+	root.add_child(trunk)
+
+	# 参照全体樹のクレードル枝：短く太いスタブ
+	for side in [-1.0, 1.0]:
+		var base_y := trunk.position.y + TRUNK_H * 0.55
+		var stub := MeshInstance3D.new()
+		stub.mesh = CraftMeshes.trunk(0.26, 0.072, 0.044, 10, 0.0, 0.02)
+		stub.material_override = bark_mat
+		stub.position = Vector3(0.10 * side, base_y, 0.04)
+		stub.rotation_degrees.z = -40.0 * side
+		stub.rotation_degrees.x = -10.0
+		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(stub)
+
+	var canopy := canopy_part()
+	canopy.name = "Canopy"
+	# 結合時のみ：丸め中房＋地味オリーブ（ミント禁止）
+	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
+	if canopy_mesh:
+		canopy_mesh.scale *= Vector3(0.90, 1.12, 0.90)
+		var sheet_leaf := Color(0.31, 0.37, 0.22)
+		var sheet_dark := Color(0.13, 0.18, 0.10)
+		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
+	# フォーク先端だけ覗く
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.59, 0.0)
+	root.add_child(canopy)
+
+	root.set_meta("tree_height", TRUNK_H)
+	root.set_meta("hero", true)
+	root.set_meta("assembled", true)
+	return root
