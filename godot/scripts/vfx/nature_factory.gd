@@ -253,9 +253,9 @@ static func cottage() -> Node3D:
 	root.add_child(body)
 
 	# 前面のハーフティンバー（参照に寄せてやや細く）
-	_beam(root, wood, Vector3(-1.65, 1.18, 1.28), Vector3(0.22, 1.75, 0.16))
-	_beam(root, wood, Vector3(1.65, 1.18, 1.28), Vector3(0.22, 1.75, 0.16))
-	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(0.22, 1.75, 0.16))
+	_beam(root, wood, Vector3(-1.65, 1.18, 1.30), Vector3(0.26, 1.75, 0.20))
+	_beam(root, wood, Vector3(1.65, 1.18, 1.30), Vector3(0.26, 1.75, 0.20))
+	_beam(root, wood, Vector3(0, 1.18, 1.30), Vector3(0.26, 1.75, 0.20))
 	_beam(root, wood, Vector3(0, 0.42, 1.28), Vector3(3.35, 0.18, 0.16))
 	_beam(root, wood, Vector3(0, 1.18, 1.28), Vector3(3.35, 0.17, 0.16))
 	_beam(root, wood, Vector3(0, 1.95, 1.28), Vector3(3.35, 0.18, 0.16))
