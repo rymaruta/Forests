@@ -121,10 +121,11 @@ func _build_visual() -> void:
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
-	# マフラー：首に太い巻き＋片側の短い端（リボン垂れ禁止）
-	_mi(CraftMeshes.uv_sphere(0.22, 14, 18, 0.035, 6.0, 0.50), _cm(scarf_col, scarf_col.darkened(0.26), 0.65), Vector3(0, 0.90, 0.08), Vector3(1.70, 0.82, 1.45))
-	_mi(CraftMeshes.uv_sphere(0.14, 10, 12, 0.03, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.20), 0.58), Vector3(0.16, 0.84, 0.22))
-	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.025, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.55), Vector3(0.20, 0.70, 0.20))
+	# マフラー：太い巻き＋片側の短い端（リボン垂れ禁止）
+	_mi(CraftMeshes.uv_sphere(0.24, 14, 18, 0.04, 6.0, 0.48), _cm(scarf_col, scarf_col.darkened(0.28), 0.72), Vector3(0, 0.88, 0.10), Vector3(1.78, 0.88, 1.50))
+	_mi(CraftMeshes.uv_sphere(0.15, 10, 12, 0.03, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.22), 0.65), Vector3(0.18, 0.82, 0.24))
+	_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.025, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.60), Vector3(0.22, 0.68, 0.22))
+	_mi(CraftMeshes.uv_sphere(0.08, 7, 9, 0.02, 8.0, 0.95), _cm(scarf_col, scarf_col.darkened(0.16), 0.55), Vector3(0.18, 0.58, 0.18))
 
 	mesh_root.scale = Vector3(1.06, 1.14, 1.06)
 
