@@ -108,15 +108,15 @@ func _build_visual() -> void:
 	# 小さな鼻（参照の控えめ鼻）
 	_mi(CraftMeshes.uv_sphere(0.022, 6, 7), _cm(skin.darkened(0.04), skin.darkened(0.16), 0.20), Vector3(0, 1.14, 0.295), Vector3(0.90, 0.75, 1.05))
 
-	var mouth := _mi(CraftMeshes.uv_sphere(0.014, 5, 6, 0.0, 1.0, 0.12), _cm(Color(0.55, 0.32, 0.34), Color(0.32, 0.16, 0.18), 0.15), Vector3(0, 1.05, 0.285))
-	mouth.scale = Vector3(1.10, 0.18, 0.22)
+	var mouth := _mi(CraftMeshes.uv_sphere(0.018, 6, 7, 0.0, 1.0, 0.15), _cm(Color(0.58, 0.34, 0.36), Color(0.34, 0.16, 0.18), 0.12), Vector3(0, 1.06, 0.292))
+	mouth.scale = Vector3(1.25, 0.22, 0.28)
 
 	# 麦わら：広いつば＋丸い麦色クラウン＋太い赤帯
 	var straw := Color(0.88, 0.70, 0.38)
 	var straw_d := Color(0.55, 0.38, 0.18)
-	# 厚いつば＋低い丸ドームクラウン（高い円筒禁止）
-	_mi(CraftMeshes.uv_sphere(0.50, 16, 28, 0.04, 2.0, 0.50), _cm(hat, hat.darkened(0.28), 0.88), Vector3(0, 1.28, -0.02), Vector3(1.24, 1.05, 1.24))
-	_mi(CraftMeshes.uv_sphere(0.26, 16, 18, 0.02, 2.6, 0.62), _cm(straw, straw_d, 0.82), Vector3(0, 1.46, -0.02), Vector3(1.10, 0.95, 1.10))
+	# つばは参照幅に寄せる＋低い丸ドームクラウン
+	_mi(CraftMeshes.uv_sphere(0.44, 16, 28, 0.04, 2.0, 0.55), _cm(hat, hat.darkened(0.28), 0.88), Vector3(0, 1.28, -0.02), Vector3(1.15, 1.10, 1.15))
+	_mi(CraftMeshes.uv_sphere(0.27, 16, 18, 0.02, 2.6, 0.58), _cm(straw, straw_d, 0.82), Vector3(0, 1.48, -0.02), Vector3(1.08, 1.00, 1.08))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
 	band_m.top_radius = 0.248

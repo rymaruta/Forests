@@ -399,36 +399,36 @@ static func cottage() -> Node3D:
 		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.43), Vector3(0.56, 0.05, 0.02))
 		_beam(root, wood, Vector3(side * 1.1, 1.35, 1.43), Vector3(0.05, 0.56, 0.02))
 
-	# 煙突：丸み石コース（直方芯＋潰し球で参照の石積み）
+	# 煙突：細い芯＋前面に飛び出す不揃い石（一体直方に見えない）
 	var chim := MeshInstance3D.new()
 	var chim_m := BoxMesh.new()
-	chim_m.size = Vector3(0.36, 1.05, 0.36)
+	chim_m.size = Vector3(0.28, 1.05, 0.28)
 	chim.mesh = chim_m
-	chim.material_override = VisualKit.cobble_material(Color(0.32, 0.32, 0.34))
-	chim.position = Vector3(-1.05, 3.20, 0.15)
+	chim.material_override = VisualKit.cobble_material(Color(0.30, 0.30, 0.32))
+	chim.position = Vector3(-1.05, 3.20, 0.10)
 	root.add_child(chim)
-	for ci in 10:
+	for ci in 12:
 		var course := MeshInstance3D.new()
-		var rad := 0.13 + fmod(float(ci) * 0.017, 0.05)
-		course.mesh = CraftMeshes.uv_sphere(rad, 8, 10, 0.10, float(ci) * 2.4, 0.95)
+		var rad := 0.12 + fmod(float(ci) * 0.019, 0.06)
+		course.mesh = CraftMeshes.uv_sphere(rad, 8, 10, 0.12, float(ci) * 2.4, 0.98)
 		course.material_override = VisualKit.cobble_material(
-			Color(0.26, 0.26, 0.28).lerp(Color(0.44, 0.42, 0.38), fmod(float(ci) * 0.31, 1.0))
+			Color(0.24, 0.24, 0.26).lerp(Color(0.46, 0.44, 0.40), fmod(float(ci) * 0.31, 1.0))
 		)
-		var ang := float(ci) * 0.9
+		var ang := float(ci) * 1.1
 		course.position = Vector3(
-			-1.05 + cos(ang) * 0.06,
-			2.72 + float(ci) * 0.105,
-			0.15 + sin(ang) * 0.05
+			-1.05 + cos(ang) * 0.10,
+			2.70 + float(ci) * 0.095,
+			0.22 + sin(ang) * 0.08
 		)
-		course.scale = Vector3(1.55 + fmod(float(ci) * 0.08, 0.25), 0.72, 1.45 + fmod(float(ci) * 0.06, 0.20))
+		course.scale = Vector3(1.65 + fmod(float(ci) * 0.09, 0.30), 0.68, 1.55 + fmod(float(ci) * 0.07, 0.25))
 		course.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(course)
 	var chim_cap := MeshInstance3D.new()
 	var cap_m := BoxMesh.new()
-	cap_m.size = Vector3(0.52, 0.08, 0.52)
+	cap_m.size = Vector3(0.50, 0.08, 0.50)
 	chim_cap.mesh = cap_m
 	chim_cap.material_override = VisualKit.cobble_material(Color(0.26, 0.26, 0.28))
-	chim_cap.position = Vector3(-1.05, 3.82, 0.15)
+	chim_cap.position = Vector3(-1.05, 3.88, 0.15)
 	root.add_child(chim_cap)
 
 	# 段（参照のポーチ段：扉幅に寄せる）
