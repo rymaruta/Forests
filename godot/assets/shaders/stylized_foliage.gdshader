@@ -138,8 +138,8 @@ void fragment() {
 	// シルエット柔縁：ごく細いフレネル帯だけアルファ＋ノイズ（発光禁止）
 	float dither = _vnoise(v_world * 200.0 + 3.1) * 0.55
 		+ _vnoise(v_world * 400.0 + 8.7) * 0.45;
-	float fade = smoothstep(0.50, 0.96, fres) * (0.38 + dither * 0.35);
-	float alpha = clamp(1.0 - fade, 0.20, 1.0);
+	float fade = smoothstep(0.42, 0.94, fres) * (0.48 + dither * 0.40);
+	float alpha = clamp(1.0 - fade, 0.14, 1.0);
 
 	ALBEDO = base;
 	ALPHA = alpha;
