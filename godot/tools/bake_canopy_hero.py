@@ -14,8 +14,8 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 小房が消えないよう抑えめ。貼り付け球にしない範囲で
-# 大きな房。溶けすぎず谷が残る帯
-K_BLEND = 0.092
+# 大きな房。参照の溶けた雲へ
+K_BLEND = 0.098
 SEED = 2901
 AO_SAMPLES = 18
 
@@ -26,41 +26,39 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 少数の大きな丸丘。細かい丘は置かない。
+    # 参照冠: 縦に積んだ大きな丸丘。横に広げすぎない。
     specs = [
-        # コア体積
-        ((0.00, 0.36, 0.00), 0.48),
-        ((0.02, 0.58, -0.02), 0.40),
-        ((0.00, 0.18, 0.02), 0.42),
-        # 幅広い頂（尖らせない）
-        ((0.00, 0.72, 0.00), 0.34),
-        ((0.12, 0.62, 0.08), 0.28),
-        ((-0.10, 0.64, -0.06), 0.28),
+        ((0.00, 0.34, 0.00), 0.44),
+        ((0.02, 0.56, -0.02), 0.38),
+        ((0.00, 0.16, 0.02), 0.40),
+        ((0.00, 0.74, 0.00), 0.32),
+        ((0.10, 0.64, 0.07), 0.26),
+        ((-0.09, 0.66, -0.05), 0.26),
+        ((0.06, 0.44, -0.10), 0.28),
+        ((-0.07, 0.42, 0.10), 0.28),
     ]
-    # 外周の大〜中房（aspect≈1.4）
-    for i in range(7):
-        a = i / 7 * math.tau + 0.12
-        y = 0.32 + 0.06 * math.sin(i * 1.9)
-        r = 0.34 if i % 2 == 0 else 0.30
-        rad = 0.52 + 0.04 * math.sin(i * 1.4)
+    # 外周（横半径を抑えて縦シルエット）
+    for i in range(6):
+        a = i / 6 * math.tau + 0.14
+        y = 0.30 + 0.08 * math.sin(i * 1.7)
+        r = 0.32 if i % 2 == 0 else 0.28
+        rad = 0.44 + 0.03 * math.sin(i * 1.4)
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
-    # 中段の中房（谷を作る程度）
-    for i in range(5):
-        a = i / 5 * math.tau + 0.45
+    for i in range(4):
+        a = i / 4 * math.tau + 0.50
         specs.append(
             (
                 (
-                    math.cos(a) * 0.28,
-                    0.50 + 0.05 * math.cos(i * 1.3),
-                    math.sin(a) * 0.28,
+                    math.cos(a) * 0.24,
+                    0.52 + 0.05 * math.cos(i * 1.3),
+                    math.sin(a) * 0.24,
                 ),
                 0.24,
             )
         )
-    # 裾の支え（細い丘は禁止）
-    for i in range(5):
-        a = i / 5 * math.tau + 0.25
-        specs.append(((math.cos(a) * 0.22, 0.10, math.sin(a) * 0.22), 0.22))
+    for i in range(4):
+        a = i / 4 * math.tau + 0.28
+        specs.append(((math.cos(a) * 0.18, 0.10, math.sin(a) * 0.18), 0.22))
     return specs
 
 
