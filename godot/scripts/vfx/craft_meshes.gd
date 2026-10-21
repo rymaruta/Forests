@@ -164,7 +164,7 @@ static func _root_flare_mul(t: float) -> float:
 		return 1.0
 	var ft := 1.0 - t / 0.48
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.14 * ft
+	return 1.0 + 0.09 * ft
 
 
 static func _ground_fillet(t: float) -> float:
