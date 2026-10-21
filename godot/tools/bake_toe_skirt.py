@@ -46,25 +46,23 @@ def sphere_sdf(p: np.ndarray, c: np.ndarray, r: float) -> np.ndarray:
 
 
 def build_prims():
-    # 低い裾＋広く開いた趾。参照 aspect≈3（横長）。
+    # 広く開いた趾＋丸い高さ。参照の重い粘土趾。
     prims_cap = [
-        (np.array([0.0, 0.02, 0.0]), np.array([0.0, 0.28, 0.0]), 0.34, 0.22),
+        (np.array([0.0, 0.02, 0.0]), np.array([0.0, 0.32, 0.0]), 0.32, 0.22),
     ]
     spheres = [
-        (np.array([0.0, 0.08, 0.0]), 0.32),  # 裾芯
+        (np.array([0.0, 0.10, 0.0]), 0.30),  # 裾芯
     ]
-    # 5 本の太い趾（参照：丸い指状が横に広がる）
     n = 5
     for i in range(n):
         a = i / n * math.tau + 0.22
-        rad = 0.36 + 0.04 * math.sin(i * 1.4)
-        c = np.array([math.cos(a) * rad, 0.07 + 0.015 * (i % 2), math.sin(a) * rad * 0.92])
-        spheres.append((c, 0.175 if i % 2 == 0 else 0.155))
-        tip = c + np.array([math.cos(a) * 0.16, -0.015, math.sin(a) * 0.14])
-        spheres.append((tip, 0.125 if i % 2 == 0 else 0.110))
-        # 付け根を溶かす
-        root = c * 0.55 + np.array([0.0, 0.04, 0.0])
-        spheres.append((root, 0.14))
+        rad = 0.34 + 0.04 * math.sin(i * 1.4)
+        c = np.array([math.cos(a) * rad, 0.12 + 0.02 * (i % 2), math.sin(a) * rad * 0.92])
+        spheres.append((c, 0.185 if i % 2 == 0 else 0.165))
+        tip = c + np.array([math.cos(a) * 0.15, -0.01, math.sin(a) * 0.13])
+        spheres.append((tip, 0.130 if i % 2 == 0 else 0.115))
+        root = c * 0.55 + np.array([0.0, 0.06, 0.0])
+        spheres.append((root, 0.15))
     return prims_cap, spheres
 
 

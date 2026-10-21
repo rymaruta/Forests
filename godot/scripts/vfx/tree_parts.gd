@@ -13,7 +13,7 @@ const CANOPY_R := 1.10
 const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
-const BARK := Color(0.36, 0.30, 0.24)
+const BARK := Color(0.34, 0.27, 0.20)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
 const LEAF := Color(0.49, 0.50, 0.33)
 const LEAF_DARK := Color(0.25, 0.27, 0.17)
@@ -87,7 +87,7 @@ static func toe_skirt_part() -> Node3D:
 	var root := Node3D.new()
 	root.name = "PartToeSkirt"
 	# 趾は幹より一段暗い暖茶（参照 mean≈118/91/68）
-	var bark_mat := VisualKit.bark_shader_material(Color(0.26, 0.19, 0.14))
+	var bark_mat := VisualKit.bark_shader_material(Color(0.25, 0.18, 0.12))
 	var toes := MeshInstance3D.new()
 	toes.name = "ToeSkirt"
 	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):
@@ -105,10 +105,10 @@ static func toe_skirt_part() -> Node3D:
 		)
 	toes.material_override = bark_mat
 	toes.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
-	var baked_h := 0.50
+	var baked_h := 0.54
 	var s := TOE_H / baked_h
-	# 参照：横に広がる裾 aspect≈3
-	toes.scale = Vector3(s * 1.70, s * 0.78, s * 1.70)
+	# 参照：横広＋趾の丸い高さ（平たい餅禁止）
+	toes.scale = Vector3(s * 1.90, s * 1.05, s * 1.90)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
