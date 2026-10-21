@@ -87,7 +87,7 @@ static func toe_skirt_part() -> Node3D:
 	var root := Node3D.new()
 	root.name = "PartToeSkirt"
 	# 趾は幹より一段暗い暖茶（参照 mean≈118/91/68）
-	var bark_mat := VisualKit.bark_shader_material(Color(0.23, 0.16, 0.11))
+	var bark_mat := VisualKit.bark_shader_material(Color(0.24, 0.16, 0.10))
 	var toes := MeshInstance3D.new()
 	toes.name = "ToeSkirt"
 	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):
