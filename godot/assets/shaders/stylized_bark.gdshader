@@ -79,22 +79,22 @@ void fragment() {
 	float ndl = clamp(dot(normalize(v_n), L) * 0.5 + 0.5, 0.0, 1.0);
 	float wrap = mix(0.90, 1.08, ndl);
 
-	vec3 ridge = bark_color * 1.02;
-	vec3 valley = bark_dark * 0.85;
-	vec3 base = mix(ridge, valley, grain * 0.38 + vert * 0.22);
-	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.48);
-	base *= mix(0.90, 1.08, flock);
-	base = mix(base, base * mix(0.95, 1.05, flock), flock_mix);
+	vec3 ridge = bark_color * 1.06;
+	vec3 valley = bark_dark * 0.72;
+	vec3 base = mix(ridge, valley, grain * 0.48 + vert * 0.30);
+	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.55);
+	base *= mix(0.88, 1.10, flock);
+	base = mix(base, base * mix(0.94, 1.06, flock), flock_mix);
 
-	// 股AO：ベイク＋内向き法線で参照級の深い谷
-	float inward = clamp(-v_n.y * 0.35 + (1.0 - abs(v_n.x)) * 0.25, 0.0, 1.0);
-	float crotch = smoothstep(0.55, 0.95, v_y01) * inward;
-	float crease = mix(0.30, 1.0, pow(v_ao, 0.78)) * mix(1.0, 0.32, crotch);
+	// 股AO：ベイク＋内向き法線で参照級の深い谷（対比を残す）
+	float inward = clamp(-v_n.y * 0.40 + (1.0 - abs(v_n.x)) * 0.30, 0.0, 1.0);
+	float crotch = smoothstep(0.52, 0.95, v_y01) * inward;
+	float crease = mix(0.22, 1.0, pow(v_ao, 0.70)) * mix(1.0, 0.28, crotch);
 	base *= crease * wrap;
-	base *= 0.94 + 0.08 * (1.0 - v_y01 * 0.45);
-	// 参照木部 mean≈156/145/128
-	base *= 1.58;
-	base *= vec3(0.94, 1.09, 1.26);
+	base *= 0.92 + 0.10 * (1.0 - v_y01 * 0.45);
+	// 参照木部 mean≈156/145/128 — 均一ベージュ禁止、谷を残して平均を合わせる
+	base *= 1.48;
+	base *= vec3(1.02, 1.00, 0.98);
 
 	ALBEDO = base;
 }
