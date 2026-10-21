@@ -107,9 +107,9 @@ void fragment() {
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	// 低コントラストの包み光（ハイライト白飛び禁止）
-	float wrap = mix(0.94, 1.08, ndl);
-	float up = clamp(n.y * 0.18 + 0.88, 0.86, 1.08);
+	// 完全マットの包み光（擬似スペキュラ禁止）
+	float wrap = mix(0.96, 1.04, ndl);
+	float up = clamp(n.y * 0.12 + 0.90, 0.88, 1.05);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
@@ -122,8 +122,8 @@ void fragment() {
 	base *= mix(0.89, 1.11, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.86;
-	base *= vec3(0.96, 1.015, 0.995);
+	base *= 1.82;
+	base *= vec3(0.98, 1.0, 0.98);
 
 	// 真のフレネル（0=正面, 1=縁）
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
