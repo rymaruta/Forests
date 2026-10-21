@@ -41,20 +41,20 @@ def lobe_specs():
     ]
     for i in range(8):
         a = i / 8 * math.tau + 0.12
-        y = 0.38 + 0.08 * math.sin(i * 1.5 + 0.2)
-        r = 0.32 if i % 2 == 0 else 0.28
-        rad = 0.48 + 0.05 * math.sin(i * 1.8)
+        y = 0.36 + 0.07 * math.sin(i * 1.5 + 0.2)
+        r = 0.34 if i % 2 == 0 else 0.30
+        rad = 0.54 + 0.05 * math.sin(i * 1.8)
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
     for i in range(6):
         a = i / 6 * math.tau + 0.45
         specs.append(
             (
                 (
-                    math.cos(a) * 0.30,
-                    0.54 + 0.03 * math.cos(i * 1.1),
-                    math.sin(a) * 0.30,
+                    math.cos(a) * 0.34,
+                    0.50 + 0.03 * math.cos(i * 1.1),
+                    math.sin(a) * 0.34,
                 ),
-                0.26,
+                0.28,
             )
         )
     # てっぺんは大きな1房（尖らせない）
