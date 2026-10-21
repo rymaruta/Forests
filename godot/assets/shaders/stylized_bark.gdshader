@@ -62,20 +62,8 @@ void fragment() {
 	float y_mask = smoothstep(0.05, 0.22, v_world.y);
 	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
 
-	// 彫り：遠目でも読める色差（黒帯ゼブラは避ける）
-	vec3 base = mix(bark_color * 1.16, bark_dark * 0.52, clamp(groove * 1.18, 0.0, 1.0));
-	base *= 0.97 + tex.g * 0.05;
-
-	vec3 n = normalize(v_normal);
-	vec3 t_ang = normalize(cross(n, vec3(0.0, 1.0, 0.0)));
-	if (length(t_ang) < 1e-3) {
-		t_ang = vec3(1.0, 0.0, 0.0);
-	}
-	n = normalize(n + t_ang * (groove - 0.45) * 0.85);
-
-	// ほぼフラット：円柱のプラスチックハイライトを殺す
-	vec3 L = normalize(vec3(0.22, 0.92, 0.28));
-	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.985, 1.015, ndl);
-	ALBEDO = base * wrap;
+	// 彫りはアルベドのみ。照明変調ゼロ＝円柱プラスチックハイライト禁止
+	vec3 base = mix(bark_color * 1.12, bark_dark * 0.60, clamp(groove * 1.05, 0.0, 1.0));
+	base *= 0.98 + tex.g * 0.04;
+	ALBEDO = base;
 }
