@@ -98,17 +98,17 @@ func _build_visual() -> void:
 	var mouth := _mi(CraftMeshes.uv_sphere(0.016, 5, 6, 0.0, 1.0, 0.14), _cm(Color(0.50, 0.28, 0.30), Color(0.30, 0.14, 0.16)), Vector3(0, 1.02, 0.275))
 	mouth.scale = Vector3(1.1, 0.18, 0.22)
 
-	# 麦わら：厚いつば＋丸いクラウン（平たいオレンジ円盤禁止）
-	_mi(CraftMeshes.uv_sphere(0.42, 12, 28, 0.03, 2.0, 0.24), _cm(hat, hat.darkened(0.32)), Vector3(0, 1.42, -0.02))
-	_mi(CraftMeshes.uv_sphere(0.20, 12, 16, 0.02, 2.5, 0.85), _cm(hat.lightened(0.06), hat.darkened(0.26)), Vector3(0, 1.52, -0.02))
+	# 麦わら：厚いつば＋背の高いクラウン（赤い平円盤＝クラウン禁止）
+	_mi(CraftMeshes.uv_sphere(0.44, 12, 28, 0.03, 2.0, 0.26), _cm(hat, hat.darkened(0.32)), Vector3(0, 1.42, -0.02))
+	_mi(CraftMeshes.trunk(0.22, 0.19, 0.16, 18), _cm(hat.lightened(0.08), hat.darkened(0.24)), Vector3(0, 1.48, -0.02))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.195
-	band_m.bottom_radius = 0.195
-	band_m.height = 0.055
+	band_m.top_radius = 0.20
+	band_m.bottom_radius = 0.20
+	band_m.height = 0.04
 	band.mesh = band_m
 	band.material_override = _cm(Color(0.88, 0.32, 0.22), Color(0.52, 0.12, 0.08))
-	band.position = Vector3(0, 1.50, -0.02)
+	band.position = Vector3(0, 1.46, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
