@@ -135,11 +135,11 @@ void fragment() {
 	base *= 1.0 - under;
 
 	// シルエット柔縁：最外縁のみディザ discard（内部房の白シーム禁止）
-	base *= mix(1.0, 0.92, smoothstep(0.55, 0.98, fres));
+	base *= mix(1.0, 0.86, smoothstep(0.50, 0.98, fres));
 	float dither = _vnoise(v_world * 240.0 + 3.1) * 0.50
 		+ _vnoise(v_world * 480.0 + 8.7) * 0.50;
-	float cut = smoothstep(0.62, 0.98, fres) * (0.48 + dither * 0.45);
-	if (cut > 0.72) {
+	float cut = smoothstep(0.60, 0.98, fres) * (0.50 + dither * 0.45);
+	if (cut > 0.70) {
 		discard;
 	}
 
