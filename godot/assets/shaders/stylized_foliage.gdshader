@@ -2,8 +2,9 @@ shader_type spatial;
 // フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO。
 render_mode blend_mix, depth_draw_opaque, cull_back, unshaded;
 
-uniform sampler2D leaf_tex : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D leaf_n_tex : hint_normal, filter_linear_mipmap, repeat_enable;
+// ミップでフェルト粒が消えないよう線形のみ
+uniform sampler2D leaf_tex : source_color, filter_linear, repeat_enable;
+uniform sampler2D leaf_n_tex : hint_normal, filter_linear, repeat_enable;
 uniform vec3 leaf_color : source_color = vec3(0.50, 0.56, 0.38);
 uniform vec3 leaf_dark : source_color = vec3(0.30, 0.36, 0.22);
 uniform float wind_strength = 0.012;
@@ -86,40 +87,40 @@ void vertex() {
 
 void fragment() {
 	vec3 tex = _triplanar_col(leaf_tex, v_world, v_n, nap_scale);
-	vec3 n = _triplanar_nrm(leaf_n_tex, v_world, v_n, nap_scale * 1.15);
+	vec3 n = _triplanar_nrm(leaf_n_tex, v_world, v_n, nap_scale * 1.10);
 
-	// 細かいフェルト粒。粗いディザに見えないよう高周波を抑える
-	float pile = _vnoise(v_world * 5.5 + 0.4);
-	float fiber = _vnoise(v_world * 12.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 22.0 + 7.4);
-	float flock = pile * 0.50 + fiber * 0.35 + fiber2 * 0.15;
+	// 参照級の高周波フェルト粒（hp_std≈3.7 を目標）
+	float pile = _vnoise(v_world * 10.0 + 0.4);
+	float fiber = _vnoise(v_world * 22.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 44.0 + 7.4);
+	float flock = pile * 0.40 + fiber * 0.35 + fiber2 * 0.25;
 
-	// ベイクAO＋法線谷で柔らかい雲影
+	// ベイクAO＋法線谷。柔らかく深い雲影
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
-	crevice = pow(crevice, 1.35);
-	float lobe_ao = mix(1.0, 0.52, crevice) * mix(0.70, 1.0, v_ao);
+	crevice = pow(crevice, 1.40);
+	float lobe_ao = mix(1.0, 0.48, crevice) * mix(0.66, 1.0, v_ao);
 
-	vec3 L = normalize(vec3(0.34, 0.90, 0.20));
+	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
 	float wrap = mix(0.90, 1.14, ndl);
-	float up = clamp(n.y * 0.26 + 0.86, 0.84, 1.12);
+	float up = clamp(n.y * 0.24 + 0.86, 0.84, 1.12);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
-	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.18 + ndl * 0.16);
-	base = mix(base, mix(leaf_dark * 0.94, leaf_color * 1.08, tex_l), flock_mix * 0.80);
-	base *= mix(0.96, 1.06, flock);
+	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
+	base = mix(base, mix(leaf_dark * 0.90, leaf_color * 1.12, tex_l), flock_mix);
+	// 連続ノイズの細いフェルト粒（格子ディザ禁止）
+	base *= mix(0.82, 1.20, flock);
+	float grit = _vnoise(v_world * 80.0 + 1.7);
+	float grit2 = _vnoise(v_world * 140.0 + 4.2);
+	base *= mix(0.90, 1.10, grit * 0.65 + grit2 * 0.35);
 	base *= lobe_ao * wrap;
-	// 参照級の露出。暗すぎるオリーブを避ける
-	base *= 1.14;
-	base *= mix(0.98, 1.03, fiber2);
+	base *= 1.22;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	// 参照：縁の繊維が光を拾う柔らかいハロー（別メッシュ禁止）
-	float soft_rim = pow(1.0 - facing, 1.85) * 0.62;
-	base += leaf_color * soft_rim * (0.62 + flock * 0.38);
-	base += vec3(0.04, 0.045, 0.02) * soft_rim;
+	float soft_rim = pow(1.0 - facing, 1.90) * 0.58;
+	base += leaf_color * soft_rim * (0.55 + flock * 0.35);
 
-	float under = clamp(0.18 - v_obj.y * 0.12, 0.0, 0.14);
+	float under = clamp(0.16 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
 
 	ALBEDO = base;

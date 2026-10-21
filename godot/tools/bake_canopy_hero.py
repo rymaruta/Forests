@@ -14,7 +14,7 @@ BASE_R = 1.30
 RES = 168
 PAD = 0.14
 # 丘は読めるが貼り付け球にしない。谷の柔らかさ用に少し広め
-K_BLEND = 0.088
+K_BLEND = 0.095
 SEED = 2901
 AO_SAMPLES = 16
 
@@ -25,39 +25,41 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照冠: 10〜12 の丸丘が溶け合う雲。尖頂なし。
+    # 参照冠: 縦に積む丸丘クラウド。横キノコ・尖頂禁止。
     specs = [
-        ((0.00, 0.38, 0.00), 0.48),
-        ((0.05, 0.58, -0.03), 0.42),
-        ((-0.04, 0.20, 0.04), 0.42),
-        ((0.00, 0.74, 0.00), 0.36),
-        ((0.12, 0.44, 0.10), 0.32),
-        ((-0.14, 0.50, -0.06), 0.31),
-        ((0.08, 0.28, -0.12), 0.30),
-        ((-0.08, 0.32, 0.14), 0.29),
+        ((0.00, 0.42, 0.00), 0.46),
+        ((0.04, 0.62, -0.02), 0.40),
+        ((-0.03, 0.22, 0.03), 0.40),
+        ((0.01, 0.80, 0.00), 0.34),
+        ((0.10, 0.48, 0.08), 0.30),
+        ((-0.12, 0.54, -0.05), 0.29),
+        ((0.07, 0.30, -0.10), 0.28),
+        ((-0.06, 0.34, 0.12), 0.28),
+        ((0.03, 0.70, 0.06), 0.27),
+        ((-0.05, 0.66, -0.07), 0.26),
     ]
-    for i in range(8):
-        a = i / 8 * math.tau + 0.14
-        y = 0.40 + 0.08 * math.sin(i * 1.7 + 0.2)
-        r = 0.31 if i % 2 == 0 else 0.27
-        rad = 0.44 + 0.05 * math.sin(i * 1.9)
+    for i in range(7):
+        a = i / 7 * math.tau + 0.16
+        y = 0.44 + 0.10 * math.sin(i * 1.6 + 0.25)
+        r = 0.29 if i % 2 == 0 else 0.26
+        rad = 0.40 + 0.04 * math.sin(i * 2.0)
         specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), r))
-    for i in range(6):
-        a = i / 6 * math.tau + 0.48
+    for i in range(5):
+        a = i / 5 * math.tau + 0.50
         specs.append(
             (
                 (
-                    math.cos(a) * 0.26,
-                    0.60 + 0.035 * math.cos(i * 1.2),
-                    math.sin(a) * 0.26,
+                    math.cos(a) * 0.24,
+                    0.64 + 0.03 * math.cos(i * 1.1),
+                    math.sin(a) * 0.24,
                 ),
-                0.25,
+                0.24,
             )
         )
-    specs.append(((0.02, 0.86, -0.01), 0.28))
-    for i in range(5):
-        a = i / 5 * math.tau + 0.22
-        specs.append(((math.cos(a) * 0.20, 0.08, math.sin(a) * 0.20), 0.22))
+    specs.append(((0.02, 0.92, -0.01), 0.27))
+    for i in range(4):
+        a = i / 4 * math.tau + 0.20
+        specs.append(((math.cos(a) * 0.18, 0.10, math.sin(a) * 0.18), 0.21))
     return specs
 
 
@@ -114,8 +116,8 @@ def bake_ao(verts: np.ndarray, normals: np.ndarray, centers, radii, rng: random.
             hit += occ
         # soft darken in valleys; keep lit crowns bright
         dark = hit / AO_SAMPLES
-        ao[i] = 1.0 - 0.48 * (dark ** 1.20)
-    return np.clip(ao, 0.50, 1.0)
+        ao[i] = 1.0 - 0.50 * (dark ** 1.15)
+    return np.clip(ao, 0.48, 1.0)
 
 
 def main() -> None:

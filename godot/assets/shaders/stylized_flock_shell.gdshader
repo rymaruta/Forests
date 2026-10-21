@@ -17,8 +17,7 @@ float _hash31(vec3 p) {
 }
 
 void vertex() {
-	// 薄い縁だけ。厚すぎるとディザ輪郭になる
-	float lift = 0.010 + _hash31(VERTEX * 36.0) * 0.006;
+	float lift = 0.008 + _hash31(VERTEX * 40.0) * 0.007;
 	VERTEX += NORMAL * lift;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_n = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
@@ -26,20 +25,19 @@ void vertex() {
 
 void fragment() {
 	float facing = abs(dot(normalize(v_n), VIEW));
-	// 正面はほぼ残さない。縁だけ短いフェルト毛羽
-	float edge = pow(1.0 - facing, 1.75);
-	float n1 = _hash31(v_world * 64.0);
-	float n2 = _hash31(v_world * 110.0 + 2.4);
+	float edge = pow(1.0 - facing, 1.60);
+	float n1 = _hash31(v_world * 70.0);
+	float n2 = _hash31(v_world * 120.0 + 2.4);
 	float pile = n1 * 0.55 + n2 * 0.45;
 	float cut = pile * edge;
-	// 極縁だけ。density 高め＝ほぼ捨てる
-	if (cut < density * 0.70) {
+	if (cut < density * 0.68) {
 		discard;
 	}
-	vec3 tex = texture(leaf_tex, v_world.xz * 3.6).rgb;
+	vec3 tex = texture(leaf_tex, v_world.xz * 4.0).rgb;
 	float tex_l = dot(tex, vec3(0.3, 0.5, 0.2));
-	vec3 base = leaf_color * (0.92 + tex_l * 0.16) * shell_tint;
-	base *= 0.90 + edge * 0.18;
+	// 本体と同色。白い縁ハローにしない
+	vec3 base = leaf_color * (0.88 + tex_l * 0.18) * shell_tint;
+	base *= 0.92 + edge * 0.14;
 	ALBEDO = base;
 	ALPHA = 1.0;
 }
