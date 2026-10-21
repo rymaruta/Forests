@@ -49,13 +49,15 @@ func _build_visual() -> void:
 	var hair_c := Color(0.20, 0.11, 0.07)
 	var boot_c := Color(0.40, 0.28, 0.18)
 
-	# --- 下半身（ブーツを裾から出す） ---
+	# --- 下半身（レギンス＋ブーツを裾から出す） ---
+	var leg_c := Color(0.28, 0.18, 0.12)
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.uv_sphere(0.12, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.3)), Vector3(0.12 * side, 0.10, 0.06), Vector3(1.35, 0.9, 1.6))
-		_mi(CraftMeshes.trunk(0.22, 0.075, 0.06, 10), _cm(boot_c.lightened(0.05), boot_c.darkened(0.2)), Vector3(0.11 * side, 0.14, 0.02))
+		_mi(CraftMeshes.trunk(0.28, 0.06, 0.05, 10), _cm(leg_c, leg_c.darkened(0.25)), Vector3(0.10 * side, 0.12, 0.02))
+		_mi(CraftMeshes.uv_sphere(0.13, 8, 10, 0.05, side + 2.0, 0.80), _cm(boot_c, boot_c.darkened(0.3)), Vector3(0.12 * side, 0.08, 0.08), Vector3(1.40, 0.85, 1.65))
+		_mi(CraftMeshes.trunk(0.18, 0.08, 0.065, 10), _cm(boot_c.lightened(0.05), boot_c.darkened(0.2)), Vector3(0.11 * side, 0.14, 0.03))
 
-	# 一体フレアワンピ
-	_mi(CraftMeshes.trunk(0.68, 0.32, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.28, 0))
+	# 一体フレアワンピ（裾を少し上げて脚を見せる）
+	_mi(CraftMeshes.trunk(0.62, 0.34, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.48), Vector3(0, 0.32, 0))
 
 	# 袖＋手元：trunkはローカル+Yなので X≈180 で下ろす
 	for side in [-1.0, 1.0]:

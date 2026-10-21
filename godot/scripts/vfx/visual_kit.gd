@@ -75,14 +75,14 @@ static func plaster_material() -> Material:
 	var m := ShaderMaterial.new()
 	m.shader = load_shader("res://assets/shaders/stylized_surface.gdshader")
 	m.set_shader_parameter("albedo_tex", load("res://assets/textures/plaster.png"))
-	m.set_shader_parameter("base_color", Vector3(0.82, 0.76, 0.62))
-	m.set_shader_parameter("shadow_color", Vector3(0.58, 0.52, 0.40))
-	m.set_shader_parameter("uv_scale", 2.4)
-	m.set_shader_parameter("nap_scale", 48.0)
-	m.set_shader_parameter("flock_mix", 0.92)
-	m.set_shader_parameter("tex_mix", 0.62)
-	m.set_shader_parameter("exposure", 1.02)
-	m.set_shader_parameter("warm_bias", Vector3(1.04, 1.0, 0.92))
+	m.set_shader_parameter("base_color", Vector3(0.78, 0.72, 0.58))
+	m.set_shader_parameter("shadow_color", Vector3(0.52, 0.46, 0.34))
+	m.set_shader_parameter("uv_scale", 2.8)
+	m.set_shader_parameter("nap_scale", 64.0)
+	m.set_shader_parameter("flock_mix", 0.96)
+	m.set_shader_parameter("tex_mix", 0.70)
+	m.set_shader_parameter("exposure", 0.96)
+	m.set_shader_parameter("warm_bias", Vector3(1.06, 1.0, 0.90))
 	return m
 
 
