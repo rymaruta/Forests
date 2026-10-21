@@ -15,7 +15,7 @@ const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
 # 参照樹：幹と趾は同系の暖茶（趾だけ極端に暗くしない）
 const BARK := Color(0.38, 0.30, 0.22)
-const BARK_TOE := Color(0.26, 0.18, 0.12)
+const BARK_TOE := Color(0.24, 0.16, 0.10)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
 const LEAF := Color(0.49, 0.50, 0.33)
 const LEAF_DARK := Color(0.25, 0.27, 0.17)
@@ -110,7 +110,7 @@ static func toe_skirt_part() -> Node3D:
 	var baked_h := 0.48
 	var s := TOE_H / baked_h
 	# ベイクが低いと s が増える。aspect≈3・趾の丸み
-	toes.scale = Vector3(s * 1.40, s * 1.05, s * 1.40)
+	toes.scale = Vector3(s * 1.50, s * 0.95, s * 1.50)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
