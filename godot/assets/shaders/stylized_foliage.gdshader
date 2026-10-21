@@ -68,8 +68,8 @@ void fragment() {
 
 	// 房の谷は柔らかく（黒穴の球接合に見せない）
 	float crevice = clamp(1.0 - NORMAL.y * 0.98, 0.0, 1.0);
-	crevice = pow(crevice, 1.7);
-	float lobe_ao = mix(1.0, 0.80, crevice);
+	crevice = pow(crevice, 1.55);
+	float lobe_ao = mix(1.0, 0.72, crevice);
 
 	vec3 n = NORMAL;
 	vec3 t1 = normalize(cross(NORMAL, vec3(0.17, 0.93, 0.31)));
