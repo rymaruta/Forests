@@ -107,9 +107,9 @@ void fragment() {
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	// 完全マットの包み光（擬似スペキュラ禁止）
-	float wrap = mix(0.96, 1.04, ndl);
-	float up = clamp(n.y * 0.12 + 0.90, 0.88, 1.05);
+	// 完全マットの包み光（擬似スペキュラ・白頂禁止）
+	float wrap = mix(0.98, 1.02, ndl);
+	float up = clamp(n.y * 0.08 + 0.92, 0.90, 1.03);
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
