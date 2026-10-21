@@ -54,21 +54,22 @@ func _build_visual() -> void:
 	# 一体フレアワンピ
 	_mi(CraftMeshes.trunk(0.68, 0.32, 0.17, 24, 0.0, 0.01), _cm(cloth, cloth_d), Vector3(0, 0.28, 0))
 
-	# 袖＋手元：体側に自然に下ろす（胸前で交差禁止）
+	# 袖＋手元：trunkはローカル+Yなので X≈180 で下ろす
 	for side in [-1.0, 1.0]:
 		var arm_root := Node3D.new()
-		arm_root.position = Vector3(0.24 * side, 0.82, 0.02)
-		arm_root.rotation_degrees.z = 18.0 * side
+		arm_root.position = Vector3(0.22 * side, 0.80, 0.02)
+		arm_root.rotation_degrees.x = 168.0
+		arm_root.rotation_degrees.z = 12.0 * side
 		mesh_root.add_child(arm_root)
 		var upper := MeshInstance3D.new()
-		upper.mesh = CraftMeshes.trunk(0.32, 0.07, 0.055, 12)
+		upper.mesh = CraftMeshes.trunk(0.34, 0.07, 0.052, 12)
 		upper.material_override = _cm(cloth, cloth_d)
 		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
 		hand.mesh = CraftMeshes.uv_sphere(0.058, 7, 8)
 		hand.material_override = _cm(skin, skin.darkened(0.22))
-		hand.position = Vector3(0.0, 0.34, 0.02)
+		hand.position = Vector3(0.0, 0.36, 0.0)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
 
