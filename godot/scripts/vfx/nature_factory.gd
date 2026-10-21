@@ -65,7 +65,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.12 if hero else 0.028,
+		0.135 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -73,16 +73,16 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# 参照：幹頂の短い V フォークが冠の下から読める。
+	# 参照：幹頂の短い V フォーク。冠に食い込ませて黒い三角割れを隠す。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.46 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.14 if hero else 0.06, 0.06 if hero else 0.022, 16, 0.04)
+		var blen := 0.40 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.15 if hero else 0.06, 0.065 if hero else 0.022, 18, 0.05)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.48 if b == 0 else PI - 0.48) + lean * 1.2
-		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (base_r * 0.28 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.10 if hero else 0.04))
-		br.rotation = Vector3(0.35 if hero else 0.55, ang, 0.55 if (hero and b == 0) else (-0.55 if hero else 0.0))
+		var ang := (0.40 if b == 0 else PI - 0.40) + lean * 1.2
+		var by := h * (0.86 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.18 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.06 if hero else 0.04))
+		br.rotation = Vector3(0.22 if hero else 0.55, ang, 0.40 if (hero and b == 0) else (-0.40 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -96,10 +96,10 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 枝の V フォークが冠下から読める高さ
 	canopy.position = Vector3(lean * 0.08, h * 0.92, 0.0)
 	if hero:
-		# OBJ は BASE_R=1.18 で焼く。ワールド側で念のため比率固定
+		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
 		var baked_r := 1.18
 		var s := canopy_r / baked_r
-		canopy.scale = Vector3(s, s * 0.92, s)
+		canopy.scale = Vector3(s, s, s)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 	# 趾パッドと樹皮溝が正面で読めるヨー
