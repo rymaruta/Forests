@@ -102,6 +102,8 @@ func _build_visual() -> void:
 		mesh_root.add_child(shine)
 
 	# 頬紅は省略（薄い球が傷跡ラインに読まれるため）
+	# 小さな鼻（参照の控えめ鼻）
+	_mi(CraftMeshes.uv_sphere(0.018, 6, 7), _cm(skin.darkened(0.06), skin.darkened(0.22)), Vector3(0, 1.12, 0.285), Vector3(0.85, 0.70, 0.95))
 
 	var mouth := _mi(CraftMeshes.uv_sphere(0.014, 5, 6, 0.0, 1.0, 0.12), _cm(Color(0.55, 0.32, 0.34), Color(0.32, 0.16, 0.18)), Vector3(0, 1.04, 0.278))
 	mouth.scale = Vector3(1.05, 0.16, 0.20)
