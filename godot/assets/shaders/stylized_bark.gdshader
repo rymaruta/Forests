@@ -49,8 +49,8 @@ float _groove_at(vec3 wpos) {
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float g = _groove_at(v_world);
-	// ごく浅い押し（硬い稜線を作らない）
-	VERTEX += NORMAL * (g - 0.35) * 0.012;
+	// 浅い押しでシルエットに溝を出す（硬い稜線は避ける）
+	VERTEX += NORMAL * (g - 0.30) * 0.030;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
@@ -64,13 +64,21 @@ void fragment() {
 	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
 
 	// 彫り：温かみのある読みやすい溝（黒帯ゼブラ禁止）
-	vec3 base = mix(bark_color * 1.14, bark_dark * 0.62, clamp(groove * 1.05, 0.0, 1.0));
+	vec3 base = mix(bark_color * 1.16, bark_dark * 0.55, clamp(groove * 1.15, 0.0, 1.0));
 	base *= 0.98 + tex.g * 0.05;
+
+	// 溝方向に法線を少し曲げて彫りを照明で読む（金属ハイライトは出さない）
+	vec3 n = normalize(v_normal);
+	vec3 t_ang = normalize(cross(n, vec3(0.0, 1.0, 0.0)));
+	if (length(t_ang) < 1e-3) {
+		t_ang = vec3(1.0, 0.0, 0.0);
+	}
+	n = normalize(n + t_ang * (groove - 0.45) * 1.15);
 
 	// 超フラットな包み込み照明（円柱のプラスチックハイライト禁止）
 	vec3 L = normalize(vec3(0.22, 0.92, 0.28));
-	float ndl = clamp(dot(normalize(v_normal), L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.94, 1.04, ndl);
-	float up = mix(0.98, 1.02, clamp(v_normal.y * 0.5 + 0.5, 0.0, 1.0));
+	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
+	float wrap = mix(0.93, 1.05, ndl);
+	float up = mix(0.97, 1.03, clamp(n.y * 0.5 + 0.5, 0.0, 1.0));
 	ALBEDO = base * wrap * up;
 }

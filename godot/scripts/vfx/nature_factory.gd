@@ -52,15 +52,15 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照マスク mean 寄り（暗すぎ黒帯を避ける）
 	var bark_tint := Color(0.46, 0.34, 0.24) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
-	# 参照のくすんだセージ。Benchで飽和しすぎないよう灰みを足す
-	var leaf := Color(0.36, 0.39, 0.30) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.24, 0.28, 0.20)
+	# 参照マスク mean ≈0.62/0.64/0.56。Bench露出で沈むので少し明るめに置く
+	var leaf := Color(0.58, 0.61, 0.50) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.40, 0.44, 0.34)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	var trunk_h := h * (1.0 if hero else 0.92)
 	var bark_mat := VisualKit.bark_shader_material(bark_tint)
-	# 参照：太い丸趾4本（尖り5本より粘土一体に近い）
-	var toe_n := 4 if hero else (0 if backdrop else 4)
+	# 参照：5本前後の丸趾
+	var toe_n := 5 if hero else (0 if backdrop else 4)
 	var trunk := MeshInstance3D.new()
 	trunk.name = "HeroTrunk" if hero else "Trunk"
 	trunk.mesh = CraftMeshes.trunk(
@@ -69,7 +69,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.075 if hero else 0.028,
+		0.12 if hero else 0.028,
 		true,
 		toe_n
 	)
