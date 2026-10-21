@@ -262,7 +262,7 @@ static func cottage() -> Node3D:
 	# 前面斜め梁：窓を避け上段ベイのみ（参照ハーフティンバー）
 	var d1 := MeshInstance3D.new()
 	var dm := BoxMesh.new()
-	dm.size = Vector3(0.95, 0.14, 0.11)
+	dm.size = Vector3(0.95, 0.11, 0.09)
 	d1.mesh = dm
 	d1.material_override = wood
 	d1.position = Vector3(-0.78, 1.68, 1.36)
