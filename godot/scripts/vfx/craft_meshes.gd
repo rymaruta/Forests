@@ -186,11 +186,11 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.38
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.46, 0.0, 1.0)
-		lobe = pow(lobe, 1.25)
+		var lobe: float = clampf(1.0 - d / 0.50, 0.0, 1.0)
+		lobe = pow(lobe, 1.55)
 		best = maxf(best, lobe)
-	# 谷を残して趾を個別に読む（スカート溶断／別体球禁止）
-	return 1.0 + 0.95 * best * env
+	# 丸先端パッド。尖り／スカート溶断禁止
+	return 1.0 + 0.72 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
@@ -199,8 +199,8 @@ static func _root_toe_lift(boost: float, t: float, height: float) -> float:
 	if excess <= 0.001 or t > 0.34:
 		return 0.0
 	var u := clampf(t / 0.34, 0.0, 1.0)
-	var mound := exp(-pow((u - 0.12) / 0.16, 2.0))
-	return excess * 0.48 * mound * height * 0.10
+	var mound := exp(-pow((u - 0.14) / 0.18, 2.0))
+	return excess * 0.36 * mound * height * 0.09
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:
