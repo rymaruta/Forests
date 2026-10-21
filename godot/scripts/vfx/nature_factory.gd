@@ -457,21 +457,25 @@ static func cottage() -> Node3D:
 	root.add_child(chim_cap)
 
 	# 段（参照のポーチ段：扉幅に寄せる・段ごとに少し明度差）
-	var step_mats = [
-		VisualKit.bark_shader_material(Color(0.22, 0.13, 0.07), 0.0, 0.55),
-		VisualKit.bark_shader_material(Color(0.19, 0.11, 0.06), 0.0, 0.60),
-		VisualKit.bark_shader_material(Color(0.17, 0.10, 0.05), 0.0, 0.65),
+	var step_ys: Array[float] = [0.34, 0.20, 0.08]
+	var step_zs: Array[float] = [1.72, 1.90, 2.05]
+	var step_sizes: Array[Vector3] = [
+		Vector3(1.05, 0.14, 0.48),
+		Vector3(0.95, 0.12, 0.42),
+		Vector3(0.85, 0.10, 0.34),
+	]
+	var step_cols: Array[Color] = [
+		Color(0.22, 0.13, 0.07),
+		Color(0.19, 0.11, 0.06),
+		Color(0.17, 0.10, 0.05),
 	]
 	for i in 3:
-		var sy := [0.34, 0.20, 0.08][i]
-		var sz := [1.72, 1.90, 2.05][i]
-		var ss := [Vector3(1.05, 0.14, 0.48), Vector3(0.95, 0.12, 0.42), Vector3(0.85, 0.10, 0.34)][i]
 		var st := MeshInstance3D.new()
 		var stm := BoxMesh.new()
-		stm.size = ss
+		stm.size = step_sizes[i]
 		st.mesh = stm
-		st.material_override = step_mats[i]
-		st.position = Vector3(0, sy, sz)
+		st.material_override = VisualKit.bark_shader_material(step_cols[i], 0.0, 0.55 + float(i) * 0.05)
+		st.position = Vector3(0.0, step_ys[i], step_zs[i])
 		root.add_child(st)
 
 	var rng := RandomNumberGenerator.new()
