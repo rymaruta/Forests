@@ -79,10 +79,15 @@ void fragment() {
 
 	float tex_l = dot(tex, vec3(0.30, 0.52, 0.18));
 	vec3 base = mix(leaf_dark, leaf_color, 0.48 + up * 0.18 + ndl * 0.12);
-	base = mix(base, leaf_color * (0.92 + tex_l * 0.16), flock_mix * 0.55);
-	base *= mix(0.97, 1.04, flock);
+	base = mix(base, leaf_color * (0.90 + tex_l * 0.22), flock_mix * 0.70);
+	base *= mix(0.96, 1.05, flock);
 	base *= lobe_ao * wrap;
 	base *= mix(0.99, 1.015, fiber2);
+
+	// 柔らかいフェルト縁：ディザ殻ではなく面の向きで薄い毛羽ハロー
+	float facing = clamp(dot(normalize(v_n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
+	float soft_rim = pow(1.0 - facing, 2.2) * 0.55;
+	base += leaf_color * soft_rim * (0.55 + flock * 0.35);
 
 	float under = clamp(0.18 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
