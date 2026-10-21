@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 160
 PAD = 0.12
-K_BLEND = 0.11  # 房は溶けるが雲の丘として読める
+K_BLEND = 0.095  # 丘は読めるが貼り付け球にしない
 SEED = 2901
 
 

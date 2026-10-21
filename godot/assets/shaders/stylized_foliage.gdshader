@@ -88,9 +88,9 @@ void fragment() {
 	float flock = pile * 0.45 + fiber * 0.38 + fiber2 * 0.17;
 
 	// 房の谷：柔らかい雲影
-	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
-	crevice = pow(crevice, 1.70);
-	float lobe_ao = mix(1.0, 0.62, crevice);
+	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
+	crevice = pow(crevice, 1.45);
+	float lobe_ao = mix(1.0, 0.52, crevice);
 
 	vec3 L = normalize(vec3(0.28, 0.92, 0.24));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -106,8 +106,8 @@ void fragment() {
 	base *= mix(0.985, 1.02, fiber2);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 2.5) * 0.32;
-	base += leaf_color * soft_rim * (0.40 + flock * 0.35);
+	float soft_rim = pow(1.0 - facing, 2.2) * 0.48;
+	base += leaf_color * soft_rim * (0.50 + flock * 0.40);
 
 	float under = clamp(0.16 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
