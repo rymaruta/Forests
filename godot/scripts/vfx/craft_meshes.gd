@@ -198,13 +198,13 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
-	## ごく低い丘だけ。強リフト＝先端が浮くフィン／フックになる
+	## 低い粘土丘。接地はフィレット半径で丸め、ここは上面の膨らみだけ。
 	var excess := maxf(boost - 1.0, 0.0)
-	if excess <= 0.001 or t > 0.36:
+	if excess <= 0.001 or t > 0.40:
 		return 0.0
-	var u := clampf(t / 0.36, 0.0, 1.0)
-	var mound := exp(-pow((u - 0.14) / 0.16, 2.0))
-	return excess * 0.28 * mound * height * 0.07
+	var u := clampf(t / 0.40, 0.0, 1.0)
+	var mound := exp(-pow((u - 0.12) / 0.18, 2.0))
+	return excess * 0.40 * mound * height * 0.085
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:

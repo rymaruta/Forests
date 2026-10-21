@@ -70,7 +70,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.06 if hero else 0.028,
+		0.035 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -88,9 +88,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
 		var ang := (0.70 if b == 0 else PI - 0.70) + lean * 1.2
 		# 冠より下で外へ開き、正面から短い V が読める
-		var by := h * (0.86 if hero else (0.58 if b == 0 else 0.54))
+		var by := h * (0.88 if hero else (0.58 if b == 0 else 0.54))
 		br.position = Vector3(cos(ang) * (base_r * 0.28 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.10 if hero else 0.04))
-		br.rotation = Vector3(0.72 if hero else 0.55, ang, 0.62 if (hero and b == 0) else (-0.62 if hero else 0.0))
+		br.rotation = Vector3(0.65 if hero else 0.55, ang, 0.58 if (hero and b == 0) else (-0.58 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -101,8 +101,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	# 幹頂は冠に食い込み、フォークは冠下に残す
-	canopy.position = Vector3(lean * 0.08, h * 0.98, 0.0)
+	# 幹・フォークを冠に食い込ませて黒い水平割れを消す
+	canopy.position = Vector3(lean * 0.08, h * 0.88, 0.0)
 	if hero:
 		# OBJ は BASE_R=1.30 で焼く
 		var baked_r := 1.30
