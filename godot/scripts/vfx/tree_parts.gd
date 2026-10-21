@@ -166,8 +166,8 @@ static func assemble_hero() -> Node3D:
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
 		canopy_mesh.scale *= Vector3(0.86, 1.18, 0.86)
-		var sheet_leaf := Color(0.36, 0.43, 0.28)
-		var sheet_dark := Color(0.18, 0.24, 0.14)
+		var sheet_leaf := Color(0.34, 0.41, 0.26)
+		var sheet_dark := Color(0.16, 0.22, 0.12)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
 	# フォーク先端だけ覗く
 	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.60, 0.0)
