@@ -10,7 +10,7 @@ const HERO_TRUNK_H := 1.40
 ## 幹本体はやや細め。フレア幅は趾ブーストに任せる（太杭＋フィン化を防ぐ）
 const HERO_BASE_R := 0.28
 const HERO_TOP_R := 0.10
-const HERO_CANOPY_R := 1.22
+const HERO_CANOPY_R := 1.10
 const HERO_SEED := 2901
 
 
@@ -86,13 +86,13 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		var br := MeshInstance3D.new()
 		# 参照：短い V フォークが冠下から読める
 		# 参照：短い U クレードル（鋭い V 禁止）
-		var blen := 0.55 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.055 if hero else 0.022, 18, 0.08)
+		var blen := 0.60 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.14 if hero else 0.06, 0.06 if hero else 0.022, 18, 0.10)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
-		var by := h * (0.84 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (base_r * 0.26 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.10 if hero else 0.04))
-		br.rotation = Vector3(0.62 if hero else 0.55, ang, 0.52 if (hero and b == 0) else (-0.52 if hero else 0.0))
+		var ang := (0.60 if b == 0 else PI - 0.60) + lean * 1.2
+		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.30 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.12 if hero else 0.04))
+		br.rotation = Vector3(0.70 if hero else 0.55, ang, 0.55 if (hero and b == 0) else (-0.55 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -104,12 +104,12 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
 	# 幹頂は冠に食い込み、短いクレードルは冠下に残す
-	canopy.position = Vector3(lean * 0.08, h * 0.96, 0.0)
+	canopy.position = Vector3(lean * 0.08, h * 0.98, 0.0)
 	if hero:
-		# OBJ は BASE_R=1.30 で焼く
+		# OBJ は BASE_R=1.30 で焼く。横を抑え縦を伸ばして参照の縦長雲へ
 		var baked_r := 1.30
 		var s := canopy_r / baked_r
-		canopy.scale = Vector3(s, s, s)
+		canopy.scale = Vector3(s * 0.92, s * 1.12, s * 0.92)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 	# 趾パッドと樹皮溝が正面で読めるヨー
