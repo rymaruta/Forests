@@ -13,7 +13,9 @@ const CANOPY_R := 1.10
 const TOE_H := 0.42
 const TOE_BOTTOM_R := 0.34
 const LEAN := 0.02
-const BARK := Color(0.37, 0.29, 0.20)
+# 参照樹：幹と趾は同系の暖茶（趾だけ極端に暗くしない）
+const BARK := Color(0.42, 0.30, 0.18)
+const BARK_TOE := Color(0.40, 0.28, 0.17)
 # 参照冠の深いモスオリーブ（rb/g≈0.22）
 const LEAF := Color(0.49, 0.50, 0.33)
 const LEAF_DARK := Color(0.25, 0.27, 0.17)
@@ -86,8 +88,8 @@ static func toe_skirt_part() -> Node3D:
 	## 部品3: 粘土趾＋裾だけ。短い丘メッシュ。
 	var root := Node3D.new()
 	root.name = "PartToeSkirt"
-	# 趾は幹より一段暗い暖茶（参照 mean≈118/91/68）
-	var bark_mat := VisualKit.bark_shader_material(Color(0.25, 0.18, 0.12))
+	# 趾は幹と同系の暖茶（参照全体樹で色が揃う）
+	var bark_mat := VisualKit.bark_shader_material(BARK_TOE)
 	var toes := MeshInstance3D.new()
 	toes.name = "ToeSkirt"
 	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):
@@ -108,7 +110,7 @@ static func toe_skirt_part() -> Node3D:
 	var baked_h := 0.48
 	var s := TOE_H / baked_h
 	# ベイクが低いと s が増える。aspect≈3・趾の丸み
-	toes.scale = Vector3(s * 1.45, s * 0.95, s * 1.45)
+	toes.scale = Vector3(s * 1.40, s * 1.05, s * 1.40)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")

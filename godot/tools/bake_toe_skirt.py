@@ -12,7 +12,7 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "toe_skirt.obj"
 RES = 140
 PAD = 0.10
-K_BLEND = 0.090
+K_BLEND = 0.070
 SEED = 5201
 AO_SAMPLES = 16
 
@@ -56,13 +56,13 @@ def build_prims():
     n = 5
     for i in range(n):
         a = i / n * math.tau + 0.22
-        rad = 0.36 + 0.04 * math.sin(i * 1.4)
-        c = np.array([math.cos(a) * rad, 0.13 + 0.02 * (i % 2), math.sin(a) * rad * 0.90])
-        spheres.append((c, 0.185 if i % 2 == 0 else 0.165))
-        tip = c + np.array([math.cos(a) * 0.14, -0.005, math.sin(a) * 0.12])
-        spheres.append((tip, 0.125 if i % 2 == 0 else 0.110))
-        root = c * 0.55 + np.array([0.0, 0.06, 0.0])
-        spheres.append((root, 0.145))
+        rad = 0.34 + 0.04 * math.sin(i * 1.4)
+        c = np.array([math.cos(a) * rad, 0.15 + 0.025 * (i % 2), math.sin(a) * rad * 0.90])
+        spheres.append((c, 0.175 if i % 2 == 0 else 0.155))
+        tip = c + np.array([math.cos(a) * 0.13, 0.01, math.sin(a) * 0.11])
+        spheres.append((tip, 0.120 if i % 2 == 0 else 0.105))
+        root = c * 0.55 + np.array([0.0, 0.08, 0.0])
+        spheres.append((root, 0.135))
     return prims_cap, spheres
 
 
