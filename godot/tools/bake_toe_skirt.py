@@ -48,10 +48,10 @@ def sphere_sdf(p: np.ndarray, c: np.ndarray, r: float) -> np.ndarray:
 def build_prims():
     # 広く開いた趾＋丸い高さ。参照の重い粘土趾。
     prims_cap = [
-        (np.array([0.0, 0.02, 0.0]), np.array([0.0, 0.32, 0.0]), 0.32, 0.22),
+        (np.array([0.0, 0.02, 0.0]), np.array([0.0, 0.22, 0.0]), 0.30, 0.24),
     ]
     spheres = [
-        (np.array([0.0, 0.10, 0.0]), 0.30),  # 裾芯
+        (np.array([0.0, 0.09, 0.0]), 0.28),  # 裾芯
     ]
     n = 5
     for i in range(n):
