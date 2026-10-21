@@ -126,7 +126,7 @@ static func assemble_hero() -> Node3D:
 	# 全体樹シートの暖茶（部品Benchのクール木部ロックは触らない）
 	# 幹・趾は同一マテリアル（ground_contact分離＝二色割れ禁止）
 	# シート木部ターゲット ≈98/94/62（暖赤茶・カーキ禁止）
-	var bark_sheet := Color(0.248, 0.205, 0.118)
+	var bark_sheet := Color(0.258, 0.218, 0.124)
 	var bark_mat := VisualKit.bark_shader_material(bark_sheet, 0.0, 1.0)
 
 	var toes := toe_skirt_part()
