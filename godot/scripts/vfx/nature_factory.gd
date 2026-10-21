@@ -8,8 +8,8 @@ class_name NatureFactory
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
 const HERO_TRUNK_H := 1.42
 ## 幹本体はやや細め。フレア幅は趾ブーストに任せる（太杭＋フィン化を防ぐ）
-const HERO_BASE_R := 0.36
-const HERO_TOP_R := 0.15
+const HERO_BASE_R := 0.34
+const HERO_TOP_R := 0.11
 const HERO_CANOPY_R := 1.30
 const HERO_SEED := 2901
 
@@ -81,8 +81,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 別体趾は床フィン・貼り付け感で捨てた。趾は一本メッシュのみ。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.40 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.15 if hero else 0.06, 0.065 if hero else 0.022, 18, 0.05)
+		var blen := 0.48 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.12 if hero else 0.06, 0.055 if hero else 0.022, 18, 0.08)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
 		var ang := (0.40 if b == 0 else PI - 0.40) + lean * 1.2
 		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))

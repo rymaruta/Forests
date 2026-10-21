@@ -78,7 +78,7 @@ void fragment() {
 	// 超フラットな包み込み照明（円柱のプラスチックハイライト禁止）
 	vec3 L = normalize(vec3(0.22, 0.92, 0.28));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.93, 1.05, ndl);
-	float up = mix(0.97, 1.03, clamp(n.y * 0.5 + 0.5, 0.0, 1.0));
+	float wrap = mix(0.96, 1.03, ndl);
+	float up = mix(0.98, 1.02, clamp(n.y * 0.5 + 0.5, 0.0, 1.0));
 	ALBEDO = base * wrap * up;
 }

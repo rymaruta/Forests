@@ -1,5 +1,5 @@
 shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_back, unshaded;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled;
 
 uniform sampler2D leaf_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform vec3 leaf_color : source_color = vec3(0.36, 0.44, 0.30);
@@ -78,24 +78,27 @@ void fragment() {
 	n += (pile - 0.5) * 0.26 * t1;
 	n = normalize(n);
 
-	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.92, 1.06, ndl);
+	// Lambert で房の立体を残しつつ、マット＋フェルト変調
+	float ndl = clamp(dot(n, normalize(vec3(0.18, 0.95, 0.22))), 0.0, 1.0);
+	ndl = clamp(ndl * 0.28 + 0.72, 0.0, 1.0);
 	float up = clamp(n.y * 0.16 + 0.84, 0.80, 1.0);
-	float fiber_catch = mix(0.90, 1.12, flock) * wrap;
+	float fiber_catch = mix(0.90, 1.12, flock) * ndl;
 
 	float facing = clamp(dot(n, VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float rim = pow(1.0 - facing, 1.55) * 0.85;
+	float rim = pow(1.0 - facing, 1.55) * 0.90;
 
 	vec3 base = mix(leaf_dark, leaf_color, 0.40 + fiber_catch * 0.30 + up * 0.14);
-	base = mix(base, leaf_color * (0.90 + tex.g * 0.14), flock_mix * 0.52);
-	base *= mix(0.985, 1.022, flock);
+	base = mix(base, leaf_color * (0.90 + tex.g * 0.12), flock_mix * 0.48);
+	base *= mix(0.985, 1.020, flock);
 	base *= lobe_ao;
-	base += leaf_color * rim * 1.20;
-	base *= mix(0.990, 1.014, fiber2);
-	base *= wrap;
+	base += leaf_color * rim * 1.25;
+	base *= mix(0.990, 1.012, fiber2);
 
 	float under = clamp(0.20 - v_obj.y * 0.14, 0.0, 0.14);
 	base *= 1.0 - under;
 
 	ALBEDO = base;
+	ROUGHNESS = max(roughness_val, 0.99);
+	SPECULAR = 0.0;
+	METALLIC = 0.0;
 }

@@ -192,8 +192,8 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 		var lobe: float = clampf(1.0 - d / 0.46, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
 		best = maxf(best, lobe)
-	# パッドは控えめ：フレアが本体、趾が起伏
-	return 1.0 + 0.55 * best * env
+	# フレア＋やや長い趾パッド（参照の伸びた粘土指）
+	return 1.0 + 0.72 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
