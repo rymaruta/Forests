@@ -159,50 +159,49 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：なだらかな粘土裾＋趾パッドのスイープ
-	if t >= 0.55:
+	## 参照：なだらかな粘土裾。趾は別ブーストで丘にする
+	if t >= 0.42:
 		return 1.0
-	var ft := 1.0 - t / 0.55
+	var ft := 1.0 - t / 0.42
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.14 * ft
+	return 1.0 + 0.18 * ft
 
 
 static func _ground_fillet(t: float) -> float:
 	## 接地を丸く：直角切れを粘土丘のフィレットに
-	if t >= 0.12:
+	if t >= 0.16:
 		return 1.0
-	var u := 1.0 - t / 0.12
+	var u := 1.0 - t / 0.16
 	u = u * u * (3.0 - 2.0 * u)
-	return 1.0 - 0.18 * u
+	return 1.0 - 0.22 * u
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
-	## 粘土趾：裾フレアの上に丸パッドを重ね、スイープ一体に見せる。
-	# 趾は裾だけ。幹中腹まで残すと縦稜の柱に見える
-	if toes <= 0 or t > 0.30:
+	## 裾の丸い丘だけ。星型の尖りを避けるため広く低く
+	if toes <= 0 or t > 0.26:
 		return 1.0
-	var u := clampf(t / 0.30, 0.0, 1.0)
-	var env: float = exp(-pow(u / 0.55, 2.2))
+	var u := clampf(t / 0.26, 0.0, 1.0)
+	var env: float = exp(-pow(u / 0.62, 2.4))
 	var best := 0.0
 	for i in toes:
-		var center := float(i) / float(toes) * TAU + 0.28 + 0.07 * sin(float(i) * 2.1)
-		var half_w := 0.58 + 0.05 * cos(float(i) * 1.7)
+		var center := float(i) / float(toes) * TAU + 0.22 + 0.06 * sin(float(i) * 2.1)
+		var half_w := 0.66 + 0.04 * cos(float(i) * 1.7)
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
 		var lobe: float = clampf(1.0 - d / half_w, 0.0, 1.0)
 		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
-		var amp := 0.78 + 0.08 * sin(float(i) * 1.3 + 0.4)
+		var amp := 0.58 + 0.06 * sin(float(i) * 1.3 + 0.4)
 		best = maxf(best, lobe * amp)
 	return 1.0 + best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
-	## 低い粘土丘。接地はフィレット半径で丸め、ここは上面の膨らみだけ。
+	## 低い粘土丘。上面だけ少し膨らませる
 	var excess := maxf(boost - 1.0, 0.0)
-	if excess <= 0.001 or t > 0.40:
+	if excess <= 0.001 or t > 0.28:
 		return 0.0
-	var u := clampf(t / 0.40, 0.0, 1.0)
-	var mound := exp(-pow((u - 0.12) / 0.18, 2.0))
-	return excess * 0.40 * mound * height * 0.085
+	var u := clampf(t / 0.28, 0.0, 1.0)
+	var mound := exp(-pow((u - 0.10) / 0.16, 2.0))
+	return excess * 0.55 * mound * height * 0.10
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:
