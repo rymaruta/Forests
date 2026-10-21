@@ -41,8 +41,8 @@ func _build_visual() -> void:
 		c.queue_free()
 
 	# Benchクリーム背景でも溶ける白肌禁止
-	var cloth := Color(0.22, 0.44, 0.48)
-	var cloth_d := Color(0.12, 0.28, 0.32)
+	var cloth := Color(0.20, 0.42, 0.46)
+	var cloth_d := Color(0.10, 0.26, 0.30)
 	var skin := Color(0.78, 0.56, 0.42)
 	var hat := Color(0.78, 0.60, 0.32)
 	var scarf_col := Color(0.90, 0.40, 0.28)
@@ -59,22 +59,23 @@ func _build_visual() -> void:
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
 
-	# 袖＋手元：体より前・外側に出して腕として読ませる
+	# 袖＋手元：体より前・外側。手先は丸い拳（鉤爪禁止）
 	for side in [-1.0, 1.0]:
 		var arm_root := Node3D.new()
-		arm_root.position = Vector3(0.34 * side, 0.80, 0.12)
-		arm_root.rotation_degrees.x = 155.0
-		arm_root.rotation_degrees.z = 18.0 * side
+		arm_root.position = Vector3(0.32 * side, 0.78, 0.14)
+		arm_root.rotation_degrees.x = 162.0
+		arm_root.rotation_degrees.z = 12.0 * side
 		mesh_root.add_child(arm_root)
 		var upper := MeshInstance3D.new()
-		upper.mesh = CraftMeshes.trunk(0.42, 0.068, 0.048, 14)
+		upper.mesh = CraftMeshes.trunk(0.40, 0.070, 0.052, 14)
 		upper.material_override = _cm(cloth, cloth_d, 0.50)
 		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.055, 8, 9)
-		hand.material_override = _cm(skin, skin.darkened(0.22))
-		hand.position = Vector3(0.0, 0.44, 0.0)
+		hand.mesh = CraftMeshes.uv_sphere(0.052, 9, 10)
+		hand.material_override = _cm(skin, skin.darkened(0.18))
+		hand.position = Vector3(0.0, 0.40, 0.0)
+		hand.scale = Vector3(1.15, 0.95, 1.10)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
 
