@@ -36,17 +36,21 @@ def lobe_specs():
         ((0.08, 0.04, -0.18), 0.18),
         ((-0.10, 0.05, 0.16), 0.18),
     ]
-    for i in range(7):
-        a = i / 7 * math.tau + 0.12
-        y = 0.44 + 0.06 * math.sin(i * 1.7)
-        r = 0.28 if i % 2 == 0 else 0.24
-        specs.append(((math.cos(a) * 0.44, y, math.sin(a) * 0.44), r))
+    # 小さめの房を増やして雲の粒立ちを出す（大きな数個だけ禁止）
+    for i in range(9):
+        a = i / 9 * math.tau + 0.12
+        y = 0.42 + 0.07 * math.sin(i * 1.7)
+        r = 0.24 if i % 2 == 0 else 0.20
+        specs.append(((math.cos(a) * 0.46, y, math.sin(a) * 0.46), r))
+    for i in range(8):
+        a = i / 8 * math.tau + 0.40
+        specs.append(((math.cos(a) * 0.30, 0.64, math.sin(a) * 0.30), 0.18))
     for i in range(6):
-        a = i / 6 * math.tau + 0.40
-        specs.append(((math.cos(a) * 0.28, 0.68, math.sin(a) * 0.28), 0.22))
-    for i in range(4):
-        a = i / 4 * math.tau + 0.55
-        specs.append(((math.cos(a) * 0.15, 0.86, math.sin(a) * 0.15), 0.17))
+        a = i / 6 * math.tau + 0.55
+        specs.append(((math.cos(a) * 0.16, 0.84, math.sin(a) * 0.16), 0.15))
+    for i in range(5):
+        a = i / 5 * math.tau + 0.22
+        specs.append(((math.cos(a) * 0.38, 0.28, math.sin(a) * 0.38), 0.16))
     return specs
 
 
