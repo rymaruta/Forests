@@ -87,7 +87,7 @@ static func toe_skirt_part() -> Node3D:
 	var root := Node3D.new()
 	root.name = "PartToeSkirt"
 	# 趾は幹より一段暗い暖茶（参照 mean≈118/91/68）
-	var bark_mat := VisualKit.bark_shader_material(Color(0.25, 0.18, 0.12))
+	var bark_mat := VisualKit.bark_shader_material(Color(0.22, 0.16, 0.11))
 	var toes := MeshInstance3D.new()
 	toes.name = "ToeSkirt"
 	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):
@@ -108,7 +108,7 @@ static func toe_skirt_part() -> Node3D:
 	var baked_h := 0.54
 	var s := TOE_H / baked_h
 	# 参照：横広 aspect≈3 ＋趾の丸い高さ
-	toes.scale = Vector3(s * 2.45, s * 0.82, s * 2.45)
+	toes.scale = Vector3(s * 2.30, s * 0.88, s * 2.30)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
