@@ -52,9 +52,9 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 参照の暖かい中茶
 	var bark_tint := Color(0.50, 0.36, 0.24) if hero else ForestsPalette.BARK_WARM.lerp(Color(0.40, 0.26, 0.16), rng.randf() * 0.5)
 	# Bench露出で明るくなるので参照 mean より暗めに置く
-	# 参照のモス寄り（淡ミント禁止）
-	var leaf := Color(0.38, 0.44, 0.28) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
-	var leaf_dark := Color(0.22, 0.28, 0.16)
+	# 参照の暖かいモス
+	var leaf := Color(0.42, 0.46, 0.28) if hero else Color(0.4, 0.48, 0.35).lerp(Color(0.36, 0.44, 0.32), rng.randf())
+	var leaf_dark := Color(0.24, 0.30, 0.16)
 
 	# ヒーロー：一本メッシュ幹（連続フレア＋粘土趾丘）。MC soft-union は白欠けで捨てた。
 	var trunk_h := h * (1.0 if hero else 0.92)
