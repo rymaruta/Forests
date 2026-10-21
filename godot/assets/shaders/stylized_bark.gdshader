@@ -49,8 +49,7 @@ float _groove_at(vec3 wpos) {
 void vertex() {
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	float g = _groove_at(v_world);
-	// ごく浅い押し（硬いデジタル稜線を避ける）
-	VERTEX += NORMAL * (g - 0.32) * 0.018;
+	VERTEX += NORMAL * (g - 0.32) * 0.022;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_normal = normalize((MODEL_MATRIX * vec4(NORMAL, 0.0)).xyz);
 }
@@ -63,20 +62,19 @@ void fragment() {
 	float y_mask = smoothstep(0.05, 0.22, v_world.y);
 	groove = mix(tex_g * y_mask * 0.55, groove, 0.78);
 
-	// 彫り：柔らかい色差（デジタルな黒溝を避ける）
-	vec3 base = mix(bark_color * 1.12, bark_dark * 0.68, clamp(groove * 0.90, 0.0, 1.0));
-	base *= 0.99 + tex.g * 0.04;
+	// 彫り：手彫りが読める色差（黒帯ゼブラは避ける）
+	vec3 base = mix(bark_color * 1.14, bark_dark * 0.58, clamp(groove * 1.08, 0.0, 1.0));
+	base *= 0.98 + tex.g * 0.05;
 
-	// 法線曲げを弱く：彫りの色差を主、プラスチック光沢を避ける
 	vec3 n = normalize(v_normal);
 	vec3 t_ang = normalize(cross(n, vec3(0.0, 1.0, 0.0)));
 	if (length(t_ang) < 1e-3) {
 		t_ang = vec3(1.0, 0.0, 0.0);
 	}
-	n = normalize(n + t_ang * (groove - 0.45) * 0.70);
+	n = normalize(n + t_ang * (groove - 0.45) * 0.85);
 
 	vec3 L = normalize(vec3(0.22, 0.92, 0.28));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-	float wrap = mix(0.97, 1.02, ndl);
+	float wrap = mix(0.96, 1.03, ndl);
 	ALBEDO = base * wrap;
 }
