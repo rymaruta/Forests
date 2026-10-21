@@ -123,8 +123,8 @@ void fragment() {
 	base *= mix(0.905, 1.095, grit * 0.28 + grit2 * 0.36 + grit3 * 0.36);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 2.56;
-	base *= vec3(0.955, 1.01, 1.01);
+	base *= 2.54;
+	base *= vec3(0.96, 0.995, 1.015);
 
 	// 真のフレネル — 発光リム完全禁止。柔縁はアルファのみ
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
