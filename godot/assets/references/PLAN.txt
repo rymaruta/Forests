@@ -31,5 +31,5 @@ Step 4  ワールドへ戻す
   Bench subjects: tree_canopy / tree_trunk / tree_toes / tree
   参照パーツ: assets/references/parts/ref-{canopy,trunk,toes}.png
   撮影: screenshot_bench_tree_part.gd と screenshot_bench_tree.gd
-  いま: 部品Bench立ち上げ。冠から合格させる。
+  いま: 冠部品のBench寄せ継続中（色・谷は接近、フェルト粒/雲溶けが残）。
   未達: 各部品合格→結合合格。合格宣言禁止。ワールド戻さない

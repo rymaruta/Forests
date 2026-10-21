@@ -64,10 +64,10 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 	return normalize(n + (px * wn.x + py * wn.y + pz * wn.z) * nap_strength);
 }
 
-void vertex() {
+	void vertex() {
 	// 短いフェルト毛羽。ギザ輪郭にならない程度
-	float fuzz = _hash31(VERTEX * 26.0 + 2.7) * 0.012
-		+ _hash31(VERTEX * 54.0) * 0.006
+	float fuzz = _hash31(VERTEX * 26.0 + 2.7) * 0.010
+		+ _hash31(VERTEX * 54.0) * 0.005
 		+ _hash31(VERTEX * 90.0 + 1.1) * 0.003;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
@@ -115,7 +115,7 @@ void fragment() {
 	float grit3 = _vnoise(v_world * 320.0 + 9.1);
 	base *= mix(0.88, 1.12, grit * 0.40 + grit2 * 0.35 + grit3 * 0.25);
 	base *= lobe_ao * wrap;
-	base *= 1.32;
+	base *= 1.26;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	float soft_rim = pow(1.0 - facing, 1.85) * 0.55;
