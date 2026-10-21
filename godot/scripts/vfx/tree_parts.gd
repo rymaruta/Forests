@@ -72,7 +72,7 @@ static func trunk_fork_part() -> Node3D:
 	col.material_override = bark_mat
 	col.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	# ベイク高さ≈1.65 → TRUNK_H
-	var baked_h := 1.73
+	var baked_h := 1.80
 	var s := TRUNK_H / baked_h
 	col.scale = Vector3(s * 1.12, s, s * 1.12)
 	root.add_child(col)
