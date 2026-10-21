@@ -212,15 +212,24 @@ static func cottage() -> Node3D:
 	plinth.material_override = stone
 	plinth.position = Vector3(0, 0.06, -0.1)
 	root.add_child(plinth)
-	# 前面の石：潰した球を密に重ねて石積み帯に読ませる
-	for i in 20:
+	# 前面の石：二段に密に重ねて石積み帯の厚みを読ませる
+	for i in 22:
 		var tint := Color(0.38, 0.38, 0.40).lerp(Color(0.24, 0.25, 0.26), fmod(float(i) * 0.17, 1.0))
 		var cob := MeshInstance3D.new()
 		cob.mesh = CraftMeshes.uv_sphere(0.15 + fmod(float(i) * 0.011, 0.05), 10, 12, 0.08, float(i) * 2.7, 0.92)
 		cob.material_override = VisualKit.cobble_material(tint)
-		cob.position = Vector3(-2.05 + float(i) * 0.21, 0.12 + fmod(float(i) * 0.03, 0.06), 1.52)
-		cob.scale = Vector3(1.45 + fmod(float(i) * 0.09, 0.30), 0.48 + fmod(float(i) * 0.04, 0.14), 1.25)
+		cob.position = Vector3(-2.10 + float(i) * 0.195, 0.14 + fmod(float(i) * 0.03, 0.06), 1.52)
+		cob.scale = Vector3(1.50 + fmod(float(i) * 0.09, 0.30), 0.70 + fmod(float(i) * 0.04, 0.16), 1.30)
 		cob.rotation_degrees.y = fmod(float(i) * 19.0, 30.0) - 15.0
+		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		root.add_child(cob)
+	for i in 18:
+		var tint := Color(0.36, 0.36, 0.38).lerp(Color(0.22, 0.23, 0.24), fmod(float(i) * 0.21, 1.0))
+		var cob := MeshInstance3D.new()
+		cob.mesh = CraftMeshes.uv_sphere(0.12 + fmod(float(i) * 0.01, 0.04), 9, 11, 0.07, float(i) * 3.1, 0.90)
+		cob.material_override = VisualKit.cobble_material(tint)
+		cob.position = Vector3(-1.95 + float(i) * 0.22, 0.28 + fmod(float(i) * 0.02, 0.05), 1.48)
+		cob.scale = Vector3(1.35 + fmod(float(i) * 0.08, 0.25), 0.62 + fmod(float(i) * 0.05, 0.14), 1.20)
 		cob.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(cob)
 	for i in 4:
