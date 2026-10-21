@@ -80,6 +80,16 @@ func _build_visual() -> void:
 		hand.scale = Vector3(1.25, 1.10, 1.20)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
+		var cuff := MeshInstance3D.new()
+		var cuff_m := CylinderMesh.new()
+		cuff_m.top_radius = 0.058
+		cuff_m.bottom_radius = 0.062
+		cuff_m.height = 0.04
+		cuff.mesh = cuff_m
+		cuff.material_override = _cm(cloth.darkened(0.08), cloth_d, 0.55)
+		cuff.position = Vector3(0.0, 0.34, 0.0)
+		cuff.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		arm_root.add_child(cuff)
 
 	# --- 頭 ---
 	_mi(CraftMeshes.uv_sphere(0.30, 18, 22, 0.01, 3.0, 1.02), _cm(skin, skin.darkened(0.18)), Vector3(0, 1.18, 0))
