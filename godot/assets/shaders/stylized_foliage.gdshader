@@ -125,21 +125,19 @@ void fragment() {
 	base *= 2.28;
 	base *= vec3(0.975, 1.01, 0.995);
 
-	// 真のフレネル（0=正面, 1=縁）— 発光リム禁止、細い柔縁のみ
+	// 真のフレネル — 発光リム完全禁止。柔縁はアルファのみ
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
-	float fres = pow(1.0 - ndv, 1.75);
-	float rim_mask = smoothstep(0.55, 0.99, fres);
-	base += leaf_color * fres * (0.10 + flock * 0.08) * rim_mask;
+	float fres = pow(1.0 - ndv, 1.85);
 
 	// 下側の重い帯を抑え、参照の柔らかい裾に
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：ごく細いフレネル帯だけアルファ＋ノイズ（発光禁止）
-	float dither = _vnoise(v_world * 200.0 + 3.1) * 0.55
-		+ _vnoise(v_world * 400.0 + 8.7) * 0.45;
-	float fade = smoothstep(0.42, 0.94, fres) * (0.48 + dither * 0.40);
-	float alpha = clamp(1.0 - fade, 0.14, 1.0);
+	// シルエット柔縁：縁を葉色のまま薄く（白加算なし）
+	float dither = _vnoise(v_world * 210.0 + 3.1) * 0.55
+		+ _vnoise(v_world * 420.0 + 8.7) * 0.45;
+	float fade = smoothstep(0.40, 0.95, fres) * (0.52 + dither * 0.42);
+	float alpha = clamp(1.0 - fade, 0.12, 1.0);
 
 	ALBEDO = base;
 	ALPHA = alpha;
