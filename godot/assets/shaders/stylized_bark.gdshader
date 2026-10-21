@@ -41,10 +41,12 @@ float _vnoise(vec3 p) {
 }
 
 vec3 _triplanar_col(sampler2D tex, vec3 wpos, vec3 n, float scale) {
+	// 縦繊維優先：側面（YZ/XY）を強く、上面グリッドを抑える
 	vec3 a = texture(tex, wpos.yz * scale * vec2(uv_scale_x, uv_scale_y)).rgb;
-	vec3 b = texture(tex, wpos.xz * scale * vec2(uv_scale_x, uv_scale_y)).rgb;
+	vec3 b = texture(tex, wpos.xz * scale * vec2(uv_scale_x * 0.55, uv_scale_y * 1.35)).rgb;
 	vec3 c = texture(tex, wpos.xy * scale * vec2(uv_scale_x, uv_scale_y)).rgb;
 	vec3 wn = abs(n);
+	wn.y *= 0.35;
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	return a * wn.x + b * wn.y + c * wn.z;
 }
@@ -94,8 +96,9 @@ void fragment() {
 	base *= 0.92 + 0.10 * (1.0 - v_y01 * 0.45);
 	// 参照木部 mean≈156/145/128 — 均一ベージュ禁止、谷を残して平均を合わせる
 	// 部品Bench木部 mean≈156/145/128（R据え置きで G/B を上げる）
-	base *= 1.45;
-	base *= vec3(0.94, 1.11, 1.26);
+	// 全体樹でベージュに飛ばないよう一段落とす（部品 mean は許容帯）
+	base *= 1.28;
+	base *= vec3(0.96, 1.08, 1.18);
 
 	ALBEDO = base;
 }
