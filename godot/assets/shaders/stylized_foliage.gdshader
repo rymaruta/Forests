@@ -98,7 +98,7 @@ void fragment() {
 	// ベイクAO＋法線谷。柔らかく深い雲影
 	float crevice = clamp(1.0 - v_n.y * 0.90, 0.0, 1.0);
 	crevice = pow(crevice, 1.40);
-	float lobe_ao = mix(1.0, 0.42, crevice) * mix(0.58, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.48, crevice) * mix(0.64, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -109,13 +109,13 @@ void fragment() {
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
 	base = mix(base, mix(leaf_dark * 0.94, leaf_color * 1.08, tex_l), flock_mix * 0.70);
 	// 細い均一フェルト粒（中周波モトル禁止）hp_std≈3.7
-	base *= mix(0.90, 1.12, flock);
+	base *= mix(0.88, 1.14, flock);
 	float grit = _vnoise(v_world * 100.0 + 1.7);
 	float grit2 = _vnoise(v_world * 180.0 + 4.2);
 	float grit3 = _vnoise(v_world * 280.0 + 9.1);
 	base *= mix(0.90, 1.10, grit * 0.45 + grit2 * 0.35 + grit3 * 0.20);
 	base *= lobe_ao * wrap;
-	base *= 1.18;
+	base *= 1.28;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	float soft_rim = pow(1.0 - facing, 1.65) * 0.78;
