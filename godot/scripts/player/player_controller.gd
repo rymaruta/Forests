@@ -143,7 +143,8 @@ func _build_visual() -> void:
 	_mi(CraftMeshes.uv_sphere(0.24, 14, 18, 0.025, 6.0, 0.55), _cm(scarf_col, scarf_col.darkened(0.28), 0.72), Vector3(0, 0.90, 0.06), Vector3(1.80, 0.95, 1.50))
 	_mi(CraftMeshes.uv_sphere(0.14, 10, 12, 0.02, 6.5, 0.70), _cm(scarf_col.lightened(0.04), scarf_col.darkened(0.20), 0.65), Vector3(-0.14, 0.92, 0.12))
 	_mi(CraftMeshes.uv_sphere(0.13, 10, 12, 0.015, 7.0, 0.88), _cm(scarf_col, scarf_col.darkened(0.22), 0.62), Vector3(0.18, 0.82, -0.08))
-	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.012, 7.5, 0.92), _cm(scarf_col, scarf_col.darkened(0.18), 0.58), Vector3(0.22, 0.66, -0.12))
+	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.012, 7.5, 0.92), _cm(scarf_col, scarf_col.darkened(0.18), 0.58), Vector3(0.24, 0.58, -0.18))
+	_mi(CraftMeshes.uv_sphere(0.08, 7, 8, 0.01, 8.0, 0.9), _cm(scarf_col.darkened(0.05), scarf_col.darkened(0.22), 0.55), Vector3(0.26, 0.48, -0.22))
 
 	mesh_root.scale = Vector3(1.06, 1.14, 1.06)
 
