@@ -187,13 +187,13 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 		env = exp(-pow((u - 0.18) / 0.28, 2.0))
 	var best := 0.0
 	for i in toes:
-		var center := float(i) / float(toes) * TAU + 0.28
+		var center := float(i) / float(toes) * TAU + 0.22
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.46, 0.0, 1.0)
-		lobe = lobe * lobe * (3.0 - 2.0 * lobe)
+		# やや細い指＋谷：伸びた粘土趾
+		var lobe: float = clampf(1.0 - d / 0.38, 0.0, 1.0)
+		lobe = pow(lobe, 1.35)
 		best = maxf(best, lobe)
-	# フレア＋やや長い趾パッド（参照の伸びた粘土指）
-	return 1.0 + 0.72 * best * env
+	return 1.0 + 0.90 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
