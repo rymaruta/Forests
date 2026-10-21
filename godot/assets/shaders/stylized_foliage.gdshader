@@ -1,6 +1,6 @@
 shader_type spatial;
-// フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO＋縁ディザ柔縁。
-render_mode blend_mix, depth_draw_opaque, cull_back, unshaded, depth_prepass_alpha;
+// フェルト雲（部品・冠）：アルベドパイル＋ノーマルパイル＋頂点AO＋縁アルファ柔縁。
+render_mode blend_mix, depth_draw_always, cull_back, unshaded;
 
 // ミップでフェルト粒が消えないよう線形のみ
 uniform sampler2D leaf_tex : source_color, filter_linear, repeat_enable;
@@ -66,9 +66,9 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 
 	void vertex() {
 	// 短いフェルト毛羽。連続ノイズで縁を崩す（参照の柔毛）
-	float fuzz = _vnoise(VERTEX * 22.0 + 1.3) * 0.016
-		+ _vnoise(VERTEX * 44.0 + 4.7) * 0.009
-		+ _vnoise(VERTEX * 11.0 + 9.1) * 0.005;
+	float fuzz = _vnoise(VERTEX * 26.0 + 1.3) * 0.020
+		+ _vnoise(VERTEX * 52.0 + 4.7) * 0.011
+		+ _vnoise(VERTEX * 12.0 + 9.1) * 0.006;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -99,8 +99,8 @@ void fragment() {
 	float crevice = clamp(1.0 - v_n.y * 0.88, 0.0, 1.0);
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
-	// 大房の谷は広く柔らかく（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.44, pow(crevice, 1.10)) * mix(0.66, 1.0, v_ao);
+	// 大房の谷は広く深く（細かいポップコーン影禁止）
+	float lobe_ao = mix(1.0, 0.46, pow(crevice, 1.10)) * mix(0.66, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -118,8 +118,8 @@ void fragment() {
 	base *= mix(0.88, 1.12, grit * 0.30 + grit2 * 0.35 + grit3 * 0.35);
 	base *= lobe_ao * wrap;
 	// 露出：mean≈147 / rb/g≈0.22
-	base *= 1.82;
-	base *= vec3(0.98, 1.005, 0.995);
+	base *= 2.02;
+	base *= vec3(0.975, 1.005, 0.995);
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
 	// 縁だけフェルト溶かし。本体は洗わない
@@ -134,15 +134,15 @@ void fragment() {
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：縁帯のみ細かくディザ discard（本体は残す）
-	float edge = pow(1.0 - facing, 1.25);
-	float dither = _vnoise(v_world * 140.0 + 3.1) * 0.50
-		+ _vnoise(v_world * 280.0 + 8.7) * 0.50;
-	float cut = smoothstep(0.40, 0.95, edge) * (0.50 + dither * 0.50);
-	if (cut > 0.62) {
-		discard;
-	}
+	// シルエット柔縁：縁でアルファフェード＋ノイズ（白ハロー禁止）
+	float edge = pow(1.0 - facing, 1.05);
+	float dither = _vnoise(v_world * 160.0 + 3.1) * 0.55
+		+ _vnoise(v_world * 320.0 + 8.7) * 0.45;
+	float fade = smoothstep(0.28, 0.92, edge) * (0.55 + dither * 0.55);
+	float alpha = clamp(1.0 - fade, 0.0, 1.0);
+	// 葉色のまま薄く。背景へ溶かすが白縁にしない
+	base = mix(base, leaf_color * 0.92, fade * 0.35);
 
 	ALBEDO = base;
-	ALPHA = 1.0;
+	ALPHA = alpha;
 }
