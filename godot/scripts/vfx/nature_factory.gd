@@ -69,7 +69,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.12 if hero else 0.028,
+		0.14 if hero else 0.028,
 		true,
 		toe_n
 	)

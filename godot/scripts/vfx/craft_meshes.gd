@@ -159,12 +159,12 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 
 
 static func _root_flare_mul(t: float) -> float:
-	## 参照：なだらかな粘土裾。趾パッドと重ねてスイープ感を出す。
-	if t >= 0.50:
+	## 参照：弱い裾＋趾パッド。強いスカートは趾を溶かすので禁止。
+	if t >= 0.45:
 		return 1.0
-	var ft := 1.0 - t / 0.50
+	var ft := 1.0 - t / 0.45
 	ft = ft * ft * (3.0 - 2.0 * ft)
-	return 1.0 + 0.18 * ft
+	return 1.0 + 0.08 * ft
 
 
 static func _ground_fillet(t: float) -> float:
