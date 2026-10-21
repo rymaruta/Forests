@@ -38,10 +38,10 @@ float _vnoise(vec3 p) {
 
 void vertex() {
 	// 短く密なパイル。長いジャギー禁止
-	// 短パイル密度を上げてフェルト毛羽を読む
-	float fuzz = _hash31(VERTEX * 52.0 + 2.7) * 0.020
-		+ _hash31(VERTEX * 110.0) * 0.014
-		+ _hash31(VERTEX * 210.0 + 1.1) * 0.007;
+	// 短く密なパイル。高周波ジャギーは抑えてフェルトへ
+	float fuzz = _hash31(VERTEX * 36.0 + 2.7) * 0.022
+		+ _hash31(VERTEX * 72.0) * 0.012
+		+ _hash31(VERTEX * 140.0 + 1.1) * 0.005;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;

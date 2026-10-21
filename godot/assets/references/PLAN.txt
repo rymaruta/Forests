@@ -50,16 +50,16 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: canopy_hero.obj（16房 soft-union k=0.14）
+  形: canopy_hero.obj（24房 soft-union k≈0.095）
       幹: 一本メッシュ CraftMeshes（96 seg／連続フレア＋4趾パッド）
-      HERO_TRUNK_H=1.78 / BASE_R=0.38 / TOP_R=0.16 / CANOPY_R=1.35 / SEED=2901
-  質感: 短パイル leaf.png＋リム散乱／樹皮幾何溝 0.14＋マットシェーダ
-  色: 幹≈(0.38,0.28,0.19) 冠セージ。Bench 柔らか3灯
+      HERO_TRUNK_H=1.72 / BASE_R=0.36 / TOP_R=0.15 / CANOPY_R=1.28 / SEED=2901
+  質感: 短パイル leaf.png＋弱リム／樹皮幾何溝 0.10＋マットシェーダ
+  色: 参照マスク mean 寄せ（幹≈0.49/0.37/0.27 冠≈0.46/0.49/0.32）
   捨てた: MC幹全体（白欠け再発）/ CSG趾球列 / 冠k=0.22 / 強リフト趾（フック化）
-         / 板状趾 / 星型裾 / 球チェーン
-  進行中レバー: ①趾＝接地ピークの丸パッド（弱リフト・中幅ローブ）
-               ②樹皮＝幾何太溝の正面読度＋マット粘土
-               ③冠＝16房 k=0.14／フェルト短パイル
-  未達: 参照級フェルト毛羽・趾の粘土一体感・溝の最終読度
+         / 板状趾 / 星型裾 / 球チェーン / 細長い幹(H=2.10)
+  進行中レバー: ①趾＝個別丸パッド（谷を残す）
+               ②樹皮＝浅い有機溝＋マット粘土（鋭い柱状禁止）
+               ③冠＝24中小房／フェルト短パイル（砂粒禁止）
+  未達: 参照級フェルト・趾の粘土一体・溝の手彫り感
   次: Bench撮→fair cmp（被写体トリム＋letterbox）。合格までワールド戻さない
   合格宣言禁止: 参照に届くまで Step2 へ進まない

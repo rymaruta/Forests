@@ -186,10 +186,11 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 	for i in toes:
 		var center := float(i) / float(toes) * TAU + 0.38
 		var d: float = absf(atan2(sin(angle - center), cos(angle - center)))
-		var lobe: float = clampf(1.0 - d / 0.50, 0.0, 1.0)
-		lobe = pow(lobe, 1.40)
+		var lobe: float = clampf(1.0 - d / 0.46, 0.0, 1.0)
+		lobe = pow(lobe, 1.25)
 		best = maxf(best, lobe)
-	return 1.0 + 0.70 * best * env
+	# 谷を少し残して趾を個別に読む（スカート溶断禁止）
+	return 1.0 + 0.78 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
