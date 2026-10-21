@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Bake canopy_hero.obj — 参照：中小房が重なる柔らかい雲冠。"""
+"""Bake canopy_hero.obj — 参照：横広の雲。中小房が重なる。"""
 from __future__ import annotations
 
 import math
@@ -10,10 +10,10 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.32
+BASE_R = 1.38
 RES = 148
 PAD = 0.14
-K_BLEND = 0.11
+K_BLEND = 0.12
 SEED = 2901
 
 
@@ -23,27 +23,27 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：小〜中房を多めに重ねて雲。巨大単球禁止。
+    # 参照：横広・低め。頂を突き上げない。
     specs = [
-        ((0.0, 0.48, 0.0), 0.42),
-        ((0.0, 0.82, 0.0), 0.36),
-        ((0.0, 0.18, 0.0), 0.38),
-        ((0.0, 1.12, 0.0), 0.28),
+        ((0.0, 0.42, 0.0), 0.46),
+        ((0.0, 0.72, 0.0), 0.40),
+        ((0.0, 0.16, 0.0), 0.40),
+        ((0.0, 0.98, 0.0), 0.30),
     ]
     for i in range(8):
-        a = i / 8 * math.tau + 0.15
-        y = 0.48 + 0.07 * math.sin(i * 1.9)
-        r = 0.34 if i % 2 == 0 else 0.30
-        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+        a = i / 8 * math.tau + 0.12
+        y = 0.44 + 0.05 * math.sin(i * 1.7)
+        r = 0.36 if i % 2 == 0 else 0.32
+        specs.append(((math.cos(a) * 0.52, y, math.sin(a) * 0.52), r))
     for i in range(6):
-        a = i / 6 * math.tau + 0.45
-        specs.append(((math.cos(a) * 0.30, 0.92, math.sin(a) * 0.30), 0.28))
+        a = i / 6 * math.tau + 0.40
+        specs.append(((math.cos(a) * 0.34, 0.78, math.sin(a) * 0.34), 0.30))
     for i in range(5):
-        a = i / 5 * math.tau + 0.30
-        specs.append(((math.cos(a) * 0.36, 0.24, math.sin(a) * 0.36), 0.26))
+        a = i / 5 * math.tau + 0.28
+        specs.append(((math.cos(a) * 0.40, 0.22, math.sin(a) * 0.40), 0.28))
     for i in range(4):
-        a = i / 4 * math.tau + 0.70
-        specs.append(((math.cos(a) * 0.18, 1.18, math.sin(a) * 0.18), 0.24))
+        a = i / 4 * math.tau + 0.65
+        specs.append(((math.cos(a) * 0.22, 0.95, math.sin(a) * 0.22), 0.26))
     return specs
 
 

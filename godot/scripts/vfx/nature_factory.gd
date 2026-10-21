@@ -6,10 +6,10 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.95
-const HERO_BASE_R := 0.30
-const HERO_TOP_R := 0.13
-const HERO_CANOPY_R := 1.32
+const HERO_TRUNK_H := 1.88
+const HERO_BASE_R := 0.33
+const HERO_TOP_R := 0.14
+const HERO_CANOPY_R := 1.38
 const HERO_SEED := 2901
 
 
@@ -63,7 +63,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.048 if hero else 0.028,
+		0.095 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -91,8 +91,8 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	# 枝が見える余白
-	canopy.position = Vector3(lean * 0.08, h * 0.90, 0.0)
+	# 枝の V フォークがわずかに覗く高さ
+	canopy.position = Vector3(lean * 0.08, h * 0.86, 0.0)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 	# 趾パッドと樹皮溝が正面で読めるヨー

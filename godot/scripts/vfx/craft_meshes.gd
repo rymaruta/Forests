@@ -189,7 +189,7 @@ static func _root_toe_boost(angle: float, t: float, toes: int) -> float:
 		var lobe: float = clampf(1.0 - d / 0.56, 0.0, 1.0)
 		lobe = pow(lobe, 1.65)
 		best = maxf(best, lobe)
-	return 1.0 + 0.48 * best * env
+	return 1.0 + 0.62 * best * env
 
 
 static func _root_toe_lift(boost: float, t: float, height: float) -> float:
