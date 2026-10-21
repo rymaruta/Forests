@@ -142,7 +142,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：やや細長く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(0.92, 0.92, 0.92)
+		trunk_mesh.scale *= Vector3(1.08, 0.90, 1.08)
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
