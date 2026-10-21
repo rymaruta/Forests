@@ -104,7 +104,7 @@ void fragment() {
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
 	// 大房の谷は広く深く（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.38, pow(crevice, 0.95)) * mix(0.52, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.36, pow(crevice, 0.90)) * mix(0.50, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -134,12 +134,12 @@ void fragment() {
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：不透明ディザ discard（MSAA白縁回避）
-	base *= mix(1.0, 0.90, smoothstep(0.40, 0.95, fres));
-	float dither = _vnoise(v_world * 220.0 + 3.1) * 0.50
-		+ _vnoise(v_world * 440.0 + 8.7) * 0.50;
-	float cut = smoothstep(0.45, 0.96, fres) * (0.55 + dither * 0.55);
-	if (cut > 0.58) {
+	// シルエット柔縁：最外縁のみディザ discard（内部房の白シーム禁止）
+	base *= mix(1.0, 0.92, smoothstep(0.55, 0.98, fres));
+	float dither = _vnoise(v_world * 240.0 + 3.1) * 0.50
+		+ _vnoise(v_world * 480.0 + 8.7) * 0.50;
+	float cut = smoothstep(0.62, 0.98, fres) * (0.48 + dither * 0.45);
+	if (cut > 0.72) {
 		discard;
 	}
 
