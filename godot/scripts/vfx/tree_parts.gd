@@ -88,8 +88,8 @@ static func toe_skirt_part() -> Node3D:
 	## 部品3: 粘土趾＋裾だけ。短い丘メッシュ。
 	var root := Node3D.new()
 	root.name = "PartToeSkirt"
-	# 趾は幹と同系の暖茶（参照全体樹で色が揃う）
-	var bark_mat := VisualKit.bark_shader_material(BARK_TOE)
+	# 趾は幹と同系色＋接地影のみ（幹マテリアルは ground_contact=0）
+	var bark_mat := VisualKit.bark_shader_material(BARK_TOE, 1.0)
 	var toes := MeshInstance3D.new()
 	toes.name = "ToeSkirt"
 	if ResourceLoader.exists("res://assets/meshes/toe_skirt.obj"):

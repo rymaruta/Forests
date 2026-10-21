@@ -9,6 +9,8 @@ uniform float uv_scale_x = 1.10;
 uniform float uv_scale_y = 1.85;
 uniform float flock_mix : hint_range(0.0, 1.0) = 0.78;
 uniform float nap_scale = 3.4;
+// 趾パーツだけ 1.0：接地影。幹は 0 で組み立て色割れを防ぐ
+uniform float ground_contact : hint_range(0.0, 1.0) = 0.0;
 
 varying vec3 v_world;
 varying vec3 v_obj;
@@ -97,12 +99,14 @@ void fragment() {
 	float crease = mix(0.20, 1.0, pow(v_ao, 0.66)) * mix(1.0, 0.24, crotch);
 	base *= crease * wrap;
 	base *= 0.90 + 0.12 * (1.0 - v_y01 * 0.45);
-	// 趾裾（低Y）は参照パーツより暗く：接地影を足す（p10≈50・mean≈118）
-	base *= mix(0.64, 1.0, smoothstep(0.02, 0.42, v_y01));
-	// 中暗茶：幹中〜上で G/B を上げ REF木部 156/145/128 帯へ
-	// ワールドY勾配：趾 mean≈118、幹 mean≈156
-	base *= mix(1.70, 1.98, smoothstep(0.10, 0.62, v_y01));
-	base *= mix(vec3(1.02, 1.06, 1.08), vec3(0.94, 1.20, 1.68), smoothstep(0.12, 0.65, v_y01));
+	// 趾だけ接地影（幹は掛けない＝組み立ての二色割れ禁止）
+	float ground = mix(0.58, 1.0, smoothstep(0.02, 0.40, v_y01));
+	base *= mix(1.0, ground, ground_contact);
+	// 幹色：全体を REF木部 156/145/128 帯へ（高さで極端に割らない）
+	base *= 1.88;
+	base *= vec3(0.96, 1.16, 1.52);
+	// ごく弱い高さグラデ（組み立てでも滑らか）
+	base *= mix(0.94, 1.04, smoothstep(0.05, 0.75, v_y01));
 
 	ALBEDO = base;
 }
