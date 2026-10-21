@@ -23,24 +23,25 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 下縁を高く：幹差し込み穴は中心房だけで塞ぐ（下段リング禁止）
+    # 参照：縦長の卵型雲。小房を縦に重ねる。
     specs = [
-        ((0.0, 0.55, 0.0), 0.48),
-        ((0.0, 0.85, 0.0), 0.40),
-        ((0.0, 0.38, 0.0), 0.36),  # 下は軽く、幹を隠さない
-        ((0.0, 1.08, 0.0), 0.30),
+        ((0.0, 0.50, 0.0), 0.44),
+        ((0.0, 0.78, 0.0), 0.40),
+        ((0.0, 0.36, 0.0), 0.34),
+        ((0.0, 1.05, 0.0), 0.32),
+        ((0.0, 1.28, 0.0), 0.26),
     ]
-    for i in range(7):
-        a = i / 7 * math.tau + 0.18
-        y = 0.58 + 0.06 * math.sin(i * 1.5)
-        r = 0.36 if i % 2 == 0 else 0.32
-        specs.append(((math.cos(a) * 0.50, y, math.sin(a) * 0.50), r))
+    for i in range(6):
+        a = i / 6 * math.tau + 0.20
+        y = 0.55 + 0.05 * math.sin(i * 1.3)
+        r = 0.34 if i % 2 == 0 else 0.30
+        specs.append(((math.cos(a) * 0.42, y, math.sin(a) * 0.42), r))
     for i in range(5):
-        a = i / 5 * math.tau + 0.50
-        specs.append(((math.cos(a) * 0.32, 0.88, math.sin(a) * 0.32), 0.30))
+        a = i / 5 * math.tau + 0.45
+        specs.append(((math.cos(a) * 0.28, 0.92, math.sin(a) * 0.28), 0.28))
     for i in range(4):
-        a = i / 4 * math.tau + 0.70
-        specs.append(((math.cos(a) * 0.20, 1.10, math.sin(a) * 0.20), 0.26))
+        a = i / 4 * math.tau + 0.60
+        specs.append(((math.cos(a) * 0.18, 1.18, math.sin(a) * 0.18), 0.24))
     return specs
 
 

@@ -77,7 +77,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	for b in 2:
 		var br := MeshInstance3D.new()
 		var blen := 0.46 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.07 if hero else 0.022, 14, 0.03)
+		br.mesh = CraftMeshes.branch(blen, 0.14 if hero else 0.06, 0.06 if hero else 0.022, 16, 0.04)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
 		var ang := (0.48 if b == 0 else PI - 0.48) + lean * 1.2
 		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))

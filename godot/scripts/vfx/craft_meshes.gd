@@ -203,36 +203,54 @@ static func _root_toe_lift(boost: float, t: float, height: float) -> float:
 
 
 static func branch(length: float, start_r: float, end_r: float, segments: int = 6, bend: float = 0.2) -> ArrayMesh:
+	## 丸先端の短い粘土枝。平切り円柱／三角プリズム禁止。
 	var st := SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
-	var rings := 5
+	var rings := 10
 	for i in rings:
 		var t0 := float(i) / float(rings)
 		var t1 := float(i + 1) / float(rings)
 		var y0 := t0 * length
 		var y1 := t1 * length
-		var r0 := lerpf(start_r, end_r, t0)
-		var r1 := lerpf(start_r, end_r, t1)
+		# 先端へ急に細る丸み
+		var ease0 := 1.0 - pow(t0, 1.6)
+		var ease1 := 1.0 - pow(t1, 1.6)
+		var r0 := lerpf(end_r, start_r, ease0)
+		var r1 := lerpf(end_r, start_r, ease1)
 		var off0 := bend * t0 * t0
 		var off1 := bend * t1 * t1
 		for j in segments:
 			var a0 := float(j) / float(segments) * TAU
 			var a1 := float(j + 1) / float(segments) * TAU
-			var p00 := Vector3(cos(a0) * r0 + off0, y0, sin(a0) * r0)
-			var p10 := Vector3(cos(a1) * r0 + off0, y0, sin(a1) * r0)
-			var p01 := Vector3(cos(a0) * r1 + off1, y1, sin(a0) * r1)
-			var p11 := Vector3(cos(a1) * r1 + off1, y1, sin(a1) * r1)
+			# ごく弱い溝で幹と質感を揃える
+			var rip0 := 1.0 + 0.03 * sin(a0 * 3.0 + t0 * 2.0)
+			var rip1 := 1.0 + 0.03 * sin(a1 * 3.0 + t0 * 2.0)
+			var rip2 := 1.0 + 0.03 * sin(a0 * 3.0 + t1 * 2.0)
+			var rip3 := 1.0 + 0.03 * sin(a1 * 3.0 + t1 * 2.0)
+			var p00 := Vector3(cos(a0) * r0 * rip0 + off0, y0, sin(a0) * r0 * rip0)
+			var p10 := Vector3(cos(a1) * r0 * rip1 + off0, y0, sin(a1) * r0 * rip1)
+			var p01 := Vector3(cos(a0) * r1 * rip2 + off1, y1, sin(a0) * r1 * rip2)
+			var p11 := Vector3(cos(a1) * r1 * rip3 + off1, y1, sin(a1) * r1 * rip3)
 			_tri(st, p00, p10, p01)
 			_tri(st, p10, p11, p01)
-	# 両端を閉じて白穴を防ぐ
-	var tip := Vector3(bend, length, 0)
+	# 丸い先端キャップ（平切り禁止）
+	var tip := Vector3(bend, length + end_r * 0.55, 0)
+	var tip_r := end_r * 0.55
+	for j in segments:
+		var a0 := float(j) / float(segments) * TAU
+		var a1 := float(j + 1) / float(segments) * TAU
+		var pe0 := Vector3(cos(a0) * tip_r + bend, length, sin(a0) * tip_r)
+		var pe1 := Vector3(cos(a1) * tip_r + bend, length, sin(a1) * tip_r)
+		_tri(st, tip, pe0, pe1)
+		var mid := Vector3(cos(a0) * end_r + bend, length, sin(a0) * end_r)
+		var mid1 := Vector3(cos(a1) * end_r + bend, length, sin(a1) * end_r)
+		_tri(st, pe0, mid, pe1)
+		_tri(st, pe1, mid, mid1)
+	# 根元は幹に埋めるので軽く閉じるだけ
 	var base_c := Vector3(0, 0, 0)
 	for j in segments:
 		var a0 := float(j) / float(segments) * TAU
 		var a1 := float(j + 1) / float(segments) * TAU
-		var pe0 := Vector3(cos(a0) * end_r + bend, length, sin(a0) * end_r)
-		var pe1 := Vector3(cos(a1) * end_r + bend, length, sin(a1) * end_r)
-		_tri(st, tip, pe0, pe1)
 		var pb0 := Vector3(cos(a0) * start_r, 0, sin(a0) * start_r)
 		var pb1 := Vector3(cos(a1) * start_r, 0, sin(a1) * start_r)
 		_tri(st, base_c, pb1, pb0)
