@@ -13,7 +13,7 @@ OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.o
 BASE_R = 1.30
 RES = 150
 PAD = 0.13
-K_BLEND = 0.11
+K_BLEND = 0.10
 SEED = 2901
 
 
@@ -23,24 +23,24 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：少数の大きな丸房。細房密集は三角シルエットになりやすい
+    # 参照：丸い塊＋中小房の密度。縦に尖らせない
     specs = [
-        ((0.0, 0.42, 0.0), 0.42),
-        ((0.0, 0.72, 0.0), 0.38),
-        ((0.0, 0.18, 0.0), 0.34),
-        ((0.0, 0.98, 0.0), 0.32),
+        ((0.0, 0.40, 0.0), 0.38),
+        ((0.0, 0.68, 0.0), 0.34),
+        ((0.0, 0.16, 0.0), 0.32),
+        ((0.0, 0.92, 0.0), 0.28),
     ]
-    for i in range(6):
-        a = i / 6 * math.tau + 0.16
-        y = 0.50 + 0.06 * math.sin(i * 1.4)
-        r = 0.34 if i % 2 == 0 else 0.30
-        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
+    for i in range(8):
+        a = i / 8 * math.tau + 0.14
+        y = 0.48 + 0.07 * math.sin(i * 1.6)
+        r = 0.28 if i % 2 == 0 else 0.25
+        specs.append(((math.cos(a) * 0.50, y, math.sin(a) * 0.50), r))
+    for i in range(7):
+        a = i / 7 * math.tau + 0.42
+        specs.append(((math.cos(a) * 0.32, 0.78, math.sin(a) * 0.32), 0.23))
     for i in range(5):
-        a = i / 5 * math.tau + 0.45
-        specs.append(((math.cos(a) * 0.28, 0.82, math.sin(a) * 0.28), 0.26))
-    for i in range(3):
-        a = i / 3 * math.tau + 0.70
-        specs.append(((math.cos(a) * 0.14, 1.05, math.sin(a) * 0.14), 0.22))
+        a = i / 5 * math.tau + 0.66
+        specs.append(((math.cos(a) * 0.18, 1.00, math.sin(a) * 0.18), 0.20))
     return specs
 
 
