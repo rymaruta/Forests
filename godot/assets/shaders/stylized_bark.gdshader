@@ -108,10 +108,10 @@ void fragment() {
 	base *= mix(1.86, 1.76, ground_contact);
 	vec3 cool = vec3(0.94, 1.18, 1.62);
 	vec3 warm_toe = vec3(1.07, 1.01, 0.93);
-	vec3 warm_sheet = vec3(1.08, 0.86, 0.64);
+	vec3 warm_sheet = vec3(1.14, 0.90, 0.70);
 	base *= mix(cool, warm_toe, ground_contact * 0.70);
-	// シート暖茶は一段落とす（参照全体樹の中暗茶）
-	base = mix(base, base * warm_sheet * 0.72, sheet_warm);
+	// シート暖茶：参照全体樹の中茶（黒茶すぎ禁止）
+	base = mix(base, base * warm_sheet * 0.86, sheet_warm);
 	// ごく弱い高さグラデ（組み立てでも滑らか）
 	base *= mix(0.96, 1.03, smoothstep(0.05, 0.75, v_y01));
 
