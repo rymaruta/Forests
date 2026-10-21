@@ -52,10 +52,11 @@ func _build_visual() -> void:
 	# --- 下半身（暗いレギンス＋チャンキーブーツ） ---
 	var leg_c := Color(0.16, 0.10, 0.07)
 	for side in [-1.0, 1.0]:
-		_mi(CraftMeshes.trunk(0.26, 0.048, 0.042, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.10 * side, 0.22, 0.02))
-		# 靴：丸いチャンキー体積（正面でも厚みが読める）
-		_mi(CraftMeshes.uv_sphere(0.16, 12, 14, 0.02, side + 2.0, 0.30), _cm(boot_c, boot_c.darkened(0.28), 0.55), Vector3(0.11 * side, 0.10, 0.12), Vector3(1.45, 1.25, 1.85))
-		_mi(CraftMeshes.uv_sphere(0.12, 10, 12, 0.015, side + 3.0, 0.35), _cm(boot_c.lightened(0.04), boot_c.darkened(0.20), 0.50), Vector3(0.11 * side, 0.20, 0.04), Vector3(1.20, 1.15, 1.15))
+		_mi(CraftMeshes.trunk(0.22, 0.050, 0.044, 10), _cm(leg_c, leg_c.darkened(0.30)), Vector3(0.10 * side, 0.28, 0.02))
+		# 靴：ふくらはぎまで続くチャンキー筒＋丸つま先
+		_mi(CraftMeshes.trunk(0.22, 0.095, 0.085, 12, 0.0, 0.01), _cm(boot_c, boot_c.darkened(0.26), 0.55), Vector3(0.11 * side, 0.08, 0.04))
+		_mi(CraftMeshes.uv_sphere(0.13, 12, 14, 0.02, side + 2.0, 0.28), _cm(boot_c.lightened(0.03), boot_c.darkened(0.22), 0.50), Vector3(0.11 * side, 0.08, 0.14), Vector3(1.40, 1.15, 1.55))
+		_mi(CraftMeshes.uv_sphere(0.11, 10, 12, 0.015, side + 3.0, 0.32), _cm(boot_c, boot_c.darkened(0.20), 0.48), Vector3(0.11 * side, 0.24, 0.02), Vector3(1.25, 1.20, 1.20))
 
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
@@ -112,14 +113,14 @@ func _build_visual() -> void:
 	# 麦わら：広いつば＋丸い麦色クラウン＋太い赤帯
 	var straw := Color(0.88, 0.70, 0.38)
 	var straw_d := Color(0.55, 0.38, 0.18)
-	_mi(CraftMeshes.uv_sphere(0.54, 14, 30, 0.03, 2.0, 0.28), _cm(hat, hat.darkened(0.30), 0.90), Vector3(0, 1.28, -0.02), Vector3(1.20, 0.78, 1.20))
-	_mi(CraftMeshes.uv_sphere(0.24, 14, 16, 0.02, 2.6, 0.42), _cm(straw, straw_d, 0.85), Vector3(0, 1.48, -0.02), Vector3(1.15, 1.05, 1.15))
-	_mi(CraftMeshes.uv_sphere(0.18, 12, 14, 0.015, 2.9, 0.50), _cm(straw.lightened(0.04), straw_d, 0.82), Vector3(0, 1.58, -0.02), Vector3(1.05, 0.85, 1.05))
+	# つば＋一体ドームクラウン（段積み禁止）
+	_mi(CraftMeshes.uv_sphere(0.54, 14, 30, 0.03, 2.0, 0.28), _cm(hat, hat.darkened(0.30), 0.90), Vector3(0, 1.28, -0.02), Vector3(1.22, 0.80, 1.22))
+	_mi(CraftMeshes.uv_sphere(0.30, 16, 18, 0.02, 2.6, 0.38), _cm(straw, straw_d, 0.85), Vector3(0, 1.50, -0.02), Vector3(1.05, 0.92, 1.05))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.255
-	band_m.bottom_radius = 0.262
-	band_m.height = 0.058
+	band_m.top_radius = 0.258
+	band_m.bottom_radius = 0.265
+	band_m.height = 0.052
 	band.mesh = band_m
 	# 帯は flock 弱め＝赤が麦色に濁らない（参照の太い布帯）
 	band.material_override = _cm(Color(0.90, 0.32, 0.16), Color(0.52, 0.12, 0.05), 0.08)
