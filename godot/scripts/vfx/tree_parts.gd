@@ -128,7 +128,7 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：水平餅裾を抑え、縦趾を残す（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as Node3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.86, 1.18, 0.86)
+		toe_mesh.scale *= Vector3(0.80, 1.28, 0.80)
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
