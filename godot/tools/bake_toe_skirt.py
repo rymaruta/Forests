@@ -12,7 +12,7 @@ from skimage.measure import marching_cubes
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "toe_skirt.obj"
 RES = 140
 PAD = 0.10
-K_BLEND = 0.070
+K_BLEND = 0.055
 SEED = 5201
 AO_SAMPLES = 16
 
@@ -58,16 +58,17 @@ def build_prims():
     n = 5
     for i in range(n):
         a = i / n * math.tau + 0.22
-        rad = 0.34 + 0.035 * math.sin(i * 1.4)
-        base = np.array([math.cos(a) * rad, 0.06, math.sin(a) * rad * 0.90])
-        top = np.array([math.cos(a) * rad * 0.55, 0.28 + 0.02 * (i % 2), math.sin(a) * rad * 0.50])
-        ra = 0.155 if i % 2 == 0 else 0.140
-        rb = 0.105 if i % 2 == 0 else 0.095
+        rad = 0.33 + 0.030 * math.sin(i * 1.4)
+        base = np.array([math.cos(a) * rad, 0.05, math.sin(a) * rad * 0.88])
+        top = np.array([math.cos(a) * rad * 0.48, 0.30 + 0.02 * (i % 2), math.sin(a) * rad * 0.44])
+        ra = 0.148 if i % 2 == 0 else 0.132
+        rb = 0.095 if i % 2 == 0 else 0.088
         toe_caps.append((base, top, ra, rb))
-        tip = base + np.array([math.cos(a) * 0.11, 0.0, math.sin(a) * 0.09])
-        spheres.append((tip, 0.110 if i % 2 == 0 else 0.098))
-        root = base * 0.45 + np.array([0.0, 0.10, 0.0])
-        spheres.append((root, 0.125))
+        tip = base + np.array([math.cos(a) * 0.10, 0.0, math.sin(a) * 0.08])
+        spheres.append((tip, 0.095 if i % 2 == 0 else 0.088))
+        # 根元フィラーは弱く（趾の谷を残す）
+        root = base * 0.50 + np.array([0.0, 0.11, 0.0])
+        spheres.append((root, 0.100))
     return prims_cap + toe_caps, spheres
 
 
