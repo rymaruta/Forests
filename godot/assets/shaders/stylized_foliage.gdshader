@@ -67,12 +67,12 @@ vec3 _triplanar_nrm(sampler2D tex, vec3 wpos, vec3 n, float scale) {
 
 	void vertex() {
 	// 中〜高周波の二次丘（大房の上に参照の起伏）＋短いフェルト毛羽
-	float mound = _vnoise(VERTEX * 4.0 + 0.7) * 0.024
-		+ _vnoise(VERTEX * 8.5 + 2.3) * 0.016
-		+ _vnoise(VERTEX * 14.0 + 5.1) * 0.009;
-	float fuzz = _vnoise(VERTEX * 30.0 + 1.3) * 0.016
-		+ _vnoise(VERTEX * 60.0 + 4.7) * 0.009
-		+ _vnoise(VERTEX * 14.0 + 9.1) * 0.005;
+	float mound = _vnoise(VERTEX * 4.0 + 0.7) * 0.022
+		+ _vnoise(VERTEX * 8.5 + 2.3) * 0.015
+		+ _vnoise(VERTEX * 14.0 + 5.1) * 0.010;
+	float fuzz = _vnoise(VERTEX * 34.0 + 1.3) * 0.018
+		+ _vnoise(VERTEX * 68.0 + 4.7) * 0.010
+		+ _vnoise(VERTEX * 16.0 + 9.1) * 0.006;
 	VERTEX += NORMAL * (mound + fuzz);
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
