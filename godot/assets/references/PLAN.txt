@@ -31,9 +31,10 @@ Step 4  ワールドへ戻す
   Bench subjects: tree_canopy / tree_trunk / tree_toes / tree
   参照パーツ: assets/references/parts/ref-{canopy,trunk,toes}.png
   撮影: screenshot_bench_tree_part.gd と screenshot_bench_tree.gd
-  いま: 冠部品Bench継続（2026-10-21）。
-    製法: 中密度35 lobe / K_BLEND=0.070 / 頂点AO / 本体シェーダ毛羽のみ（殻ハロー禁止）
-    Bench: 寄りカメラでREF crop密度に合わせる
-    metrics≈REF: mean~142–148 / p10~79 / hp~3.6 / aspect=1.4 / rb/g~0.22–0.27
-    見た目残: 縁の柔毛ハロー・オリーブ温かみ・谷の読み。合格宣言禁止。
-  未達: 各部品合格→結合合格。ワールド戻さない
+  いま: Step1d assemble + Step2 cottage 並行（2026-10-21）。
+    冠: fair_cmp ほぼロック（mean/p10/hp/aspect/rb）。合格宣言はまだしない。
+    幹: クレードル腕を中庸太さへ再ベイク。木部 mean まだ暗い（~133 vs 156）。
+    趾: aspect~2.4（REF 3.0）。縦立ち上がりは不足、餅裾は緩和中。
+    assemble: 冠近い。趾フラットと幹色が残課題。
+    cottage: stylized_surface 漆喰／瓦＋不透明灰石。瓦段と漆喰コントラスト継続。
+  未達: 結合合格→小屋合格→旅人→ワールド。ワールド戻さない
