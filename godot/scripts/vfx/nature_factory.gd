@@ -443,16 +443,16 @@ static func cottage() -> Node3D:
 
 static func _add_tiled_roof_side(root: Node3D, roof_mat: Material, side_sign: float) -> void:
 	## side_sign: -1 = 奥側, +1 = 手前側。細かい半円瓦の段を読ませる。
-	var rows := 10
-	var cols := 14
+	var rows := 12
+	var cols := 16
 	for row in rows:
 		var t := float(row) / float(rows - 1)
-		var y := 2.16 + t * 0.88
-		var z := side_sign * (1.12 - t * 1.05)
+		var y := 2.14 + t * 0.92
+		var z := side_sign * (1.14 - t * 1.08)
 		for col in cols:
 			var tile := MeshInstance3D.new()
 			# 小さめの横長半潰し球＝瓦のうろこ
-			tile.mesh = CraftMeshes.uv_sphere(0.20, 8, 10, 0.05, float(col) * 1.7 + float(row), 0.42)
+			tile.mesh = CraftMeshes.uv_sphere(0.175, 8, 10, 0.05, float(col) * 1.7 + float(row), 0.46)
 			var shade := 0.72 + 0.34 * fmod(float(col * 2 + row * 3), 9.0) / 9.0
 			var tm := roof_mat.duplicate() as ShaderMaterial
 			if tm:
@@ -464,9 +464,9 @@ static func _add_tiled_roof_side(root: Node3D, roof_mat: Material, side_sign: fl
 				tile.material_override = tm
 			else:
 				tile.material_override = roof_mat
-			var x := -1.90 + float(col) * 0.29 + (0.14 if row % 2 == 1 else 0.0)
+			var x := -1.95 + float(col) * 0.255 + (0.12 if row % 2 == 1 else 0.0)
 			tile.position = Vector3(x, y + 0.05, z + side_sign * 0.06)
-			tile.scale = Vector3(1.40, 0.72, 1.25)
+			tile.scale = Vector3(1.30, 0.78, 1.20)
 			tile.rotation_degrees.x = 38.0 * side_sign
 			tile.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 			root.add_child(tile)

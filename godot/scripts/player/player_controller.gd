@@ -59,7 +59,7 @@ func _build_visual() -> void:
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
 
-	# 袖＋手元：体より前・外側。手先は丸い拳（鉤爪禁止）
+	# 袖＋手元：体より前・外側。手先は太い丸い拳で袖先を覆う
 	for side in [-1.0, 1.0]:
 		var arm_root := Node3D.new()
 		arm_root.position = Vector3(0.32 * side, 0.78, 0.14)
@@ -67,15 +67,15 @@ func _build_visual() -> void:
 		arm_root.rotation_degrees.z = 12.0 * side
 		mesh_root.add_child(arm_root)
 		var upper := MeshInstance3D.new()
-		upper.mesh = CraftMeshes.trunk(0.40, 0.070, 0.052, 14)
+		upper.mesh = CraftMeshes.trunk(0.38, 0.070, 0.055, 14)
 		upper.material_override = _cm(cloth, cloth_d, 0.50)
 		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.052, 9, 10)
-		hand.material_override = _cm(skin, skin.darkened(0.18))
-		hand.position = Vector3(0.0, 0.40, 0.0)
-		hand.scale = Vector3(1.15, 0.95, 1.10)
+		hand.mesh = CraftMeshes.uv_sphere(0.062, 10, 12)
+		hand.material_override = _cm(skin, skin.darkened(0.16))
+		hand.position = Vector3(0.0, 0.38, 0.0)
+		hand.scale = Vector3(1.20, 1.05, 1.15)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
 
@@ -121,11 +121,10 @@ func _build_visual() -> void:
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
-	# マフラー：太い巻き＋片側の短い端（リボン垂れ禁止）
-	_mi(CraftMeshes.uv_sphere(0.24, 14, 18, 0.04, 6.0, 0.48), _cm(scarf_col, scarf_col.darkened(0.28), 0.72), Vector3(0, 0.88, 0.10), Vector3(1.78, 0.88, 1.50))
-	_mi(CraftMeshes.uv_sphere(0.15, 10, 12, 0.03, 7.0, 0.85), _cm(scarf_col, scarf_col.darkened(0.22), 0.65), Vector3(0.18, 0.82, 0.24))
-	_mi(CraftMeshes.uv_sphere(0.11, 8, 10, 0.025, 7.5, 0.9), _cm(scarf_col, scarf_col.darkened(0.18), 0.60), Vector3(0.22, 0.68, 0.22))
-	_mi(CraftMeshes.uv_sphere(0.08, 7, 9, 0.02, 8.0, 0.95), _cm(scarf_col, scarf_col.darkened(0.16), 0.55), Vector3(0.18, 0.58, 0.18))
+	# マフラー：太い巻き＋片側の短い端（リボン垂れ・胸面歪み禁止）
+	_mi(CraftMeshes.uv_sphere(0.23, 14, 18, 0.02, 6.0, 0.50), _cm(scarf_col, scarf_col.darkened(0.28), 0.70), Vector3(0, 0.88, 0.10), Vector3(1.72, 0.85, 1.45))
+	_mi(CraftMeshes.uv_sphere(0.14, 10, 12, 0.015, 7.0, 0.88), _cm(scarf_col, scarf_col.darkened(0.22), 0.62), Vector3(0.18, 0.80, 0.22))
+	_mi(CraftMeshes.uv_sphere(0.10, 8, 10, 0.012, 7.5, 0.92), _cm(scarf_col, scarf_col.darkened(0.18), 0.58), Vector3(0.22, 0.66, 0.20))
 
 	mesh_root.scale = Vector3(1.06, 1.14, 1.06)
 
