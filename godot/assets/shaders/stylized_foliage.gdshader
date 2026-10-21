@@ -109,18 +109,17 @@ void fragment() {
 	vec3 base = mix(leaf_dark, leaf_color, 0.50 + up * 0.16 + ndl * 0.14);
 	base = mix(base, mix(leaf_dark * 0.94, leaf_color * 1.08, tex_l), flock_mix * 0.70);
 	// 細い均一フェルト粒（中周波モトル禁止）hp_std≈3.7
-	base *= mix(0.88, 1.14, flock);
-	float grit = _vnoise(v_world * 100.0 + 1.7);
-	float grit2 = _vnoise(v_world * 180.0 + 4.2);
-	float grit3 = _vnoise(v_world * 280.0 + 9.1);
-	base *= mix(0.90, 1.10, grit * 0.45 + grit2 * 0.35 + grit3 * 0.20);
+	base *= mix(0.86, 1.16, flock);
+	float grit = _vnoise(v_world * 110.0 + 1.7);
+	float grit2 = _vnoise(v_world * 200.0 + 4.2);
+	float grit3 = _vnoise(v_world * 320.0 + 9.1);
+	base *= mix(0.88, 1.12, grit * 0.40 + grit2 * 0.35 + grit3 * 0.25);
 	base *= lobe_ao * wrap;
 	base *= 1.22;
 
 	float facing = clamp(dot(normalize(n), VIEW) * 0.5 + 0.5, 0.0, 1.0);
-	float soft_rim = pow(1.0 - facing, 1.65) * 0.78;
-	base += leaf_color * soft_rim * (0.65 + flock * 0.45);
-	base += vec3(0.06, 0.065, 0.03) * soft_rim;
+	float soft_rim = pow(1.0 - facing, 1.85) * 0.55;
+	base += leaf_color * soft_rim * (0.50 + flock * 0.40);
 
 	float under = clamp(0.16 - v_obj.y * 0.12, 0.0, 0.12);
 	base *= 1.0 - under;
