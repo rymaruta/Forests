@@ -50,13 +50,11 @@ Step 4  ワールドへ戻す
 - Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
   比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
 - Step 1 進行中（樹）:
-  形: canopy_hero.obj（28中小房 soft-union k=0.10）
-      幹: 一本メッシュ CraftMeshes（96 seg／裾フレア＋長い趾指）
+  形: canopy_hero.obj（18大房 soft-union k=0.11）
+      幹: 一本メッシュ CraftMeshes（96 seg／弱い裾＋不規則丸趾）
       HERO_TRUNK_H=1.42 / BASE_R=0.34 / TOP_R=0.11 / CANOPY_R=1.30 / SEED=2901
-  質感: 密短パイル leaf＋Lambert房体積／樹皮 unshaded＋アルベド溝 0.12
-  色: 幹≈0.45/0.35/0.27 冠≈0.66/0.69/0.56（参照マスク寄せ）
-  捨てた: MC幹全体 / CSG趾 / 冠k=0.22 / 強リフト趾 / 黒帯溝
-         / 露出オーバーのライム冠 / 幹外に出るV枝割れ
-  進行中レバー: ①フェルト短パイルの厚み ②趾スイープ一体 ③手彫り溝
-  未達: 参照級フェルト・趾粘土一体・溝の手彫り感（合格宣言禁止）
-  次: Bench撮→fair cmp（シート1本トリム＋letterbox）。合格までワールド戻さない
+  質感: 低周波フェルト＋Lambert／樹皮 unshaded＋溝アルベド 0.11
+  色: 幹≈0.50/0.36/0.24 冠≈0.42/0.46/0.34
+  捨てた: MC幹 / CSG趾 / 28細房三角冠 / 強スカート / 強リフト / 黒帯溝
+  進行中レバー: ①フェルト厚み ②趾スイープ一体 ③手彫り溝の遠目可読
+  未達: 参照級（合格宣言禁止）。次: fair cmp継続。合格までワールド戻さない
