@@ -104,7 +104,7 @@ func _build_visual() -> void:
 	for side in [-1.0, 1.0]:
 		_mi(CraftMeshes.uv_sphere(0.048, 10, 12), _cm(Color(0.10, 0.06, 0.04), Color(0.02, 0.01, 0.01), 0.08), Vector3(0.095 * side, 1.22, 0.288), Vector3(1.20, 0.95, 0.70))
 		var shine := MeshInstance3D.new()
-		shine.mesh = CraftMeshes.uv_sphere(0.016, 5, 6)
+		shine.mesh = CraftMeshes.uv_sphere(0.019, 5, 6)
 		var sm := StandardMaterial3D.new()
 		sm.albedo_color = Color(1, 1, 1)
 		sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
