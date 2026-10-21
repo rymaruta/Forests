@@ -110,7 +110,7 @@ static func toe_skirt_part() -> Node3D:
 	var baked_h := 0.52
 	var s := TOE_H / baked_h
 	# 水平で aspect≈3、縦カプセル趾は残す
-	toes.scale = Vector3(s * 1.88, s * 1.00, s * 1.88)
+	toes.scale = Vector3(s * 2.05, s * 0.96, s * 2.05)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
