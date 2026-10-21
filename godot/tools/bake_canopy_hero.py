@@ -115,14 +115,15 @@ def main() -> None:
     centers = []
     radii = []
     for c, r in lobe_specs():
+        # 参照の不規則な成長感。対称リングを崩す
         centers.append(
             (
-                c[0] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
-                c[1] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
-                c[2] * BASE_R + rng.uniform(-0.002, 0.002) * BASE_R,
+                c[0] * BASE_R + rng.uniform(-0.018, 0.018) * BASE_R,
+                c[1] * BASE_R + rng.uniform(-0.012, 0.012) * BASE_R,
+                c[2] * BASE_R + rng.uniform(-0.018, 0.018) * BASE_R,
             )
         )
-        radii.append(r * BASE_R * rng.uniform(0.999, 1.001))
+        radii.append(r * BASE_R * rng.uniform(0.94, 1.06))
 
     xs = [p[0] for p in centers]
     ys = [p[1] for p in centers]
