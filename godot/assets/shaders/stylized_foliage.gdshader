@@ -103,7 +103,7 @@ void fragment() {
 	crevice = pow(crevice, 1.25);
 	// 谷だけ深く（p10≈77）、高台は明るく保つ
 	// 大房の谷は広く深く（細かいポップコーン影禁止）
-	float lobe_ao = mix(1.0, 0.46, pow(crevice, 1.10)) * mix(0.64, 1.0, v_ao);
+	float lobe_ao = mix(1.0, 0.50, pow(crevice, 1.20)) * mix(0.70, 1.0, v_ao);
 
 	vec3 L = normalize(vec3(0.32, 0.92, 0.22));
 	float ndl = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
@@ -125,22 +125,21 @@ void fragment() {
 	base *= 1.94;
 	base *= vec3(0.965, 1.01, 0.995);
 
-	// 真のフレネル（0=正面, 1=縁）
+	// 真のフレネル（0=正面, 1=縁）— 発光リム禁止、細い柔縁のみ
 	float ndv = clamp(abs(dot(normalize(n), VIEW)), 0.0, 1.0);
-	float fres = pow(1.0 - ndv, 1.55);
-	// 縁は葉色のみ。クリーム混色は白ハローになるので禁止
-	float rim_mask = smoothstep(0.40, 0.98, fres);
-	base += leaf_color * fres * (0.18 + flock * 0.12) * rim_mask;
+	float fres = pow(1.0 - ndv, 1.75);
+	float rim_mask = smoothstep(0.55, 0.99, fres);
+	base += leaf_color * fres * (0.10 + flock * 0.08) * rim_mask;
 
 	// 下側の重い帯を抑え、参照の柔らかい裾に
 	float under = clamp(0.10 - v_obj.y * 0.08, 0.0, 0.08);
 	base *= 1.0 - under;
 
-	// シルエット柔縁：細いフレネル帯だけアルファ＋ノイズ（白縁禁止）
-	float dither = _vnoise(v_world * 190.0 + 3.1) * 0.55
-		+ _vnoise(v_world * 380.0 + 8.7) * 0.45;
-	float fade = smoothstep(0.35, 0.92, fres) * (0.45 + dither * 0.40);
-	float alpha = clamp(1.0 - fade, 0.12, 1.0);
+	// シルエット柔縁：ごく細いフレネル帯だけアルファ＋ノイズ（発光禁止）
+	float dither = _vnoise(v_world * 200.0 + 3.1) * 0.55
+		+ _vnoise(v_world * 400.0 + 8.7) * 0.45;
+	float fade = smoothstep(0.50, 0.96, fres) * (0.38 + dither * 0.35);
+	float alpha = clamp(1.0 - fade, 0.20, 1.0);
 
 	ALBEDO = base;
 	ALPHA = alpha;
