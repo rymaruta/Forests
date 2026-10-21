@@ -10,7 +10,7 @@ import numpy as np
 from skimage.measure import marching_cubes
 
 OUT = Path(__file__).resolve().parents[1] / "assets" / "meshes" / "canopy_hero.obj"
-BASE_R = 1.38
+BASE_R = 1.18
 RES = 148
 PAD = 0.14
 K_BLEND = 0.12

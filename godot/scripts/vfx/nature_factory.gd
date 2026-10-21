@@ -6,10 +6,10 @@ class_name NatureFactory
 
 ## ヒーロー樹の固定比率（参照 ref-tree-deciduous.jpg）
 ## 幹高 : 樹冠幅 : 根幅  ≈  2.0 : 3.2 : 1.2  （幹は太く短め、冠は横広）
-const HERO_TRUNK_H := 1.88
-const HERO_BASE_R := 0.33
-const HERO_TOP_R := 0.14
-const HERO_CANOPY_R := 1.38
+const HERO_TRUNK_H := 2.10
+const HERO_BASE_R := 0.34
+const HERO_TOP_R := 0.145
+const HERO_CANOPY_R := 1.18
 const HERO_SEED := 2901
 
 
@@ -65,7 +65,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 		top_r,
 		96 if hero else 16,
 		lean,
-		0.095 if hero else 0.028,
+		0.12 if hero else 0.028,
 		true,
 		toe_n
 	)
@@ -73,16 +73,16 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	trunk.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(trunk)
 
-	# 参照：幹頂の短い V フォーク。横に突き出す棒枝は禁止。
+	# 参照：幹頂の短い V フォークが冠の下から読める。
 	for b in 2:
 		var br := MeshInstance3D.new()
-		var blen := 0.32 if hero else rng.randf_range(0.35, 0.5)
-		br.mesh = CraftMeshes.branch(blen, 0.11 if hero else 0.06, 0.06 if hero else 0.022, 14, 0.02)
+		var blen := 0.46 if hero else rng.randf_range(0.35, 0.5)
+		br.mesh = CraftMeshes.branch(blen, 0.13 if hero else 0.06, 0.07 if hero else 0.022, 14, 0.03)
 		br.material_override = VisualKit.bark_shader_material(bark_tint)
-		var ang := (0.55 if b == 0 else PI - 0.55) + lean * 1.2
-		var by := h * (0.78 if hero else (0.58 if b == 0 else 0.54))
-		br.position = Vector3(cos(ang) * (base_r * 0.22 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.06 if hero else 0.04))
-		br.rotation = Vector3(0.55 if hero else 0.55, ang, 0.35 if (hero and b == 0) else (-0.35 if hero else 0.0))
+		var ang := (0.48 if b == 0 else PI - 0.48) + lean * 1.2
+		var by := h * (0.82 if hero else (0.58 if b == 0 else 0.54))
+		br.position = Vector3(cos(ang) * (base_r * 0.28 if hero else 0.2) + lean * 0.1, by, sin(ang) * (base_r * 0.10 if hero else 0.04))
+		br.rotation = Vector3(0.35 if hero else 0.55, ang, 0.55 if (hero and b == 0) else (-0.55 if hero else 0.0))
 		br.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(br)
 
@@ -93,8 +93,13 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	if canopy.mesh == null:
 		canopy.mesh = CraftMeshes.canopy_soft_union(rng, canopy_r)
 	canopy.material_override = VisualKit.foliage_material(leaf, leaf_dark)
-	# 枝の V フォークがわずかに覗く高さ
-	canopy.position = Vector3(lean * 0.08, h * 0.86, 0.0)
+	# 枝の V フォークが冠下から読める高さ
+	canopy.position = Vector3(lean * 0.08, h * 0.88, 0.0)
+	if hero:
+		# OBJ は BASE_R=1.18 で焼く。ワールド側で念のため比率固定
+		var baked_r := 1.18
+		var s := canopy_r / baked_r
+		canopy.scale = Vector3(s, s * 0.92, s)
 	canopy.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	root.add_child(canopy)
 	# 趾パッドと樹皮溝が正面で読めるヨー
