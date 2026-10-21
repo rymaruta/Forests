@@ -59,6 +59,12 @@ def lobe_specs():
         )
     # てっぺんは大きな1房（尖らせない）
     specs.append(((0.02, 0.78, -0.01), 0.30))
+    # 中小房を足して参照の「細かい丘」密度へ
+    for i in range(10):
+        a = i / 10 * math.tau + 0.07
+        y = 0.42 + 0.12 * math.sin(i * 2.3 + 0.5)
+        rad = 0.38 + 0.08 * math.cos(i * 1.4)
+        specs.append(((math.cos(a) * rad, y, math.sin(a) * rad), 0.20))
     for i in range(5):
         a = i / 5 * math.tau + 0.18
         specs.append(((math.cos(a) * 0.22, 0.08, math.sin(a) * 0.22), 0.24))
