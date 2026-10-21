@@ -2,7 +2,7 @@ extends Node3D
 ## AssetBench — 参照と同じ比較条件で1アセットだけ撮る台。
 ## 灰背景・柔らかい3灯・HUDなし。ワールド写真は最終確認だけ。
 
-@export_enum("tree", "cottage", "traveler") var subject: String = "tree"
+@export_enum("tree", "tree_canopy", "tree_trunk", "tree_toes", "cottage", "traveler") var subject: String = "tree"
 
 
 func _ready() -> void:
@@ -123,6 +123,24 @@ func _spawn_subject() -> void:
 			cam.position = Vector3(0.08, 2.70, 7.8)
 			cam.look_at(Vector3(0.0, 1.70, 0.0), Vector3.UP)
 			cam.fov = 28.0
+		"tree_canopy":
+			var canopy := NatureFactory.deciduous_part_canopy()
+			hold.add_child(canopy)
+			cam.position = Vector3(0.0, 1.15, 4.6)
+			cam.look_at(Vector3(0.0, 0.85, 0.0), Vector3.UP)
+			cam.fov = 30.0
+		"tree_trunk":
+			var trunk := NatureFactory.deciduous_part_trunk()
+			hold.add_child(trunk)
+			cam.position = Vector3(0.05, 1.35, 5.2)
+			cam.look_at(Vector3(0.0, 0.85, 0.0), Vector3.UP)
+			cam.fov = 28.0
+		"tree_toes":
+			var toes := NatureFactory.deciduous_part_toes()
+			hold.add_child(toes)
+			cam.position = Vector3(0.10, 0.55, 2.6)
+			cam.look_at(Vector3(0.0, 0.18, 0.0), Vector3.UP)
+			cam.fov = 32.0
 		"cottage":
 			var home := NatureFactory.cottage()
 			hold.add_child(home)

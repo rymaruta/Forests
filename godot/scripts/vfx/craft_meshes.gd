@@ -101,8 +101,10 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 		var y1 := t1 * height
 		var r0 := lerpf(bottom_r, top_r, t0 * t0 * 0.35 + t0 * 0.65)
 		var r1 := lerpf(bottom_r, top_r, t1 * t1 * 0.35 + t1 * 0.65)
-		r0 *= _root_flare_mul(t0)
-		r1 *= _root_flare_mul(t1)
+		# フレア／趾／接地フィレットは toe 部品だけ。幹柱は滑らかな円錐台。
+		if root_toes > 0:
+			r0 *= _root_flare_mul(t0)
+			r1 *= _root_flare_mul(t1)
 		var lean0 := lean * t0 * t0
 		var lean1 := lean * t1 * t1
 		for j in segments:
@@ -112,7 +114,6 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var toe1 := _root_toe_boost(a1, t0, root_toes)
 			var toe2 := _root_toe_boost(a0, t1, root_toes)
 			var toe3 := _root_toe_boost(a1, t1, root_toes)
-			# 幾何溝は参照級の浅い刷毛筋のみ。深いフルートはテクスチャ縦繊維へ。
 			var rip_amt0 := bark_ripple * lerpf(0.20, 1.0, clampf((t0 - 0.10) / 0.22, 0.0, 1.0))
 			var rip_amt1 := bark_ripple * lerpf(0.20, 1.0, clampf((t1 - 0.10) / 0.22, 0.0, 1.0))
 			var w0 := 0.55 * sin(a0 * 1.3 + t0 * 0.6) + 0.45 * sin(a0 * 2.7 + t0 * 1.1)
@@ -123,20 +124,25 @@ static func trunk(height: float, bottom_r: float, top_r: float, segments: int = 
 			var ripple1 := 1.0 + rip_amt0 * (0.70 * sin(a1 * 5.0 + w1 * 0.40) + 0.30 * sin(a1 * 9.0 + t0 * 0.5))
 			var ripple2 := 1.0 + rip_amt1 * (0.70 * sin(a0 * 5.0 + w2 * 0.40) + 0.30 * sin(a0 * 9.0 + t1 * 0.5))
 			var ripple3 := 1.0 + rip_amt1 * (0.70 * sin(a1 * 5.0 + w3 * 0.40) + 0.30 * sin(a1 * 9.0 + t1 * 0.5))
-			# 接地フィレット：最下端だけ少し内へ（平パッド切断面を丸く）
-			var fillet0 := _ground_fillet(t0)
-			var fillet1 := _ground_fillet(t1)
-			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 * fillet0 + lean0, y0 + _root_toe_lift(toe0, t0, height), sin(a0) * r0 * ripple0 * toe0 * fillet0)
-			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 * fillet0 + lean0, y0 + _root_toe_lift(toe1, t0, height), sin(a1) * r0 * ripple1 * toe1 * fillet0)
-			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 * fillet1 + lean1, y1 + _root_toe_lift(toe2, t1, height), sin(a0) * r1 * ripple2 * toe2 * fillet1)
-			var p11 := Vector3(cos(a1) * r1 * ripple3 * toe3 * fillet1 + lean1, y1 + _root_toe_lift(toe3, t1, height), sin(a1) * r1 * ripple3 * toe3 * fillet1)
+			var fillet0 := 1.0 if root_toes <= 0 else _ground_fillet(t0)
+			var fillet1 := 1.0 if root_toes <= 0 else _ground_fillet(t1)
+			var lift0 := 0.0 if root_toes <= 0 else _root_toe_lift(toe0, t0, height)
+			var lift1 := 0.0 if root_toes <= 0 else _root_toe_lift(toe1, t0, height)
+			var lift2 := 0.0 if root_toes <= 0 else _root_toe_lift(toe2, t1, height)
+			var lift3 := 0.0 if root_toes <= 0 else _root_toe_lift(toe3, t1, height)
+			var p00 := Vector3(cos(a0) * r0 * ripple0 * toe0 * fillet0 + lean0, y0 + lift0, sin(a0) * r0 * ripple0 * toe0 * fillet0)
+			var p10 := Vector3(cos(a1) * r0 * ripple1 * toe1 * fillet0 + lean0, y0 + lift1, sin(a1) * r0 * ripple1 * toe1 * fillet0)
+			var p01 := Vector3(cos(a0) * r1 * ripple2 * toe2 * fillet1 + lean1, y1 + lift2, sin(a0) * r1 * ripple2 * toe2 * fillet1)
+			var p11 := Vector3(cos(a1) * r1 * ripple3 * toe3 * fillet1 + lean1, y1 + lift3, sin(a1) * r1 * ripple3 * toe3 * fillet1)
 			var u0 := float(j) / float(segments)
 			var u1 := float(j + 1) / float(segments)
 			_tri_uv(st, p00, p10, p01, Vector2(u0, t0), Vector2(u1, t0), Vector2(u0, t1))
 			_tri_uv(st, p10, p11, p01, Vector2(u1, t0), Vector2(u1, t1), Vector2(u0, t1))
 	# 底を閉じて中空見えを防ぐ（フィレット後の外形に追従）
 	var bot_c := Vector3(0, 0.001, 0)
-	var flare0 := _root_flare_mul(0.0) * _ground_fillet(0.0)
+	var flare0 := 1.0
+	if root_toes > 0:
+		flare0 = _root_flare_mul(0.0) * _ground_fillet(0.0)
 	for j in segments:
 		var a0 := float(j) / float(segments) * TAU
 		var a1 := float(j + 1) / float(segments) * TAU

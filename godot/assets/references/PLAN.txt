@@ -4,58 +4,32 @@ Forests — 直し方（手順を変えないと治らない）
 1. 比較方法が間違っている
    - 参照＝スタジオ照明・灰背景・1アセット正面
    - ゲーム＝ワールド全体・HUD・変な角度
-   → これでは「似てない」しか分からず、何を直せばいいか決まらない
-
-2. 問題を混ぜている
-   A. 形（シルエット／比率）
-   B. 質感（フェルト葉・樹皮・漆喰・瓦）
-   C. 見せ方（光・背景・影）
-   → 毎回全部いじるから、どれが効いたか分からない
-
-3. 製法が参照に届かない
-   - 参照の樹冠＝なめらかな一体感＋フェルト質感
-   - 今＝毎フレーム生成の粗いプロシージャル＋艶なしでも平べったい色
-   - 「球を足す／雲シェルに変える」を繰り返しても B が足りない
+2. 問題を混ぜている（形・質感・見せ方を同時いじり）
+3. 一体物のまま全部直そうとして部品の理想形が決まらない
 
 ■ 何をどうするか（これ以外やらない）
-Step 0  比較台を作る
-  - AssetBench: 灰背景・柔らかい3灯・HUDなし・アセット1つ
-  - 参照と同じ条件で撮る。ワールド写真は最終確認だけ
-
-Step 1  樹（ヒーロー1本）だけを参照に合わせる
-  - 比率を数値で固定（幹高 : 樹冠幅 : 根幅）
-  - 樹冠メッシュを固定シードで1つに決める（毎回ランダム禁止）
-  - フェルト質感テクスチャ＋完全マットな葉シェーダ
-  - Bench写真が参照に近づくまでワールドに戻さない
-
-Step 2  小屋正面だけ
-  - 同じBench、正面固定カメラ
-  - 漆喰／太い梁／瓦／石積みを1項目ずつ
-
-Step 3  旅人正面だけ
-  - 同じBench、顔が見える正面
-  - 体型比率→顔→帽子の順
-
+Step 0  比較台（AssetBench）
+Step 1  樹を部品に分解 → 各部品を理想形 → 結合
+  1a  冠（canopy）だけ参照 parts/ref-canopy.png に合わせる
+  1b  幹＋クレードル枝（trunk_fork）だけ parts/ref-trunk.png に合わせる
+  1c  趾＋裾（toe_skirt）だけ parts/ref-toes.png に合わせる
+  1d  合格部品を TreeParts.assemble_hero() で結合 → 全体Bench
+Step 2  小屋正面
+Step 3  旅人正面
 Step 4  ワールドへ戻す
-  - Bench合格のヒーローを配置
-  - 光は参照の朝の柔らかさに寄せる
-  - その後で全体スクショ
 
 ■ 禁止
-- 参照なしの「なんか良くする」変更
-- 樹・小屋・旅人を同時にいじる
-- HUD付きワールド写真だけで判断する
+- 参照なしの「なんか良くする」
+- 部品を混ぜて同時に直す
+- 部品不合格のまま結合を合格扱いにする
+- HUD付きワールド写真だけで判断
 
-■ 進行メモ（Bench運用）
-- Step 0 完了: scenes/bench/AssetBench.tscn + screenshot_bench*.gd
-  比較写真: /opt/cursor/artifacts/screenshots/bench-tree.png と cmp-bench-tree.jpg
-- Step 1 進行中（樹）:
-  形: canopy_hero.obj（中高丸雲 soft-union k=0.07／下房で底を丸く）
-      幹: 一本メッシュ（96 seg／趾は裾だけ／接地フィレット）trunk_h=1.12h
-      短い U クレードルが冠下から読める
-      HERO_TRUNK_H=1.40 / BASE_R=0.28 / TOP_R=0.10 / CANOPY_R=1.22 / SEED=2901
-  質感: 冠 unshadedフェルト＋房AO／樹皮 unshaded＋縦繊維（幾何稜線なし）
-  色: 幹≈0.46/0.33/0.22 冠≈0.48/0.54/0.36
-  捨てた: 深い幾何フルート／ゼブラ樹皮／趾が幹中腹まで残る稜／ディザ殻／尖頂冠
-  進行中レバー: ①フェルト面の密度（最大ギャップ）②趾の丸粘土フィレット ③刷毛筋の遠目
-  未達: 参照級（合格宣言禁止）。fair cmp継続。合格までワールド戻さない
+■ 進行メモ
+- Step 0 完了
+- Step 1 製法変更（2026-10-21）:
+  TreeParts: canopy / trunk_fork / toe_skirt → assemble_hero
+  Bench subjects: tree_canopy / tree_trunk / tree_toes / tree
+  参照パーツ: assets/references/parts/ref-{canopy,trunk,toes}.png
+  撮影: screenshot_bench_tree_part.gd と screenshot_bench_tree.gd
+  いま: 部品Bench立ち上げ。冠から合格させる。
+  未達: 各部品合格→結合合格。合格宣言禁止。ワールド戻さない

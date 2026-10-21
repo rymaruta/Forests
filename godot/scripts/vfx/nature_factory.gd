@@ -15,10 +15,22 @@ const HERO_SEED := 2901
 
 
 static func deciduous_tree_hero(rng: RandomNumberGenerator = null) -> Node3D:
-	## Bench合格用。毎回ランダム禁止。比率・シード固定。
-	var r := rng if rng != null else RandomNumberGenerator.new()
-	r.seed = HERO_SEED
-	return _deciduous_build(r, false, true)
+	## Bench合格用。部品を理想形にしてから結合（TreeParts）。
+	if rng != null:
+		rng.seed = HERO_SEED
+	return TreeParts.assemble_hero()
+
+
+static func deciduous_part_canopy() -> Node3D:
+	return TreeParts.canopy_part()
+
+
+static func deciduous_part_trunk() -> Node3D:
+	return TreeParts.trunk_fork_part()
+
+
+static func deciduous_part_toes() -> Node3D:
+	return TreeParts.toe_skirt_part()
 
 
 static func deciduous_tree(rng: RandomNumberGenerator, backdrop: bool = false) -> Node3D:
