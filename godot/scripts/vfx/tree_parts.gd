@@ -134,43 +134,43 @@ static func assemble_hero() -> Node3D:
 	# 結合時のみ：参照の趾フレア（部品Benchスケールは維持）
 	var toe_mesh := toes.get_node_or_null("ToeSkirt") as MeshInstance3D
 	if toe_mesh:
-		toe_mesh.scale *= Vector3(0.46, 1.00, 0.46)
+		toe_mesh.scale *= Vector3(0.42, 1.04, 0.42)
 		toe_mesh.material_override = bark_mat
 	root.add_child(toes)
 
 	var trunk := trunk_fork_part()
 	trunk.name = "TrunkFork"
-	trunk.position.y = TOE_H * 0.34
-	# 結合時のみ：幹をやや細く（部品Benchは維持）
+	trunk.position.y = TOE_H * 0.36
+	# 結合時のみ：幹を細長く（部品Benchは維持）
 	var trunk_mesh := trunk.get_node_or_null("TrunkFork") as MeshInstance3D
 	if trunk_mesh:
-		trunk_mesh.scale *= Vector3(0.86, 1.06, 0.86)
+		trunk_mesh.scale *= Vector3(0.82, 1.12, 0.82)
 		trunk_mesh.material_override = bark_mat
 	root.add_child(trunk)
 
-	# 参照全体樹のクレードル枝：冠下で読めるフォーク
+	# 参照全体樹のクレードル枝：控えめに冠へ埋める
 	for side in [-1.0, 1.0]:
-		var base_y := trunk.position.y + TRUNK_H * 0.52
+		var base_y := trunk.position.y + TRUNK_H * 0.56
 		var stub := MeshInstance3D.new()
-		stub.mesh = CraftMeshes.trunk(0.32, 0.062, 0.038, 10, 0.0, 0.02)
+		stub.mesh = CraftMeshes.trunk(0.22, 0.052, 0.034, 10, 0.0, 0.02)
 		stub.material_override = bark_mat
-		stub.position = Vector3(0.105 * side, base_y, 0.05)
-		stub.rotation_degrees.z = -44.0 * side
-		stub.rotation_degrees.x = -12.0
+		stub.position = Vector3(0.09 * side, base_y, 0.03)
+		stub.rotation_degrees.z = -36.0 * side
+		stub.rotation_degrees.x = -8.0
 		stub.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		root.add_child(stub)
 
 	var canopy := canopy_part()
 	canopy.name = "Canopy"
-	# 結合時のみ：やや広い中房＋濃オリーブ（部品Bench色は維持）
+	# 結合時のみ：縦長中房＋落ち着いたオリーブ（部品Bench色は維持）
 	var canopy_mesh := canopy.get_node_or_null("Canopy") as MeshInstance3D
 	if canopy_mesh:
-		canopy_mesh.scale *= Vector3(0.90, 1.08, 0.90)
-		var sheet_leaf := Color(0.33, 0.41, 0.24)
-		var sheet_dark := Color(0.15, 0.21, 0.11)
+		canopy_mesh.scale *= Vector3(0.86, 1.18, 0.86)
+		var sheet_leaf := Color(0.36, 0.43, 0.28)
+		var sheet_dark := Color(0.18, 0.24, 0.14)
 		canopy_mesh.material_override = VisualKit.foliage_material(sheet_leaf, sheet_dark)
-	# クレードル先端が覗く座
-	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.58, 0.0)
+	# フォーク先端だけ覗く
+	canopy.position = Vector3(LEAN * 0.08, trunk.position.y + TRUNK_H * 0.60, 0.0)
 	root.add_child(canopy)
 
 	root.set_meta("tree_height", TRUNK_H)

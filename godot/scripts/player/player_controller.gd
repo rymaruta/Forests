@@ -61,23 +61,23 @@ func _build_visual() -> void:
 	# 一体フレアワンピ（裾を広げて脚を見せる）
 	_mi(CraftMeshes.trunk(0.64, 0.36, 0.155, 24, 0.0, 0.01), _cm(cloth, cloth_d, 0.58), Vector3(0, 0.30, 0))
 
-	# 袖＋手元：体より前・外側。手先は太い丸い拳で袖先を覆う
+	# 袖＋手元：参照どおり体側に自然に下ろす。手先は太い丸い拳
 	for side in [-1.0, 1.0]:
 		var arm_root := Node3D.new()
-		arm_root.position = Vector3(0.32 * side, 0.78, 0.14)
-		arm_root.rotation_degrees.x = 162.0
-		arm_root.rotation_degrees.z = 12.0 * side
+		arm_root.position = Vector3(0.34 * side, 0.86, 0.02)
+		arm_root.rotation_degrees.x = 175.0
+		arm_root.rotation_degrees.z = 8.0 * side
 		mesh_root.add_child(arm_root)
 		var upper := MeshInstance3D.new()
-		upper.mesh = CraftMeshes.trunk(0.38, 0.082, 0.064, 14)
+		upper.mesh = CraftMeshes.trunk(0.42, 0.078, 0.062, 14)
 		upper.material_override = _cm(cloth, cloth_d, 0.58)
 		upper.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(upper)
 		var hand := MeshInstance3D.new()
-		hand.mesh = CraftMeshes.uv_sphere(0.068, 10, 12)
+		hand.mesh = CraftMeshes.uv_sphere(0.065, 10, 12)
 		hand.material_override = _cm(skin, skin.darkened(0.16))
-		hand.position = Vector3(0.0, 0.38, 0.0)
-		hand.scale = Vector3(1.28, 1.10, 1.22)
+		hand.position = Vector3(0.0, 0.42, 0.0)
+		hand.scale = Vector3(1.25, 1.10, 1.20)
 		hand.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 		arm_root.add_child(hand)
 
@@ -113,18 +113,18 @@ func _build_visual() -> void:
 	# 麦わら：広いつば＋丸い麦色クラウン＋太い赤帯
 	var straw := Color(0.88, 0.70, 0.38)
 	var straw_d := Color(0.55, 0.38, 0.18)
-	# 厚いつば＋丸ドームクラウン（平皿段積み禁止）
-	_mi(CraftMeshes.uv_sphere(0.52, 16, 28, 0.035, 2.0, 0.42), _cm(hat, hat.darkened(0.28), 0.88), Vector3(0, 1.30, -0.02), Vector3(1.28, 0.95, 1.28))
-	_mi(CraftMeshes.uv_sphere(0.28, 16, 18, 0.02, 2.6, 0.55), _cm(straw, straw_d, 0.82), Vector3(0, 1.52, -0.02), Vector3(1.08, 1.05, 1.08))
+	# 厚いつば＋低い丸ドームクラウン（高い円筒禁止）
+	_mi(CraftMeshes.uv_sphere(0.50, 16, 28, 0.04, 2.0, 0.50), _cm(hat, hat.darkened(0.28), 0.88), Vector3(0, 1.28, -0.02), Vector3(1.24, 1.05, 1.24))
+	_mi(CraftMeshes.uv_sphere(0.26, 16, 18, 0.02, 2.6, 0.62), _cm(straw, straw_d, 0.82), Vector3(0, 1.46, -0.02), Vector3(1.10, 0.95, 1.10))
 	var band := MeshInstance3D.new()
 	var band_m := CylinderMesh.new()
-	band_m.top_radius = 0.250
-	band_m.bottom_radius = 0.258
-	band_m.height = 0.045
+	band_m.top_radius = 0.248
+	band_m.bottom_radius = 0.255
+	band_m.height = 0.038
 	band.mesh = band_m
-	# 帯は flock 弱め＝赤が麦色に濁らない（参照の太い布帯）
+	# 帯は flock 弱め＝赤が麦色に濁らない（参照の布帯）
 	band.material_override = _cm(Color(0.90, 0.32, 0.16), Color(0.52, 0.12, 0.05), 0.08)
-	band.position = Vector3(0, 1.36, -0.02)
+	band.position = Vector3(0, 1.32, -0.02)
 	band.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	mesh_root.add_child(band)
 
