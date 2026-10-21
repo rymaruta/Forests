@@ -110,7 +110,7 @@ static func toe_skirt_part() -> Node3D:
 	var baked_h := 0.48
 	var s := TOE_H / baked_h
 	# ベイクが低いと s が増える。aspect≈3・趾の丸み
-	toes.scale = Vector3(s * 1.45, s * 1.15, s * 1.45)
+	toes.scale = Vector3(s * 1.55, s * 1.05, s * 1.55)
 	root.add_child(toes)
 	root.rotation.y = 0.0
 	root.set_meta("part", "toe_skirt")
