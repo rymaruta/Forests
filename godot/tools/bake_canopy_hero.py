@@ -23,25 +23,25 @@ def soft_min(a: np.ndarray, b: np.ndarray, k: float) -> np.ndarray:
 
 
 def lobe_specs():
-    # 参照：低い横広がり雲。頂点を尖らせない
+    # 参照：やや縦長の丸雲。尖頂と横キノコの両方を避ける
     specs = [
-        ((0.0, 0.28, 0.0), 0.42),
-        ((0.0, 0.46, 0.0), 0.38),
-        ((0.0, 0.12, 0.0), 0.36),
-        ((0.0, 0.60, 0.0), 0.32),
+        ((0.0, 0.30, 0.0), 0.40),
+        ((0.0, 0.52, 0.0), 0.36),
+        ((0.0, 0.12, 0.0), 0.34),
+        ((0.0, 0.72, 0.0), 0.30),
+        ((0.0, 0.90, 0.0), 0.22),
     ]
-    # 外周の大きな房（横幅を稼ぐ）
-    for i in range(8):
-        a = i / 8 * math.tau + 0.10
-        y = 0.30 + 0.05 * math.sin(i * 1.7)
-        r = 0.32 if i % 2 == 0 else 0.28
-        specs.append(((math.cos(a) * 0.55, y, math.sin(a) * 0.55), r))
-    # 中段リング
+    for i in range(7):
+        a = i / 7 * math.tau + 0.12
+        y = 0.40 + 0.06 * math.sin(i * 1.7)
+        r = 0.30 if i % 2 == 0 else 0.26
+        specs.append(((math.cos(a) * 0.48, y, math.sin(a) * 0.48), r))
     for i in range(6):
-        a = i / 6 * math.tau + 0.38
-        specs.append(((math.cos(a) * 0.32, 0.48, math.sin(a) * 0.32), 0.26))
-    # てっぺんは大きな1房だけ（三角冠禁止）
-    specs.append(((0.0, 0.68, 0.0), 0.24))
+        a = i / 6 * math.tau + 0.40
+        specs.append(((math.cos(a) * 0.30, 0.64, math.sin(a) * 0.30), 0.24))
+    for i in range(4):
+        a = i / 4 * math.tau + 0.55
+        specs.append(((math.cos(a) * 0.16, 0.82, math.sin(a) * 0.16), 0.18))
     return specs
 
 

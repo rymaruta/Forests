@@ -104,7 +104,7 @@ static func _deciduous_build(rng: RandomNumberGenerator, backdrop: bool, hero: b
 	# 幹頂は冠に食い込み、フォークは冠下に残す
 	canopy.position = Vector3(lean * 0.08, h * 0.98, 0.0)
 	if hero:
-		# OBJ は BASE_R=1.18 で焼く。縦長卵型を潰さない
+		# OBJ は BASE_R=1.30 で焼く
 		var baked_r := 1.30
 		var s := canopy_r / baked_r
 		canopy.scale = Vector3(s, s, s)

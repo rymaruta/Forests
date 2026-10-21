@@ -168,11 +168,12 @@ static func _root_flare_mul(t: float) -> float:
 
 
 static func _ground_fillet(t: float) -> float:
-	## 接地を丸く：尖った趾先端を粘土丘に見せる
-	if t >= 0.08:
+	## 接地を丸く：直角切れを粘土丘のフィレットに
+	if t >= 0.12:
 		return 1.0
-	var u := 1.0 - t / 0.08
-	return 1.0 - 0.12 * u * u * u
+	var u := 1.0 - t / 0.12
+	u = u * u * (3.0 - 2.0 * u)
+	return 1.0 - 0.18 * u
 
 
 static func _root_toe_boost(angle: float, t: float, toes: int) -> float:

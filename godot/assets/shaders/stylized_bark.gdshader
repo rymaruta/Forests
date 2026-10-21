@@ -54,15 +54,14 @@ void fragment() {
 	float groove = soft * y_mask * 0.55;
 
 	float tex_luma = dot(tex, vec3(0.32, 0.50, 0.18));
-	// 刷毛筋はごく弱く。ゼブラ帯禁止。
-	float grain = clamp((0.55 - tex_luma) * 2.2, 0.0, 1.0);
-	float g = clamp(grain * 0.40 + groove * 0.18, 0.0, 1.0);
+	// 刷毛筋はごく弱く。ゼブラ帯・太い波線禁止。
+	float grain = clamp((0.52 - tex_luma) * 1.6, 0.0, 1.0);
+	float g = clamp(grain * 0.28 + groove * 0.12, 0.0, 1.0);
 
-	vec3 ridge = bark_color * 1.04;
-	vec3 valley = bark_dark * 0.88;
+	vec3 ridge = bark_color * 1.03;
+	vec3 valley = bark_dark * 0.92;
 	vec3 base = mix(ridge, valley, g);
-	// テクスチャを薄く乗せて粘土の微かな縦筋だけ残す
-	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.38);
+	base = mix(base, tex * (bark_color / max(vec3(0.42, 0.32, 0.22), vec3(0.08))), 0.28);
 	base *= 0.98 + 0.03 * (1.0 - v_y01);
 	ALBEDO = base;
 }

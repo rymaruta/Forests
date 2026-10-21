@@ -39,9 +39,10 @@ float _vnoise(vec3 p) {
 }
 
 void vertex() {
-	float fuzz = _hash31(VERTEX * 28.0 + 2.7) * 0.034
-		+ _hash31(VERTEX * 56.0) * 0.018
-		+ _hash31(VERTEX * 110.0 + 1.1) * 0.010;
+	// 短い柔らかい毛羽（ジャギーな殻ディザは使わない）
+	float fuzz = _hash31(VERTEX * 22.0 + 2.7) * 0.022
+		+ _hash31(VERTEX * 44.0) * 0.012
+		+ _hash31(VERTEX * 88.0 + 1.1) * 0.006;
 	VERTEX += NORMAL * fuzz;
 	v_world = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	v_obj = VERTEX;
@@ -54,18 +55,18 @@ void vertex() {
 }
 
 void fragment() {
-	// 遠目でもパイル塊が残るスケール（細かすぎる砂粒禁止）
-	vec3 tex_a = texture(leaf_tex, v_world.xz * 2.6).rgb;
-	vec3 tex_b = texture(leaf_tex, v_world.xy * 2.6).rgb;
-	vec3 tex_c = texture(leaf_tex, v_world.zy * 2.6).rgb;
+	// 柔らかい大粒パイル（砂粒ディザ禁止）
+	vec3 tex_a = texture(leaf_tex, v_world.xz * 1.8).rgb;
+	vec3 tex_b = texture(leaf_tex, v_world.xy * 1.8).rgb;
+	vec3 tex_c = texture(leaf_tex, v_world.zy * 1.8).rgb;
 	vec3 wn = abs(v_n);
 	wn = wn / max(wn.x + wn.y + wn.z, 1e-4);
 	vec3 tex = tex_a * wn.y + tex_b * wn.z + tex_c * wn.x;
 
-	float pile = _vnoise(v_world * 8.0 + 0.4);
-	float fiber = _vnoise(v_world * 20.0 + 2.1);
-	float fiber2 = _vnoise(v_world * 38.0 + 7.4);
-	float flock = pile * 0.40 + fiber * 0.42 + fiber2 * 0.18;
+	float pile = _vnoise(v_world * 5.5 + 0.4);
+	float fiber = _vnoise(v_world * 12.0 + 2.1);
+	float fiber2 = _vnoise(v_world * 22.0 + 7.4);
+	float flock = pile * 0.50 + fiber * 0.35 + fiber2 * 0.15;
 
 	// 房の谷：参照級の雲影（黒穴禁止、平坦塗りつぶし禁止）
 	float crevice = clamp(1.0 - v_n.y * 0.92, 0.0, 1.0);

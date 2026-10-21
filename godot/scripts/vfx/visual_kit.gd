@@ -31,6 +31,16 @@ static func foliage_material(color: Color, dark: Color = Color.BLACK) -> Materia
 	return m
 
 
+static func flock_shell_material(color: Color, density: float = 0.42) -> Material:
+	var m := ShaderMaterial.new()
+	m.shader = load_shader("res://assets/shaders/stylized_flock_shell.gdshader")
+	m.set_shader_parameter("leaf_tex", load("res://assets/textures/leaf.png"))
+	m.set_shader_parameter("leaf_color", Vector3(color.r, color.g, color.b))
+	m.set_shader_parameter("density", density)
+	m.set_shader_parameter("shell_tint", 1.06)
+	return m
+
+
 static func water_material() -> Material:
 	# 半透明は環境によって白飛びするので、不透明の澄んだ青緑
 	var m := StandardMaterial3D.new()
